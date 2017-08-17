@@ -1,1 +1,4 @@
-exportPattern("^[[:alpha:]]+")
+import(tidyverse)
+import(stringr)
+import(vegan)
+import(phyloseq)
