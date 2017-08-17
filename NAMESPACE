@@ -3,29 +3,47 @@ import(stringr)
 import(vegan)
 import(phyloseq)
 
+# initializers
 export(make_tidyamplicons)
 export(tidy_phyloseq)
+
+# processors
 export(process_sample_selection)
 export(process_taxon_selection)
 export(process_abundance_selection)
-export(report_numbers)
+export(process_new_sample_name)
+
+# library_sizes
+export(update_lib_sizes)
+
+# mergers
 export(merge_samples)
 export(merge_taxa)
 export(merge_tidyamplicons)
+
+# secondary_variables_abundances
 export(add_rel_abundance)
+
+# secondary_variables_taxa
 export(add_max_rel_abundance)
 export(add_total_rel_abundance)
 export(add_rel_occurrence)
 export(add_taxon_name)
 export(add_taxon_name_color)
+
+# secondary_variables_samples
 export(add_lib_size)
 export(add_diversity_measures)
-export(get_rel_abundance_matrix)
-export(get_betas)
 export(add_sample_clustered)
 export(add_pcoa)
-export(process_new_sample_name)
+
+# getters_data
+export(report_numbers)
+export(get_numbers)
+export(get_rel_abundance_matrix)
+export(get_betas)
 export(get_abundances_extended)
-export(update_lib_sizes)
+
+# getters_plots
 export(get_bar_plot)
 export(get_history_plot)
