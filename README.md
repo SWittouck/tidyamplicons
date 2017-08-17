@@ -1,8 +1,6 @@
-# tidyamplicons
+# tidyamplicons: Functions to Manipulate and Visualize Amplicon Sequence Data
 
-Functions to Manipulate and Visualize Amplicon Sequence Data
-
-This package is work in progress and is currently very minimalistic. There is no documentation yet. 
+This package is work in progress and is currently very minimalistic. Documentation is under construction and will be available very soon. 
 
 # Installation
 
