@@ -11,7 +11,9 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Imports:
-    tidyverse,
+    ggplot2,
+    tidyr,
+    dplyr,
     stringr,
     vegan,
     phyloseq
