@@ -114,3 +114,35 @@ add_pcoa <- function(ta) {
   ta
 
 }
+
+# Credits to Wenke Smets for the idea of spiking samples prior to 16S sequencing
+# (Smets et al., 2016) and the initial implementation of this function
+add_spike_ratio <- function(ta, spike_taxon){
+
+  # add lib_size if not present
+  remove_lib_size <- FALSE
+  if (is.null(ta$samples$lib_size)) {
+    remove_lib_size <- TRUE
+    ta <- add_lib_size(ta)
+  }
+
+  # make sample table with spike abundances
+  spike_abundances <- ta$abundances %>%
+    filter(taxon == spike_taxon) %>%
+    select(sample, spike_abundance = abundance)
+
+  # calculate spike ratio (non-spike abundance to spike abundance)
+  ta$samples <- ta$samples %>%
+    left_join(spike_abundances) %>%
+    mutate(spike_ratio = ( lib_size - spike_abundance ) / spike_abundance)
+
+  # remove spike_abundance
+  ta$samples$spike_abundance <- NULL
+
+  # remove lib size
+  if (remove_lib_size) ta$samples$lib_size <- NULL
+
+  # return ta object
+  ta
+
+}
