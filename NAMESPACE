@@ -1,4 +1,7 @@
-import(tidyverse)
+# packages to import
+import(ggplot2)
+import(tidyr)
+import(dplyr)
 import(stringr)
 import(vegan)
 import(phyloseq)
@@ -36,6 +39,7 @@ export(add_lib_size)
 export(add_diversity_measures)
 export(add_sample_clustered)
 export(add_pcoa)
+export(add_spike_ratio)
 
 # getters_data
 export(report_numbers)

@@ -99,8 +99,8 @@ add_pcoa <- function(ta) {
   pcoa <- cmdscale(dist_matrix, k = 2, eig = T, list = T)
   pcoa_variances <- pcoa$eig/sum(pcoa$eig)
   pcoa_dimensions <- pcoa$points %>%
-    as.data.frame() %>%
-    rownames_to_column(var = "sample") %>%
+    as_tibble() %>%
+    mutate(sample = !! rownames(pcoa$points)) %>%
     rename(pcoa1 = V1, pcoa2 = V2)
 
   # add PCoA dimensions to sample table
