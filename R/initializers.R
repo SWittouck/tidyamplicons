@@ -42,9 +42,7 @@ tidy_phyloseq <- function(ps) {
 
   # convert taxon table
   abundances <- otu_table(ps)@.Data %>%
-    as_tibble() %>%
-    mutate(taxon = otu_table(ps) %>% row.names()) %>%
-    gather(key = "sample", value = abundance, - taxon)
+    as_abundances(taxa_are_columns = ! taxa_are_rows(ps))
 
   # make and return tidyamplicons object
   make_tidyamplicons(

@@ -25,17 +25,7 @@ get_rel_abundance_matrix <- function(ta) {
     ta <- add_rel_abundance(ta)
   }
 
-  # convert abundance table to wide format
-  abundances_wide <- ta$abundances %>%
-    select(sample, taxon, rel_abundance) %>%
-    spread(key = taxon, value = rel_abundance, fill = 0)
-
-  # convert wide abundance table to relative abundance matrix
-  # and return
-  rel_abundance_matrix <- abundances_wide %>%
-    select(- sample) %>%
-    as.matrix() %>%
-    `row.names<-`(abundances_wide$sample)
+  as_abundances_matrix(ta$abundances, value = rel_abundance)
 
 }
 
