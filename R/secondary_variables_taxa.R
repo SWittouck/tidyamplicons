@@ -142,17 +142,7 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
     ta <- add_taxon_name(ta)
   }
 
-  # make subset of ta object (with selection of samples and/or taxa
-  # if requested)
   ta_subset <- ta
-  if (! is.null(samples)) {
-    ta_subset$samples <- filter(ta_subset$samples, sample %in% samples)
-    ta_subset <- process_sample_selection(ta_subset)
-  }
-  if (! is.null(taxa)) {
-    ta_subset$taxa <- filter(ta_subset$taxa, taxon %in% taxa)
-    ta_subset <- process_taxon_selection(ta_subset)
-  }
 
   # add max relative abundance to taxon table if not present
   if (is.null(ta_subset$taxa$max_rel_abundance)) {
@@ -162,6 +152,17 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
   # add total relative abundance to taxon table
   if (is.null(ta_subset$taxa$total_rel_abundance)) {
     ta_subset <- add_total_rel_abundance(ta_subset)
+  }
+
+  # make subset of ta object (with selection of samples and/or taxa
+  # if requested)
+  if (! is.null(samples)) {
+    ta_subset$samples <- filter(ta_subset$samples, sample %in% samples)
+    ta_subset <- process_sample_selection(ta_subset)
+  }
+  if (! is.null(taxa)) {
+    ta_subset$taxa <- filter(ta_subset$taxa, taxon %in% taxa)
+    ta_subset <- process_taxon_selection(ta_subset)
   }
 
   # extract taxon names to visualize, in order
