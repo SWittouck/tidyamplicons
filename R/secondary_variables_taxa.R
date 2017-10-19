@@ -68,7 +68,7 @@ add_rel_occurrence <- function(ta) {
 
 }
 
-add_taxon_name <- function(ta, method = "max_rel_abundance") {
+add_taxon_name <- function(ta, method = "max_rel_abundance", include_species = F) {
 
   # throw error if method unknown
   if (! method %in% c("max_rel_abundance", "total_rel_abundance")) {
@@ -94,6 +94,7 @@ add_taxon_name <- function(ta, method = "max_rel_abundance") {
 
   # make version of taxon table with taxonomy levels in the right order
   tax_levels <- c("kingdom", "phylum", "class", "order", "family", "genus")
+  if (include_species) tax_levels <- c(tax_levels, "species")
   taxa <- ta$taxa[, tax_levels]
 
   # make temporary taxon name: most specific level of taxonomy available
