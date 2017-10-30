@@ -21,7 +21,7 @@ get_numbers <- function(ta) {
 get_rel_abundance_matrix <- function(ta) {
 
   # add relative abundances if not present
-  if (is.null(ta$abundances$rel_abundance)) {
+  if (! "rel_abundance" %in% names(ta$abundances)) {
     ta <- add_rel_abundance(ta)
   }
 

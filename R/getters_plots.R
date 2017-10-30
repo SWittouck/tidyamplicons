@@ -5,12 +5,12 @@ get_bar_plot <- function(ta, x = sample_clustered) {
   x <- substitute(x)
 
   # add sample_clustered if not present
-  if (is.null(ta$samples$sample_clustered)) {
+  if (! "sample_clustered" %in% names(ta$samples)) {
     ta <- add_sample_clustered(ta)
   }
 
   # add taxon_name_color if not present
-  if (is.null(ta$taxa$taxon_name_color)) {
+  if (! "taxon_name_color" %in% names(ta$taxa)) {
     ta <- add_taxon_name_color(ta)
   }
 

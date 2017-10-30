@@ -34,11 +34,10 @@ add_lib_size <- function(ta, step = "current") {
 # function will also add relative abundances if not present
 add_diversity_measures <- function(ta) {
 
-  # add relative abundances if not present
-  remove_rel_abundance <- FALSE
-  if (is.null(ta$abundances$rel_abundance)) {
-    remove_rel_abundance <- TRUE
+  # if rel abundances not present: add and remove again on exit
+  if (! "rel_abundance" %in% names(ta$abundances)) {
     ta <- add_rel_abundance(ta)
+    on.exit(ta$abundances$rel_abundance <- NULL)
   }
 
   # make table with sample, divObserved and divInvSimpson
@@ -52,9 +51,6 @@ add_diversity_measures <- function(ta) {
 
   # add diversity measure to sample table
   ta$samples = left_join(ta$samples, diversities)
-
-  # remove relative abundances
-  if (remove_rel_abundance) ta$abundances$rel_abundance <- NULL
 
   # return ta object
   ta
@@ -117,13 +113,12 @@ add_pcoa <- function(ta) {
 
 # Credits to Wenke Smets for the idea of spiking samples prior to 16S sequencing
 # (Smets et al., 2016) and the initial implementation of this function
-add_spike_ratio <- function(ta, spike_taxon){
+add_spike_ratio <- function(ta, spike_taxon) {
 
-  # add lib_size if not present
-  remove_lib_size <- FALSE
-  if (is.null(ta$samples$lib_size)) {
-    remove_lib_size <- TRUE
+  # if lib_size not present: add and remove again on exit
+  if (! "lib_size" %in% names(ta$samples)) {
     ta <- add_lib_size(ta)
+    on.exit(ta$samples$lib_size <- NULL)
   }
 
   # make sample table with spike abundances
@@ -138,9 +133,6 @@ add_spike_ratio <- function(ta, spike_taxon){
 
   # remove spike_abundance
   ta$samples$spike_abundance <- NULL
-
-  # remove lib size
-  if (remove_lib_size) ta$samples$lib_size <- NULL
 
   # return ta object
   ta

@@ -1,11 +1,10 @@
 
 add_max_rel_abundance <- function(ta) {
 
-  # add relative abundances if not present
-  remove_rel_abundance <- FALSE
-  if (is.null(ta$abundances$rel_abundance)) {
-    remove_rel_abundance <- TRUE
+  # if rel_abundance not present: add and remove on exit
+  if (! "rel_abundance" %in% names(ta$abundances)) {
     ta <- add_rel_abundance(ta)
+    on.exit(ta$abundances$rel_abundance <- NULL)
   }
 
   # make table with taxon and maximum relative abundance
@@ -16,9 +15,6 @@ add_max_rel_abundance <- function(ta) {
   # add max relative abundance to taxon table
   ta$taxa <- left_join(ta$taxa, max_rel_abundances)
 
-  # remove relative abundances
-  if (remove_rel_abundance) ta$abundances$rel_abundance <- NULL
-
   # return ta object
   ta
 
@@ -26,11 +22,10 @@ add_max_rel_abundance <- function(ta) {
 
 add_total_rel_abundance <- function(ta) {
 
-  # add relative abundances if not present
-  remove_rel_abundance <- FALSE
-  if (is.null(ta$abundances$rel_abundance)) {
-    remove_rel_abundance <- TRUE
+  # if rel_abundance not present: add and remove on exit
+  if (! "rel_abundance" %in% names(ta$abundances)) {
     ta <- add_rel_abundance(ta)
+    on.exit(ta$abundances$rel_abundance <- NULL)
   }
 
   # make table with taxon and total relative abundance
@@ -40,9 +35,6 @@ add_total_rel_abundance <- function(ta) {
 
   # add total relative abundance to taxon table
   ta$taxa <- left_join(ta$taxa, total_rel_abundances)
-
-  # remove relative abundances
-  if (remove_rel_abundance) ta$abundances$rel_abundance <- NULL
 
   # return ta object
   ta
@@ -78,18 +70,16 @@ add_taxon_name <- function(ta, method = "max_rel_abundance", include_species = F
   # make quosure of method
   var <- quo(get(method))
 
-  # add max relative abundance to taxon table
-  remove_max_rel_abundance <- FALSE
-  if (is.null(ta$taxa$max_rel_abundance)) {
-    remove_max_rel_abundance <- TRUE
+  # if max_rel_abundance not present: add and remove on exit
+  if (! "max_rel_abundance" %in% names(ta$taxa)) {
     ta <- add_max_rel_abundance(ta)
+    on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
   }
 
-  # add total relative abundance to taxon table
-  remove_total_rel_abundance <- FALSE
-  if (is.null(ta$taxa$total_rel_abundance)) {
-    remove_total_rel_abundance <- TRUE
+  # if total_rel_abundance not present: add and remove on exit
+  if (! "total_rel_abundance" %in% names(ta$taxa)) {
     ta <- add_total_rel_abundance(ta)
+    on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
   }
 
   # make version of taxon table with taxonomy levels in the right order
@@ -115,12 +105,6 @@ add_taxon_name <- function(ta, method = "max_rel_abundance", include_species = F
     ungroup() %>%
     select(- taxon_name_temp, - n_taxa, - taxon_number)
 
-  # remove max_rel_abundance
-  if(remove_max_rel_abundance) ta$taxa$max_rel_abundance <- NULL
-
-  # remove total_rel_abundance
-  if(remove_total_rel_abundance) ta$taxa$total_rel_abundance <- NULL
-
   # return ta object
   ta
 
@@ -136,24 +120,25 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
   # make quosure of method
   var <- quo(get(method))
 
-  # add taxon_name if not present (needs to happen before subset)
-  remove_taxon_name <- FALSE
-  if (is.null(ta$taxa$taxon_name)) {
-    remove_taxon_name <- TRUE
+  # if taxon_name not present: add and remove on exit
+  if (! "taxon_name" %in% names(ta$taxa)) {
     ta <- add_taxon_name(ta)
+    on.exit(ta$taxa$taxon_name <- NULL, add = T)
+  }
+
+  # if max_rel_abundance not present: add and remove on exit
+  if (! "max_rel_abundance" %in% names(ta$taxa)) {
+    ta <- add_max_rel_abundance(ta)
+    on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
+  }
+
+  # if total_rel_abundance not present: add and remove on exit
+  if (! "total_rel_abundance" %in% names(ta$taxa)) {
+    ta <- add_total_rel_abundance(ta)
+    on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
   }
 
   ta_subset <- ta
-
-  # add max relative abundance to taxon table if not present
-  if (is.null(ta_subset$taxa$max_rel_abundance)) {
-    ta_subset <- add_max_rel_abundance(ta_subset)
-  }
-
-  # add total relative abundance to taxon table
-  if (is.null(ta_subset$taxa$total_rel_abundance)) {
-    ta_subset <- add_total_rel_abundance(ta_subset)
-  }
 
   # make subset of ta object (with selection of samples and/or taxa
   # if requested)
@@ -178,9 +163,6 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
   ta$taxa <- ta$taxa %>%
     mutate(taxon_name_color = ifelse(taxon_name %in% levels, taxon_name, "residual")) %>%
     mutate(taxon_name_color = factor(taxon_name_color, levels = levels))
-
-  # remove taxon_name if necessary
-  if(remove_taxon_name) ta$taxa$taxon_name <- NULL
 
   # return ta object
   ta
