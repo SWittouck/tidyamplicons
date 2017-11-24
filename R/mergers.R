@@ -89,10 +89,12 @@ merge_tidyamplicons <- function(ta1, ta2) {
   taxa <- bind_rows(ta1$taxa, ta2$taxa) %>%
     select(taxon, kingdom, phylum, class, order, family, genus, species) %>%
     group_by(taxon) %>%
-    mutate(i = 1:n()) %>%
-    ungroup() %>%
-    filter(i == 1) %>%
-    select(- i)
+    summarize_all(function(x) {
+      x <- unique(x)
+      x <- x[! is.na(x)]
+      if (length(x) == 1) return(x)
+      as.character(NA)
+    })
 
   # merge abundances tables
   abundances <- bind_rows(ta1$abundances, ta2$abundances)
