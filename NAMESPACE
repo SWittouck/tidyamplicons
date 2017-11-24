@@ -23,6 +23,7 @@ export(update_lib_sizes)
 export(merge_samples)
 export(merge_taxa)
 export(merge_tidyamplicons)
+export(trim_asvs)
 
 # secondary_variables_abundances
 export(add_rel_abundance)

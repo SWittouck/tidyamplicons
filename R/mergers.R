@@ -111,3 +111,37 @@ merge_tidyamplicons <- function(ta1, ta2) {
   ta
 
 }
+
+merge_redundant_taxa <- function(ta) {
+
+  # merge taxa in taxon table
+  ta$taxa <- ta$taxa %>%
+    group_by(taxon) %>%
+    summarize_all(function(x) {
+      x <- unique(x)
+      x <- x[! is.na(x)]
+      if (length(x) == 1) return(x)
+      as.character(NA)
+    })
+
+  # merge taxa in abundances table
+  ta$abundances <- ta$abundances %>%
+    group_by(sample, taxon) %>%
+    summarise(abundance = sum(abundance)) %>%
+    ungroup()
+
+  ta
+
+}
+
+trim_asvs <- function(ta, start, end) {
+
+  ta$taxa <- ta$taxa %>%
+    mutate(taxon = str_sub(taxon, start = !! start, end = !! end))
+  ta$abundances <- ta$abundances %>%
+    mutate(taxon = str_sub(taxon, start = !! start, end = !! end))
+  ta <- merge_redundant_taxa(ta)
+
+  ta
+
+}
