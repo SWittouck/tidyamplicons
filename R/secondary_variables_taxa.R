@@ -126,26 +126,25 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
     on.exit(ta$taxa$taxon_name <- NULL, add = T)
   }
 
-  # if max_rel_abundance not present: add and remove on exit
-  if (! "max_rel_abundance" %in% names(ta$taxa)) {
-    ta <- add_max_rel_abundance(ta)
-    on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
-  }
-
-  # if total_rel_abundance not present: add and remove on exit
-  if (! "total_rel_abundance" %in% names(ta$taxa)) {
-    ta <- add_total_rel_abundance(ta)
-    on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
-  }
-
   ta_subset <- ta
 
-  # make subset of ta object (with selection of samples and/or taxa
-  # if requested)
+  # take subset of samples if requested
   if (! is.null(samples)) {
     ta_subset$samples <- filter(ta_subset$samples, sample %in% samples)
     ta_subset <- process_sample_selection(ta_subset)
   }
+
+  # if max_rel_abundance not present: add and remove on exit
+  if (! "max_rel_abundance" %in% names(ta_subset$taxa)) {
+    ta_subset <- add_max_rel_abundance(ta_subset)
+  }
+
+  # if total_rel_abundance not present: add and remove on exit
+  if (! "total_rel_abundance" %in% names(ta_subset$taxa)) {
+    ta_subset <- add_total_rel_abundance(ta_subset)
+  }
+
+  # take subset of taxa if requested
   if (! is.null(taxa)) {
     ta_subset$taxa <- filter(ta_subset$taxa, taxon %in% taxa)
     ta_subset <- process_taxon_selection(ta_subset)
