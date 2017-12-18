@@ -1,5 +1,5 @@
 
-get_bar_plot <- function(ta, x = sample_clustered) {
+get_bar_plot <- function(ta, x = sample_clustered, geom_bar = T) {
 
   # convert promise to formula
   x <- substitute(x)
@@ -15,9 +15,8 @@ get_bar_plot <- function(ta, x = sample_clustered) {
   }
 
   # make plot and return
-  get_abundances_extended(ta) %>%
+  plot <- get_abundances_extended(ta) %>%
     ggplot(aes_(x = x, y = ~abundance, fill = ~taxon_name_color)) +
-    geom_bar(stat = "identity", position = "fill") +
     scale_fill_brewer(palette = "Paired", name = "Taxon") +
     xlab("sample") + ylab("relative abundance") +
     theme(
@@ -25,6 +24,13 @@ get_bar_plot <- function(ta, x = sample_clustered) {
       axis.ticks.x = element_blank(),
       panel.background = element_rect(fill = 'white', colour = 'white')
     )
+
+  # add geom_bar if requested
+  if (geom_bar) {
+    plot <- plot + geom_bar(stat = "identity", position = "fill")
+  }
+
+  plot
 
 }
 
