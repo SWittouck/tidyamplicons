@@ -9,6 +9,7 @@ import(phyloseq)
 # initializers
 export(make_tidyamplicons)
 export(tidy_phyloseq)
+export(as_phyloseq)
 
 # processors
 export(process_sample_selection)

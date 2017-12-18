@@ -52,3 +52,32 @@ tidy_phyloseq <- function(ps) {
   )
 
 }
+
+as_phyloseq <- function(ta) {
+
+  if ("phyloseq" %in% class(ta)) return(ta)
+
+  otu_table <- ta$abundances %>%
+    spread(key = taxon, value = abundance, fill = 0) %>%
+    `attr<-`("class", "data.frame") %>%
+    `rownames<-`(.$sample) %>%
+    select(- sample) %>%
+    as.matrix() %>%
+    otu_table(taxa_are_rows = F)
+
+  sample_data <- ta$samples %>%
+    `attr<-`("class", "data.frame") %>%
+    `rownames<-`(.$sample) %>%
+    select(- sample) %>%
+    sample_data()
+
+  tax_table <- ta$taxa %>%
+    `attr<-`("class", "data.frame") %>%
+    `rownames<-`(.$taxon) %>%
+    select(- taxon) %>%
+    as.matrix() %>%
+    tax_table()
+
+  phyloseq(otu_table, sample_data, tax_table)
+
+}
