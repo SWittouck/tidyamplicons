@@ -14,9 +14,14 @@ get_bar_plot <- function(ta, x = sample_clustered, geom_bar = T) {
     ta <- add_taxon_name_color(ta)
   }
 
+  # add relative abundances if not present
+  if (! "rel_abundance" %in% names(ta$abundances)) {
+    ta <- add_rel_abundance(ta)
+  }
+
   # make plot and return
   plot <- get_abundances_extended(ta) %>%
-    ggplot(aes_(x = x, y = ~abundance, fill = ~taxon_name_color)) +
+    ggplot(aes_(x = x, y = ~rel_abundance, fill = ~taxon_name_color)) +
     scale_fill_brewer(palette = "Paired", name = "Taxon") +
     xlab("sample") + ylab("relative abundance") +
     theme(
@@ -27,7 +32,7 @@ get_bar_plot <- function(ta, x = sample_clustered, geom_bar = T) {
 
   # add geom_bar if requested
   if (geom_bar) {
-    plot <- plot + geom_bar(stat = "identity", position = "fill")
+    plot <- plot + geom_bar(stat = "identity")
   }
 
   plot
