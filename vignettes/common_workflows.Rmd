@@ -13,13 +13,13 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, message = F, warning = F, fig.width = 8, fig.height = 6)
 ```
 
-This vignette explains how to perform some common amplicon data analysis tasks using tidyamplicons. I will illustrate those using a dataset with human microbiome samples from the upper respiratory tract (URT). It contains nose as well as nasopharynx samples. Most samples were taking using a swab method, but a minority was taking with the aspirate method. 
+This vignette explains how to perform some common amplicon count data analysis tasks using tidyamplicons. I will illustrate those using a dataset of human microbiome samples from the upper respiratory tract (URT). It contains nose as well as nasopharynx samples. Most samples were taken using a swab method, but a minority was taking with the aspirate method. 
 
 # Philosophy of the package
 
 A tidyamplicons object is simply a list of three tables:
 
-* **abundances**: These are the counts of reads for each taxon in each sample. Each row represents such a read count. 
+* **abundances**: These are the counts of reads for each taxon (OTU/ASV/phylotype) in each sample. Each row represents such a read count. 
 * **samples**: This table contains the sample metadata. Each row of course represents a sample. 
 * **taxa**: This table contains the taxonomy and other metadata for the taxa. Each row represents a taxon. 
 
@@ -27,7 +27,7 @@ The package is called **tidy**amplicons because each of the tables is tidy: each
 
 The main differences with the popular phyloseq package are:
 
-* The otu_table object of phyleq is not tidy, while the abundances table of tidyamplicons is. This tidiness sacrifices some memory and speed, while in return gaining a data format that is easier to process and visualize with a few lines of code. 
+* The otu_table object of phyloseq is not tidy, while the abundances table of tidyamplicons is. This tidiness sacrifices some memory and speed, while in return gaining a data format that is easier to process and visualize with only a few lines of code. 
 * All tables in tidyamplicons are just that: tables (or "tibbles", so you prefer). In phyloseq, each table has its own special data type (i.e. the classes "otu_table", "tax_table" and "sample_data"). This makes it sometimes difficult to access the data directly and do simple stuff with it. Also, the otu_table and tax_table classes are based on the matrix type, while the sample_data class is based on the dataframe type. This also makes data manipulation sometimes unstraightforward. 
 * In a phyloseq otu_table, sometimes the rows are the taxa and sometimes the columns. This can easily leads to errors. 
 
