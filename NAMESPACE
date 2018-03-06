@@ -53,3 +53,14 @@ export(get_abundances_extended)
 # getters_plots
 export(get_bar_plot)
 export(get_history_plot)
+
+# verbs
+export(select_samples)
+export(select_taxa)
+export(select_abundances)
+export(mutate_samples)
+export(mutate_taxa)
+export(mutate_abundances)
+export(filter_samples)
+export(filter_taxa)
+export(filter_abundances)
