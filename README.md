@@ -1,4 +1,4 @@
-# tidyamplicons: Functions to Manipulate and Visualize Amplicon Count Data
+# tidyamplicons: Functions to Manipulate and Visualise Amplicon Count Data
 
 Tidyamplicons is an R package for the analysis of amplicon count data: abundances of amplicon sequences (either clustered in OTUs or [exact variants](https://www.ncbi.nlm.nih.gov/pubmed/28731476)) in samples. The package builds on the [tidyverse](https://www.tidyverse.org/) created by [Hadley Wickham](http://hadley.nz/): the data are stored in tidy tables where each row is an observation and each column a variable. In addition, the package supplies a set of "verbs": functions that take a tidyamplicons object as first argument and also return a tidyamplicons object. Not all functionality is currently implemented in the form of verbs, but this will soon be remediated. 
 
