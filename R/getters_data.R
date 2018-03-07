@@ -30,11 +30,11 @@ get_rel_abundance_matrix <- function(ta) {
 }
 
 # get sample distances as a tidy table
-get_betas <- function(ta, unique = T) {
+get_betas <- function(ta, unique = T, method = "bray", binary = F) {
 
   # make "dist" object with beta values
   rel_abundance_matrix <- get_rel_abundance_matrix(ta)
-  betas_dist <- vegdist(rel_abundance_matrix, method = "bray")
+  betas_dist <- vegdist(rel_abundance_matrix, method = method, binary = binary)
 
   # save number of betas in betas_dist in shortcut variable
   n <- attr(betas_dist, "Size")
