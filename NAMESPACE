@@ -35,6 +35,7 @@ export(add_total_rel_abundance)
 export(add_rel_occurrence)
 export(add_taxon_name)
 export(add_taxon_name_color)
+export(add_jervis_bardy)
 
 # secondary_variables_samples
 export(add_lib_size)

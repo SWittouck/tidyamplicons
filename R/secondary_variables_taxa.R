@@ -167,3 +167,34 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
   ta
 
 }
+
+add_jervis_bardy <- function(ta, min_pres = 3) {
+
+  # if rel_abundance not present: add and remove on exit
+  if (! "rel_abundance" %in% names(ta$abundances)) {
+    ta <- add_rel_abundance(ta)
+    on.exit(ta$abundances$rel_abundance <- NULL)
+  }
+
+  # if lib_size not present: add and remove on exit
+  if (! "lib_size" %in% names(ta$samples)) {
+    ta <- add_lib_size(ta)
+    on.exit(ta$samples$lib_size <- NULL, add = T)
+  }
+
+  # perform jervis bardy calculation
+  taxa_jb <- ta$abundances %>%
+    left_join(ta$samples %>% select(sample, lib_size)) %>%
+    group_by(taxon) %>%
+    filter(n() >= !! min_pres) %>%
+    do(jb = cor.test(x = .$rel_abundance, y = .$lib_size, alternative = "less", method = "spearman")) %>%
+    mutate(jb_cor = jb$estimate, jb_p = jb$p.value) %>%
+    select(- jb)
+
+  # add jb_p and jb_cor to taxa table
+  ta$taxa <- left_join(ta$taxa, taxa_jb)
+
+  # return ta object
+  ta
+
+}
