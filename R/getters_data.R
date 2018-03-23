@@ -80,3 +80,22 @@ get_abundances_extended <- function(ta) {
     left_join(ta$taxa)
 
 }
+
+# Returns a tidy table of taxon presence and absence counts in sample conditions.
+# Condition is a variable that should be present in the samples table.
+taxon_counts_in_conditions <- function(ta, condition) {
+
+  condition <- enquo(condition)
+  condition_name <- quo_name(condition)
+
+  ta$abundances %>%
+    filter(abundance > 0) %>%
+    left_join(ta$samples) %>%
+    select(taxon, sample, condition = !! condition) %>%
+    mutate(presence = "present") %>%
+    complete(nesting(condition, sample), taxon, fill = list(presence = "absent")) %>%
+    count(taxon, condition, presence) %>%
+    complete(taxon, condition, presence, fill = list(n = 0)) %>%
+    rename(!! condition_name := condition)
+
+}

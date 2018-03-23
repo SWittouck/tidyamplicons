@@ -198,3 +198,33 @@ add_jervis_bardy <- function(ta, min_pres = 3) {
   ta
 
 }
+
+# Adds taxon presence and absence counts in sample conditions to the taxa table,
+# as well as a fisher exact test for differential presence.
+# Condition is a variable that should be present in the samples table.
+add_presence_counts <- function(ta, condition) {
+
+  condition <- enquo(condition)
+
+  counts_tidy <- taxon_counts_in_conditions(ta, !! condition)
+
+  taxa_counts <- counts_tidy %>%
+    mutate(presence_in_condition = str_c(presence, !! condition, sep = "_in_")) %>%
+    select(taxon, presence_in_condition, n) %>%
+    spread(value = n, key = presence_in_condition)
+
+  taxa_fisher <- counts_tidy %>%
+    group_by(taxon) %>%
+    arrange(!! condition, presence) %>%
+    do(fisher = c(.$n) %>%
+         matrix(ncol = 2, byrow = T) %>%
+         fisher.test()
+    ) %>%
+    mutate(fisher_p = fisher$p.value) %>%
+    select(- fisher)
+
+  ta %>%
+    modify_at("taxa", left_join, taxa_counts) %>%
+    modify_at("taxa", left_join, taxa_fisher)
+
+}
