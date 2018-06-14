@@ -15,8 +15,8 @@ Imports:
     tidyr,
     dplyr,
     stringr,
-    vegan,
-    phyloseq
+    vegan
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    phyloseq
 VignetteBuilder: knitr
