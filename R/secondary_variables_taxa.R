@@ -168,7 +168,22 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
 
 }
 
-add_jervis_bardy <- function(ta, min_pres = 3) {
+# Function to estimate spearman correlation between relative abundance and sample dna concentration, 
+# for each taxon. 
+# Inputs:
+#   - ta: tidyamplicons object
+#   - dna_conc: variable in the samples table that contains dna concetrations (unquoted)
+#   - sample condition: optional extra condition that samples must pass before calculations
+#   - min_pres: minimum number of samples a taxon has to be present in for its correlation to be calculated
+add_jervis_bardy <- function(ta, dna_conc, sample_condition = NULL, min_pres = 3) {
+  
+  dna_conc <- enquo(dna_conc)
+  sample_condition <- enquo(sample_condition)
+  
+  if (! is.null(sample_condition)) {
+    ta <- ta %>%
+      filter_samples(!! sample_condition)
+  }
 
   # if rel_abundance not present: add and remove on exit
   if (! "rel_abundance" %in% names(ta$abundances)) {
@@ -176,18 +191,12 @@ add_jervis_bardy <- function(ta, min_pres = 3) {
     on.exit(ta$abundances$rel_abundance <- NULL)
   }
 
-  # if lib_size not present: add and remove on exit
-  if (! "lib_size" %in% names(ta$samples)) {
-    ta <- add_lib_size(ta)
-    on.exit(ta$samples$lib_size <- NULL, add = T)
-  }
-
   # perform jervis bardy calculation
   taxa_jb <- ta$abundances %>%
-    left_join(ta$samples %>% select(sample, lib_size)) %>%
+    left_join(ta$samples %>% select(sample, dna_conc = !! dna_conc)) %>%
     group_by(taxon) %>%
     filter(n() >= !! min_pres) %>%
-    do(jb = cor.test(x = .$rel_abundance, y = .$lib_size, alternative = "less", method = "spearman")) %>%
+    do(jb = cor.test(x = .$rel_abundance, y = .$dna_conc, alternative = "less", method = "spearman")) %>%
     mutate(jb_cor = jb$estimate, jb_p = jb$p.value) %>%
     select(- jb)
 
