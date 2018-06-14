@@ -21,8 +21,8 @@ export(process_new_sample_name)
 export(update_lib_sizes)
 
 # mergers
-export(merge_samples)
-export(merge_taxa)
+export(aggregate_samples)
+export(aggregate_taxa)
 export(merge_tidyamplicons)
 export(trim_asvs)
 
@@ -50,8 +50,11 @@ export(report_numbers)
 export(get_numbers)
 export(get_rel_abundance_matrix)
 export(get_betas)
-export(get_abundances_extended)
 export(taxon_counts_in_conditions)
+export(everything)
+export(samples)
+export(taxa)
+export(abundances)
 
 # getters_plots
 export(get_bar_plot)
@@ -67,3 +70,8 @@ export(mutate_abundances)
 export(filter_samples)
 export(filter_taxa)
 export(filter_abundances)
+
+# synonyms
+export(get_abundances_extended)
+export(merge_samples)
+export(merge_taxa)

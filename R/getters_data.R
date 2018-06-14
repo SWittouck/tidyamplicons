@@ -72,15 +72,6 @@ get_betas <- function(ta, unique = T, method = "bray", binary = F) {
 
 }
 
-get_abundances_extended <- function(ta) {
-
-  # make and return large table
-  ta$abundances %>%
-    left_join(ta$samples) %>%
-    left_join(ta$taxa)
-
-}
-
 # Returns a tidy table of taxon presence and absence counts in sample conditions.
 # Condition is a variable that should be present in the samples table.
 taxon_counts_in_conditions <- function(ta, condition) {
@@ -99,3 +90,22 @@ taxon_counts_in_conditions <- function(ta, condition) {
     rename(!! condition_name := condition)
 
 }
+
+# Returns joined tibble with all abundances, samples and taxa variables
+everything <- function(ta) {
+
+  # make and return large table
+  ta$abundances %>%
+    left_join(ta$samples) %>%
+    left_join(ta$taxa)
+
+}
+
+# Returns samples tibble
+samples <- function(ta) ta$samples
+
+# Returns taxa tibble
+taxa <- function(ta) ta$taxa
+
+# Returns abundances
+abundances <- function(ta) ta$abundances

@@ -1,7 +1,7 @@
 
 # Preprocessing: delete all sample variables that are different within
 # groups of samples that need to be merged. Keep the sample variable!
-merge_samples <- function(ta) {
+aggregate_samples <- function(ta) {
 
   # sample table with only old and new sample names
   names <- ta$samples %>%
@@ -34,7 +34,7 @@ merge_samples <- function(ta) {
 
 # Preprocessing: delete all taxonomic levels you do not want and all other junk,
 # but keep the taxon variable!
-merge_taxa <- function(ta) {
+aggregate_taxa <- function(ta) {
 
   # this avoids some problems
   ta$taxa[is.na(ta$taxa)] <- "unknown"
