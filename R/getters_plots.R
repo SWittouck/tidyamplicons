@@ -1,5 +1,5 @@
 
-get_bar_plot <- function(ta, x = sample_clustered, geom_bar = T) {
+get_bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
   # convert promise to formula
   x <- substitute(x)
@@ -11,7 +11,7 @@ get_bar_plot <- function(ta, x = sample_clustered, geom_bar = T) {
 
   # add taxon_name_color if not present
   if (! "taxon_name_color" %in% names(ta$taxa)) {
-    ta <- add_taxon_name_color(ta)
+    ta <- add_taxon_name_color(ta, n = n)
   }
 
   # add relative abundances if not present

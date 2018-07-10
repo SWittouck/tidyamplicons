@@ -27,22 +27,22 @@ make_tidyamplicons <- function(samples, taxa, abundances) {
 tidy_phyloseq <- function(ps) {
 
   # convert sample data
-  samples <- sample_data(ps)@.Data %>%
-    `names<-`(sample_data(ps)@names) %>%
+  samples <- phyloseq::sample_data(ps)@.Data %>%
+    `names<-`(phyloseq::sample_data(ps)@names) %>%
     do.call(what = tibble) %>%
-    mutate(sample = sample_data(ps)@row.names)
+    mutate(sample = phyloseq::sample_data(ps)@row.names)
 
   # convert taxon table
-  taxa <- tax_table(ps)@.Data %>%
+  taxa <- phyloseq::tax_table(ps)@.Data %>%
     as_tibble() %>%
-    mutate(taxon = tax_table(ps) %>% row.names())
+    mutate(taxon = phyloseq::tax_table(ps) %>% row.names())
 
   # make sure that taxa are rows in taxon table
-  if (! taxa_are_rows(ps)) otu_table(ps) <- t(otu_table(ps))
+  if (! phyloseq::taxa_are_rows(ps)) phyloseq::otu_table(ps) <- t(phyloseq::otu_table(ps))
 
   # convert taxon table
-  abundances <- otu_table(ps)@.Data %>%
-    as_abundances(taxa_are_columns = ! taxa_are_rows(ps))
+  abundances <- phyloseq::otu_table(ps)@.Data %>%
+    as_abundances(taxa_are_columns = ! phyloseq::taxa_are_rows(ps))
 
   # make and return tidyamplicons object
   make_tidyamplicons(

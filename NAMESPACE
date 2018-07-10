@@ -4,7 +4,6 @@ import(tidyr)
 import(dplyr)
 import(stringr)
 import(vegan)
-import(phyloseq)
 
 # initializers
 export(make_tidyamplicons)
