@@ -37,12 +37,12 @@ tidy_phyloseq <- function(ps) {
     as_tibble() %>%
     mutate(taxon = phyloseq::tax_table(ps) %>% row.names())
 
-  # make sure that taxa are rows in taxon table
-  if (! phyloseq::taxa_are_rows(ps)) phyloseq::otu_table(ps) <- t(phyloseq::otu_table(ps))
+  # make sure that taxa are columns in taxon table
+  if (phyloseq::taxa_are_rows(ps)) phyloseq::otu_table(ps) <- phyloseq::t(phyloseq::otu_table(ps))
 
   # convert taxon table
   abundances <- phyloseq::otu_table(ps)@.Data %>%
-    as_abundances(taxa_are_columns = ! phyloseq::taxa_are_rows(ps))
+    as_abundances(taxa_are_columns = T)
 
   # make and return tidyamplicons object
   make_tidyamplicons(
