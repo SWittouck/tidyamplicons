@@ -78,3 +78,6 @@ export(mutate_abundances)
 export(filter_samples)
 export(filter_taxa)
 export(filter_abundances)
+
+# analyses
+export(perform_adonis)
