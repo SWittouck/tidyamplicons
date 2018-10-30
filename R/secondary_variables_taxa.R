@@ -41,6 +41,7 @@ add_total_rel_abundance <- function(ta) {
 
 }
 
+# DEPRICATED: use add_occurrences()
 # percentage of samples in which a taxon is present
 # credits to Wenke Smets for the idea and initial implementation
 add_rel_occurrence <- function(ta) {
@@ -211,6 +212,7 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = NULL, min_pres = 3
 
 }
 
+# DEPRICATED: use add_occurrences()
 # Adds taxon presence and absence counts in sample conditions to the taxa table,
 # as well as a fisher exact test for differential presence.
 # Condition is a variable that should be present in the samples table.
@@ -238,5 +240,133 @@ add_presence_counts <- function(ta, condition) {
   ta %>%
     modify_at("taxa", left_join, taxa_counts) %>%
     modify_at("taxa", left_join, taxa_fisher)
+
+}
+
+# Adds taxon occurrences (overall or per condition) to the taxa table.
+# Condition should be a categorical variable present in the samples table.
+# Supply condition as a string.
+add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F) {
+
+  if (is.null(condition)) {
+
+    taxa_occurrences <-
+      occurrences(ta, condition = condition)
+
+  } else if (fischer_test) {
+
+    occurrences <-
+      occurrences(ta, condition = condition, pres_abs = T)
+
+    condition_sym <- sym(condition)
+
+    taxa_fischer <-
+      occurrences %>%
+      group_by(taxon) %>%
+      arrange(!! condition_sym, presence) %>%
+      do(
+        fisher = c(.$n) %>%
+          matrix(ncol = 2, byrow = T) %>%
+          fisher.test()
+      ) %>%
+      mutate(fisher_p = fisher$p.value) %>%
+      select(- fisher)
+
+    taxa_occurrences <-
+      occurrences %>%
+      filter(presence == "present") %>%
+      select(taxon, !! condition_sym, occurrence = n) %>%
+      mutate_at(condition, ~ str_c("occurrence_in", ., sep = "_")) %>%
+      spread(value = "occurrence", key = condition) %>%
+      left_join(taxa_fischer)
+
+  } else {
+
+    taxa_occurrences <-
+      occurrences(ta, condition = condition) %>%
+      mutate_at(condition, ~ str_c("occurrence_in", ., sep = "_")) %>%
+      spread(value = "occurrence", key = condition)
+
+  }
+
+  if (relative & is.null(condition)) {
+
+    taxa_occurrences %>%
+      mutate(occurrence = occurrence / nrow(ta$samples))
+
+  }
+
+  if (relative & ! is.null(condition)) {
+
+    condition_sym <- sym(condition)
+
+    conditions <-
+      ta$samples %>%
+      count(!! condition_sym)
+
+    for (con_ix in 1:nrow(conditions)) {
+
+      con <- conditions[[condition]][con_ix]
+      n_samples <- conditions[["n"]][con_ix]
+      taxa_occurrences[[str_c("occurrence_in_", con)]] <-
+        taxa_occurrences[[str_c("occurrence_in_", con)]] / n_samples
+
+    }
+
+  }
+
+  ta %>%
+    modify_at("taxa", left_join, taxa_occurrences)
+
+}
+
+# Adds taxon average relative abundances (overall or per condition) to the taxa
+# table.
+# Condition should be a categorical variable present in the samples table.
+# Supply condition as a string.
+add_mean_rel_abundances <- function(ta, condition = NULL, t_test = F) {
+
+  mean_rel_abundances <- mean_rel_abundances(ta, condition = condition)
+
+  if (is.null(condition)) {
+
+    taxa_mean_rel_abundances <- mean_rel_abundances
+
+  } else if(t_test) {
+
+    condition_sym <- ensym(condition)
+
+    # if rel_abundance not present: add and remove on exit
+    if (! "rel_abundance" %in% names(ta$abundances)) {
+      ta <- add_rel_abundance(ta)
+      on.exit(ta$abundances$rel_abundance <- NULL)
+    }
+
+    taxa_t_tests <-
+      abundances(ta) %>%
+      left_join(ta$samples) %>%
+      complete(nesting(sample, !! condition_sym), taxon, fill = list(rel_abundance = 0)) %>%
+      group_by(taxon) %>%
+      do(t_test = t.test(data = ., rel_abundance ~ !! condition_sym)) %>%
+      mutate(t_test_p = t_test$p.value, t_test_t = t_test$statistic) %>%
+      select(- t_test)
+
+    taxa_mean_rel_abundances <-
+      mean_rel_abundances %>%
+      mutate_at(condition, ~ str_c("mean_rel_abundance_in", ., sep = "_")) %>%
+      spread(value = mean_rel_abundance, key = condition) %>%
+      left_join(taxa_t_tests)
+
+  } else {
+
+    taxa_mean_rel_abundances <-
+      mean_rel_abundances %>%
+      mutate_at(condition, ~ str_c("mean_rel_abundance_in", ., sep = "_")) %>%
+      spread(value = mean_rel_abundance, key = condition)
+
+  }
+
+  ta %>%
+    modify_at("taxa", left_join, taxa_mean_rel_abundances)
 
 }

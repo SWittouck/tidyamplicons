@@ -72,6 +72,7 @@ get_betas <- function(ta, unique = T, method = "bray", binary = F) {
 
 }
 
+# DEPRICATED: use occurrences()
 # Returns a tidy table of taxon presence and absence counts in sample conditions.
 # Condition is a variable that should be present in the samples table.
 taxon_counts_in_conditions <- function(ta, condition) {
@@ -88,6 +89,80 @@ taxon_counts_in_conditions <- function(ta, condition) {
     count(taxon, condition, presence) %>%
     complete(taxon, condition, presence, fill = list(n = 0)) %>%
     rename(!! condition_name := condition)
+
+}
+
+# Returns a tidy table of occurrences: taxon presence counts in samples, overall
+# or per condition.
+# Condition should be a categorical variable present in the samples table.
+# Supply condition as a string.
+occurrences <- function(ta, condition = NULL, pres_abs = F) {
+
+  abundances_extended <-
+    ta$abundances %>%
+    filter(abundance > 0) %>%
+    left_join(ta$samples)
+
+  if (is.null(condition)) {
+
+    abundances_extended %>%
+      count(taxon) %>%
+      rename(occurrence = n)
+
+  } else if (pres_abs) {
+
+    condition <- sym(condition)
+
+    abundances_extended %>%
+      select(taxon, sample, !! condition) %>%
+      mutate(presence = "present") %>%
+      complete(nesting(!! condition, sample), taxon, fill = list(presence = "absent")) %>%
+      count(taxon, !! condition, presence) %>%
+      complete(taxon, !! condition, presence, fill = list(n = 0))
+
+  } else {
+
+    condition <- sym(condition)
+
+    abundances_extended %>%
+      count(taxon, !! condition) %>%
+      rename(occurrence = n) %>%
+      complete(taxon, !! condition, fill = list(occurrence = 0))
+
+  }
+
+}
+
+# Returns tidy table with average relatively abundances of taxa, overall or per
+# condition.
+# Condition should be a categorical variable present in the samples table.
+# Supply condition as a string.
+mean_rel_abundances <- function(ta, condition = NULL) {
+
+  ta <- add_rel_abundance(ta)
+
+  if (is.null(condition)) {
+
+    ta$abundances %>%
+      select(sample, taxon, rel_abundance) %>%
+      complete(sample, taxon, fill = list(rel_abundance = 0)) %>%
+      group_by(taxon) %>%
+      summarize(mean_rel_abundance = mean(rel_abundance)) %>%
+      ungroup()
+
+  } else {
+
+    condition <- sym(condition)
+
+    ta$abundances %>%
+      left_join(ta$samples) %>%
+      select(!! condition, sample, taxon, rel_abundance) %>%
+      complete(nesting(!! condition, sample), taxon, fill = list(rel_abundance = 0)) %>%
+      group_by(taxon, !! condition) %>%
+      summarize(mean_rel_abundance = mean(rel_abundance)) %>%
+      ungroup()
+
+  }
 
 }
 
