@@ -55,6 +55,7 @@ export(add_diversity_measures)
 export(add_sample_clustered)
 export(add_pcoa)
 export(add_spike_ratio)
+export(add_cluster)
 
 # secondary_variables_taxa
 export(add_max_rel_abundance)

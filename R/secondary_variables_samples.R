@@ -138,3 +138,30 @@ add_spike_ratio <- function(ta, spike_taxon) {
   ta
 
 }
+
+# Adds a variable "cluster" to the samples table
+# To do: merge with add_sample_clustered somehow
+add_cluster <- function(ta, n_clusters) {
+
+  # make relative abundance matrix
+  rel_abundance_matrix <- get_rel_abundance_matrix(ta)
+
+  # make Bray-Curtis distance matrix
+  dist_matrix <- vegdist(rel_abundance_matrix, method = "bray")
+
+  # perform hierarchical clustering
+  clust <- hclust(dist_matrix, method = "average")
+
+  samples_clusters <-
+    tibble(
+      sample = clust$labels,
+      cluster = cutree(clust, k = n_clusters)
+    ) %>%
+    mutate(cluster = str_c("cluster", cluster, sep = " "))
+
+  ta$samples <-
+    left_join(ta$samples, samples_clusters)
+
+  ta
+
+}
