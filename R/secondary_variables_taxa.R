@@ -85,6 +85,7 @@ add_taxon_name <- function(ta, method = "max_rel_abundance", include_species = F
 
   # make version of taxon table with taxonomy levels in the right order
   tax_levels <- c("kingdom", "phylum", "class", "order", "family", "genus")
+  tax_levels <- tax_levels[tax_levels %in% names(ta$taxa)]
   if (include_species) tax_levels <- c(tax_levels, "species")
   taxa <- ta$taxa[, tax_levels]
 
@@ -176,7 +177,7 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
 #   - dna_conc: variable in the samples table that contains dna concetrations (unquoted)
 #   - sample condition: optional extra condition that samples must pass before calculations
 #   - min_pres: minimum number of samples a taxon has to be present in for its correlation to be calculated
-add_jervis_bardy <- function(ta, dna_conc, sample_condition = NULL, min_pres = 3) {
+add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
   dna_conc <- enquo(dna_conc)
   sample_condition <- enquo(sample_condition)
