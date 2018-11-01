@@ -35,7 +35,8 @@ tidy_phyloseq <- function(ps) {
   # convert taxon table
   taxa <- phyloseq::tax_table(ps)@.Data %>%
     as_tibble() %>%
-    mutate(taxon = phyloseq::tax_table(ps) %>% row.names())
+    mutate(taxon = phyloseq::tax_table(ps) %>% row.names()) %>%
+    set_names(names(.) %>% str_to_lower())
 
   # make sure that taxa are columns in taxon table
   if (phyloseq::taxa_are_rows(ps)) phyloseq::otu_table(ps) <- phyloseq::t(phyloseq::otu_table(ps))
@@ -63,21 +64,21 @@ as_phyloseq <- function(ta) {
     `rownames<-`(.$sample) %>%
     select(- sample) %>%
     as.matrix() %>%
-    otu_table(taxa_are_rows = F)
+    phyloseq::otu_table(taxa_are_rows = F)
 
   sample_data <- ta$samples %>%
     `attr<-`("class", "data.frame") %>%
     `rownames<-`(.$sample) %>%
     select(- sample) %>%
-    sample_data()
+    phyloseq::sample_data()
 
   tax_table <- ta$taxa %>%
     `attr<-`("class", "data.frame") %>%
     `rownames<-`(.$taxon) %>%
     select(- taxon) %>%
     as.matrix() %>%
-    tax_table()
+    phyloseq::tax_table()
 
-  phyloseq(otu_table, sample_data, tax_table)
+  phyloseq::phyloseq(otu_table, sample_data, tax_table)
 
 }
