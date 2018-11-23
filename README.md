@@ -13,8 +13,8 @@ devtools::install_github("SWittouck/tidyamplicons")
 
 # Documentation
 
-Full documentation for this package is not yet available. A vignette is included with a basic explanation on the package design philosophy and an illustration of some common workflows on an example dataset. To make sure the vignette is build when you install the package, install it in the following way:
+Full documentation for this package is not yet available. A vignette is included with a basic explanation on the package design philosophy and an illustration of some common workflows on an example dataset. To make sure the vignette is built when you install the package, install it in the following way:
 
 ```R
-devtools::install_github("SWittouck/tidaymplicons", build_vignettes = TRUE)
+devtools::install_github("SWittouck/tidyamplicons", build_vignettes = TRUE)
 ```
