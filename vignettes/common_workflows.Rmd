@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, message = F, warning = F, fig.width = 8, fig.height = 6)
 ```
 
-This vignette explains how to perform some common amplicon count data analysis tasks using tidyamplicons. I will illustrate those using a dataset of human microbiome samples from the upper respiratory tract (URT). It contains nose as well as nasopharynx samples. Most samples were taken using a swab method, but a minority was taking with the aspirate method. 
+This vignette explains how to perform some common amplicon count data analysis tasks using tidyamplicons. I will illustrate those using a dataset with human microbiome samples from the upper respiratory tract (URT), taken from [this paper](https://www.frontiersin.org/articles/10.3389/fmicb.2017.02372/full) by De Boeck et al. It contains nose as well as nasopharynx samples. Most samples were taken using a swab method, but a minority was taking with the aspirate method. 
 
 # Philosophy of the package
 
@@ -41,7 +41,7 @@ library(dplyr)
 library(ggplot2)
 ```
 
-Let's load our example data set and inspect it: 
+Let's load our example data set and inspect the samples table: 
 
 ```{r}
 load("../data/urt.rda")
@@ -50,24 +50,15 @@ glimpse(urt$samples)
 
 ## Making a barplot of a subset of samples
 
-We can select a subset of our samples by filtering the samples table and then applying the function `process_sample_selection()` to the whole tidyamplicons object. Let's select all nose samples taken with a swab method: 
+We can very easily create an explorative plot of a subset of our samples (e.g., only nose samples taken with the swab method) in the following way: 
 
 ```{r}
-urt_subset <- urt
-urt_subset$samples <- urt_subset$samples %>%
-  filter(location == "N", method == "S")
-urt_subset <- process_sample_selection(urt_subset)
+urt %>%
+  filter_samples(location == "N", method == "S") %>%
+  get_bar_plot()
 ```
 
-The purpose of the sample selection processing is to delete the samples we removed from the samples table also from the abundances table and even the taxa table (taxa that occur in zero samples are removed). 
-
-Now we can very easily visualize these samples by just calling the `get_bar_plot()` function: 
-
-```{r}
-get_bar_plot(urt_subset)
-```
-
-This function returns a nice barplot visualization of the most abundant taxa in our samples. In addition, it does some things behind the screens: 
+The `filter_samples` function does what it says: filtering samples. It will also delete taxa from the taxa table that have zero total reads in the remaining samples. The `get_bar_plot` function returns a nice barplot visualization of the most abundant taxa in our samples. In addition, it does some things behind the screens: 
 
 * Add relative abundances to the abundances table. 
 * For each taxon, calculate the maximum relative abundance across all samples where this taxon occurs. 
@@ -76,12 +67,10 @@ This function returns a nice barplot visualization of the most abundant taxa in 
 
 All these new variables are created under the hood, but are gone when the function execution is finished (there are no so-called "side-effects"). Luckily, for each of these variables there also exists a function that will create it and keep it! These functions are the following (there names are intended to be self-explanatory as much as possible): 
 
-```{r}
-urt_subset <- add_rel_abundance(urt_subset) # adds to abundances table
-urt_subset <- add_max_rel_abundance(urt_subset) # adds to taxa table
-urt_subset <- add_taxon_name(urt_subset) # adds to taxa table
-urt_subset <- add_taxon_name_color(urt_subset) # adds to taxa table
-```
+* `add_rel_abundance`: adds to abundances table
+* `add_max_rel_abundance`: adds to taxa table
+* `add_taxon_name`: adds to taxa table
+* `add_taxon_name_color`: adds to taxa table
 
 There are more of such functions that add an extra variable to one of the tables; we will explore them further in other parts of this vignette. 
 
@@ -90,10 +79,7 @@ There are more of such functions that add an extra variable to one of the tables
 We start by selecting the samples we are interesting in: only the ones taken with the swab method. 
 
 ```{r}
-urt_subset <- urt
-urt_subset$samples <- urt_subset$samples %>%
-  filter(method == "S")
-urt_subset <- process_sample_selection(urt_subset)
+urt_subset <- filter_samples(urt, method == "S")
 ```
 
 There are two interesting types of facet wrapped barplots we can make: facets with fixed x-axis categories, and facets witout fixed x-axis categories. 
@@ -125,31 +111,19 @@ get_bar_plot(urt_subset) +
 
 ## Plotting only a subset of taxa, without "residual"
 
-To be able to do this, we need to do a number of things by hand that normally happen "under the hood" in the `get_bar_plot()` function. 
+To be able to do this, we need to do a number of things by hand that normally happen "under the hood" in the `get_bar_plot()` function:
 
-Step 1: we add relative abundances. We want them to be calculated with repect to the full samples, before the taxa we're not interested in are removed! 
+* Step 1: We add relative abundances. We want them to be calculated with repect to the full samples, before the taxa we're not interested in are removed! 
+* Step 2: We select only the taxa we want (e.g. family Lactobacillaceae). 
+* Step 3: We add the variable "taxon_name_color"; this variable is equal to "taxon_name", except that everything apart from the n most abundant taxa (which are at this moment all Lactobacillaceae!) will be called "residual". 
+* Step 4: We make the plot. 
 
-```{r}
-urt2 <- urt
-urt2 <- add_rel_abundance(urt2)
-```
-
-Step 2: we select only the taxa we want (e.g. family Lactobacillaceae). 
+Thanks to the `%>%` (pipe) operator from the magrittr package, we can achieve al this using the following elegant code: 
 
 ```{r}
-urt2$taxa <- urt2$taxa %>%
-  filter(family == "Lactobacillaceae")
-urt2 <- process_taxon_selection(urt2)
-```
-
-Step 3: we add the variable "taxon_name_color"; this variable is equal to "taxon_name", except that everything apart from the n most abundant taxa (which are at this moment all Lactobacillaceae!) will be called "residual". 
-
-```{r}
-urt2 <- add_taxon_name_color(urt2, n = 12)
-```
-
-Step 4: we make the plot
-
-```{r}
-get_bar_plot(urt2)
+urt %>%
+  add_rel_abundance() %>%
+  filter_taxa(family == "Lactobacillaceae") %>%
+  add_taxon_name_color() %>%
+  get_bar_plot()
 ```
