@@ -139,7 +139,10 @@ occurrences <- function(ta, condition = NULL, pres_abs = F) {
 # Supply condition as a string.
 mean_rel_abundances <- function(ta, condition = NULL) {
 
-  ta <- add_rel_abundance(ta)
+  # if rel_abundance not present: add and remove on exit
+  if (! "rel_abundance" %in% names(ta$abundances)) {
+    ta <- add_rel_abundance(ta)
+  }
 
   if (is.null(condition)) {
 
