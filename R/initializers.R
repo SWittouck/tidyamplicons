@@ -112,6 +112,18 @@ change_taxon_ids <- function(ta, taxon_new) {
 
 }
 
+reset_ids <- function(ta) {
+
+  ta %>%
+    mutate_samples(sample_prev = sample) %>%
+    mutate_taxa(taxon_prev = taxon) %>%
+    mutate_samples(sample_new = str_c("s", 1:n())) %>%
+    mutate_taxa(taxon_new = str_c("t", 1:n())) %>%
+    change_sample_ids(sample_new = "sample_new") %>%
+    change_taxon_ids(taxon_new = "taxon_new")
+
+}
+
 as_phyloseq <- function(ta, sample_id = "sample_name", taxon_id = "sequence") {
 
   if ("phyloseq" %in% class(ta)) return(ta)
