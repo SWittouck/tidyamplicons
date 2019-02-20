@@ -1,5 +1,5 @@
 
-get_bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
+bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
   # convert promise to formula
   x <- substitute(x)
@@ -39,8 +39,10 @@ get_bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
 }
 
+get_bar_plot <- bar_plot
+
 # needs lib_sizes table
-get_history_plot <- function(ta, col = NULL) {
+history_plot <- function(ta, col = NULL) {
 
   # convert promise to formula
   col <- substitute(col)
@@ -59,6 +61,8 @@ get_history_plot <- function(ta, col = NULL) {
           panel.background = element_rect(fill = "white", colour = "black"))
 
 }
+
+get_history_plot <- history_plot
 
 sample_plot <- function(ta, n = 15, nrow = NULL) {
 
@@ -103,7 +107,6 @@ sample_plot <- function(ta, n = 15, nrow = NULL) {
     ylab("relative abundance")
 
 }
-
 
 palette_paired <- c(
   "#e8e8e8", # light grey
