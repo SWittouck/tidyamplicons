@@ -60,6 +60,51 @@ get_history_plot <- function(ta, col = NULL) {
 
 }
 
+sample_plot <- function(ta, n = 15, nrow = NULL) {
+
+  # if rel_abundance not present: add and remove on exit
+  if (! "rel_abundance" %in% names(ta$abundances)) {
+    ta <- add_rel_abundance(ta)
+  }
+
+  # add taxon_name_color if not present
+  if (! "taxon_name" %in% names(ta$taxa)) {
+    ta <- add_taxon_name(ta)
+  }
+
+  # add taxon_name_color if not present
+  if (! "taxon_name_color" %in% names(ta$taxa)) {
+    ta <- add_taxon_name_color(ta, n = min(c(n, 12)))
+  }
+
+  data <-
+    ta %>%
+    everything() %>%
+    group_by(sample_id) %>%
+    arrange(desc(rel_abundance)) %>%
+    slice(1:n) %>%
+    ungroup() %>%
+    arrange(sample_id, rel_abundance) %>%
+    mutate(row = 1:n())
+
+  data %>%
+    ggplot(aes(x = row, y = rel_abundance, fill = taxon_name_color)) +
+    geom_col() +
+    facet_wrap(~ sample_id, scales = "free", nrow) +
+    coord_flip() +
+    theme_bw() +
+    scale_x_continuous(
+      breaks = data$row,
+      labels = data$taxon_name,
+      expand = c(0,0)
+    ) +
+    scale_fill_brewer(palette = "Paired", name = "taxon") +
+    xlab("taxon name") +
+    ylab("relative abundance")
+
+}
+
+
 palette_paired <- c(
   "#e8e8e8", # light grey
   "#a6cee3", # light blue

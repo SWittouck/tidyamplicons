@@ -35,6 +35,7 @@ export(perform_adonis)
 # plotters
 export(get_bar_plot)
 export(get_history_plot)
+export(sample_plot)
 
 # handlers
 export(change_ids_samples)
