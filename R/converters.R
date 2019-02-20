@@ -85,6 +85,17 @@ reset_ids <- function(ta) {
 
 }
 
+# for old tidyamplicons objects that have variable names sample, taxon instead
+# of sample_id, taxon_id
+update_id_names <- function(ta) {
+
+  ta %>%
+    modify_at("samples", rename, sample_id = sample) %>%
+    modify_at("taxa", rename, taxon_id = taxon) %>%
+    modify_at("abundances", rename, sample_id = sample, taxon_id = taxon)
+
+}
+
 as_phyloseq <- function(ta, sample = "sample", taxon = "taxon") {
 
   if ("phyloseq" %in% class(ta)) return(ta)
