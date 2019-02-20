@@ -21,8 +21,7 @@
 #'
 #' # Convert to tidyamplicons object
 #' data <- create_tidyamplicons(x,
-#'                      taxa_are_columns = FALSE,
-#'                      taxon_names_are_sequences = FALSE)
+#'                      taxa_are_columns = FALSE)
 #'
 #'
 #' \dontrun{
