@@ -64,7 +64,9 @@ history_plot <- function(ta, col = NULL) {
 
 get_history_plot <- history_plot
 
-sample_plot <- function(ta, n = 15, nrow = NULL) {
+# sample should be the name of a variable you want to use to identify samples in
+# the plot; please quote this variable name
+sample_plot <- function(ta, sample = NULL, n = 15, nrow = NULL) {
 
   # if rel_abundance not present: add and remove on exit
   if (! "rel_abundance" %in% names(ta$abundances)) {
@@ -79,6 +81,10 @@ sample_plot <- function(ta, n = 15, nrow = NULL) {
   # add taxon_name_color if not present
   if (! "taxon_name_color" %in% names(ta$taxa)) {
     ta <- add_taxon_name_color(ta, n = min(c(n, 12)))
+  }
+
+  if (! is.null(sample)) {
+    ta <- change_ids_samples(ta, sample_id_new = sample)
   }
 
   data <-
