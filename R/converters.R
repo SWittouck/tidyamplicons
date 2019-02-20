@@ -21,8 +21,7 @@
 #'
 #' # Convert to tidyamplicons object
 #' data <- create_tidyamplicons(x,
-#'                      taxa_are_columns = FALSE,
-#'                      taxon_names_are_sequences = FALSE)
+#'                      taxa_are_columns = FALSE)
 #'
 #'
 #' \dontrun{
@@ -85,8 +84,14 @@ reset_ids <- function(ta) {
 
 }
 
-# for old tidyamplicons objects that have variable names sample, taxon instead
-# of sample_id, taxon_id
+#' Update old tidyamplicons object to new one.
+#'
+#' \code{update_id_names} updates an old tidyamplicons object to a new one.
+#'
+#' This function will update a tidyamplicons object created prior to version
+#' 0.1.0 to a tidyamplicons object compatible with version 0.1.0.
+#'
+#' @param ta Old tidyamplicons object.
 update_id_names <- function(ta) {
 
   ta %>%
@@ -96,6 +101,19 @@ update_id_names <- function(ta) {
 
 }
 
+#' Convert tidyamplicons object to phyloseq object
+#'
+#' \code{as_phyloseq} returns a phyloseq object given a tidyamplicons object.
+#'
+#' This function will convert a tidyamplicons object into a phyloseq object for
+#' alternative processing using the phyloseq package. To convert from a phyloseq
+#' object to a tidyamplicons object use \code{\link{as_tidyamplicons}}.
+#'
+#' @param ta Tidyamplicons object.
+#' @param sample  The sample names required for a phyloseq object. Default is
+#'   "sample" column in sample tibble of the tidyamplicons object.
+#' @param taxon The taxon names required for a phyloseq object. Default is
+#'   "taxon" column in taxon tibble of the tidyamplicons object.
 as_phyloseq <- function(ta, sample = "sample", taxon = "taxon") {
 
   if ("phyloseq" %in% class(ta)) return(ta)
@@ -144,8 +162,17 @@ as_phyloseq <- function(ta, sample = "sample", taxon = "taxon") {
 
 }
 
-# converts a phyloseq object to a tidyamplicons object
-# the plyloseq object should contain absolute abundances
+#' Convert phyloseq object to tidyamplicons object
+#'
+#' \code{as_tidyamplicons} returns a tidyamplicons object given a phyloseq
+#' object.
+#'
+#' This function will convert a phyloseq object into a tidyamplicons object. To
+#' convert from a tidyamplicons object to a phyloseq object use
+#' \code{\link{as_phyloseq}}.
+#'
+#' @param ps Phyloseq object.
+#' 
 as_tidyamplicons <- function(ps) {
 
   if ("tidyamplicons" %in% class(ps)) return(ps)
@@ -176,7 +203,21 @@ as_tidyamplicons <- function(ps) {
 
 }
 
-# convert matrix with abundances to tidy data frame
+#' Convert matrix with abundances to tidy data frame
+#'
+#' \code{as_abundances} returns a tidy data frame given a numerical abundance
+#' matrix.
+#'
+#' This function will convert a numerical abundance matrix into a tidy data
+#' frame. To convert a tidy data frame into a numerical abundance matrix
+#' use \code{\link{as_abundances_matrix}}.
+#'
+#' @param abundances_matrix The ambundance matrix that will be converted.
+#' @param taxa_are_columns A logical scalar. Are the taxa defined in columns?
+#'   Default is TRUE.
+#' @param value Name of resulting colum containing the abundance data. Default
+#'   is "abundance".
+#'   
 as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE, value = "abundance") {
 
   if (
@@ -194,7 +235,19 @@ as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE, value = "a
 
 }
 
-# convert abundances tidy data frame to matrix
+#' Convert abundances tidy data frame to matrix.
+#'
+#' \code{as_abundances_matrix} returns a numerical matrix given a tidy
+#' abundances data frame.
+#'
+#' This function will convert a abundances tidy data frame into a numerlical
+#' abundance matrix. To convert a numerical abundance matrix into a abundances
+#' tidy data frame use \code{\link{as_abundances_matrix}}.
+#'
+#' @param abundances The abundance tidy data frame that will be converted.
+#' @param value Name of colum containing the abundance data. Default is
+#'   "abundance".
+#'   
 as_abundances_matrix <- function(abundances, value = abundance) {
 
   if (
@@ -216,7 +269,18 @@ as_abundances_matrix <- function(abundances, value = abundance) {
 
 }
 
-# requires that both as objects have a "run" variable in their samples table
+#' Merge two tidyamplicons objects.
+#'
+#' \code{merge_tidyamplicons} merges two tidyamplicons objects and returns one
+#' single tidyamplicons object.
+#'
+#' This function will merge two tidyamplicons objects into one. It is useful if
+#' one wants to merge data obtained from different sequencing runs. Therefore,
+#' this function requirers that both tidyamplicons objects contain a "run"
+#' variable in their samples table, indicating their origin.
+#'
+#' @param ta1 The first tidyamplicons object.
+#' @param ta2 The second tidyamplicons object.
 merge_tidyamplicons <- function(ta1, ta2) {
 
   # make sure that sample names are unique

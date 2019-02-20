@@ -4,16 +4,12 @@
 \alias{create_tidyamplicons}
 \title{Initiate tidyamplicons object}
 \usage{
-create_tidyamplicons(abundance_matrix, taxa_are_columns = TRUE,
-  taxon_names_are_sequences = TRUE)
+create_tidyamplicons(abundance_matrix, taxa_are_columns = TRUE)
 }
 \arguments{
 \item{abundance_matrix}{Numerical matrix containing the abundance data.}
 
 \item{taxa_are_columns}{A logical scalar. Are the taxa defined in columns?}
-
-\item{taxon_names_are_sequences}{A logical scalar. Are the taxon names the
-full length sequences they present?}
 }
 \description{
 \code{tidyamplicons} returns a tidyamplicons object given a numeric matrix.
@@ -35,8 +31,7 @@ colnames(x) <- c("sample1", "sample2")
 
 # Convert to tidyamplicons object
 data <- create_tidyamplicons(x,
-                     taxa_are_columns = FALSE,
-                     taxon_names_are_sequences = FALSE)
+                     taxa_are_columns = FALSE)
 
 
 \dontrun{
