@@ -54,8 +54,8 @@ get_betas <- function(ta, unique = T, method = "bray", binary = F) {
 
     betas <- as.matrix(betas_dist) %>%
       as_tibble() %>%
-      mutate(sample_1 = attr(betas_dist, "Labels")) %>%
-      gather(key = "sample_2", value = "beta", - sample_1)
+      mutate(sample_id_1 = attr(betas_dist, "Labels")) %>%
+      gather(key = "sample_id_2", value = "beta", - sample_id_1)
 
   }
 
