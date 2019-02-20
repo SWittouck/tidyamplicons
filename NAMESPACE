@@ -5,6 +5,22 @@ import(dplyr)
 import(stringr)
 import(vegan)
 
+# initializers
+export(tidyamplicons)
+export(add_sample_tibble)
+export(add_taxon_tibble)
+export(as_phyloseq)
+export(as_tidyamplicons)
+export(make_tidyamplicons)
+export(tidy_phyloseq)
+
+# helpers
+export(as_abundances)
+export(as_abundances_matrix)
+
+# library_sizes
+export(update_lib_sizes)
+
 # getters_data
 export(report_numbers)
 export(get_numbers)
@@ -21,18 +37,6 @@ export(abundances)
 # getters_plots
 export(get_bar_plot)
 export(get_history_plot)
-
-# helpers
-export(as_abundances)
-export(as_abundances_matrix)
-
-# initializers
-export(make_tidyamplicons)
-export(tidy_phyloseq)
-export(as_phyloseq)
-
-# library_sizes
-export(update_lib_sizes)
 
 # mergers
 export(aggregate_samples)
