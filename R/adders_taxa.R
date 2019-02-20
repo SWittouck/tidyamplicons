@@ -1,4 +1,10 @@
 
+add_taxon_tibble <- function(ta, taxon_tibble) {
+
+  modify_at(ta, "taxa", left_join, taxon_tibble)
+
+}
+
 add_max_rel_abundance <- function(ta) {
 
   # if rel_abundance not present: add and remove on exit

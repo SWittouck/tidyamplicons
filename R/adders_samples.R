@@ -1,4 +1,10 @@
 
+add_sample_tibble <- function(ta, sample_tibble) {
+
+  modify_at(ta, "samples", left_join, sample_tibble)
+
+}
+
 add_lib_size <- function(ta, step = "current") {
 
   # remove lib_size if already present

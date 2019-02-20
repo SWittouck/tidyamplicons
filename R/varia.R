@@ -62,3 +62,52 @@ process_new_sample_name <- function(ta) {
   ta
 
 }
+
+update_lib_sizes <- function(ta, step) {
+
+  # current lib_size in tidy table
+  lib_sizes_new <- ta$abundances %>%
+    group_by(sample) %>%
+    summarize(lib_size = sum(abundance)) %>%
+    mutate(step = step)
+
+  # make lib_sizes table if it doesn't exist
+  if (is.null(ta$lib_sizes)) {
+    ta$lib_sizes <- lib_sizes_new %>%
+      mutate(step = factor(step))
+    # update lib_sizes table if it already existed
+  } else {
+    levels <- levels(ta$lib_sizes$step)
+    levels <- c(levels, step)
+    ta$lib_sizes <- ta$lib_sizes %>%
+      mutate(step = as.character(step)) %>%
+      bind_rows(lib_sizes_new) %>%
+      mutate(step = factor(step, levels = !! levels))
+  }
+
+  # return ta object
+  ta
+
+}
+
+merge_redundant_taxa <- function(ta) {
+
+  # merge taxa in taxon table
+  ta$taxa <- ta$taxa %>%
+    group_by(taxon) %>%
+    summarize_all(function(x) {
+      x <- unique(x)
+      x <- x[! is.na(x)]
+      if (length(x) == 1) return(x)
+      as.character(NA)
+    })
+
+  # merge taxa in abundances table
+  ta$abundances <- ta$abundances %>%
+    group_by(sample, taxon) %>%
+    summarise(abundance = sum(abundance)) %>%
+    ungroup()
+
+  ta
+
+}

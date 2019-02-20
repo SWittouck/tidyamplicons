@@ -48,70 +48,6 @@ tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE, taxon_names
 
 }
 
-add_sample_tibble <- function(ta, sample_tibble) {
-
-  modify_at(ta, "samples", left_join, sample_tibble)
-
-}
-
-add_taxon_tibble <- function(ta, taxon_tibble) {
-
-  modify_at(ta, "taxa", left_join, taxon_tibble)
-
-}
-
-change_sample_ids <- function(ta, sample_new) {
-
-  if (any(duplicated(ta$samples[[sample_new]]))) {
-    stop("the new sample ids are not unique")
-  }
-
-  ta$samples <-
-    ta$samples %>%
-    rename(sample_new = !! sample_new) %>%
-    mutate_at("sample_new", as.character)
-
-  ta$abundances <-
-    ta$abundances %>%
-    left_join(ta$samples %>% select(sample, sample_new)) %>%
-    select(- sample) %>%
-    rename(sample = sample_new)
-
-  ta$samples <-
-    ta$samples %>%
-    select(- sample) %>%
-    rename(sample = sample_new)
-
-  ta
-
-}
-
-change_taxon_ids <- function(ta, taxon_new) {
-
-  if (any(duplicated(ta$taxa[[taxon_new]]))) {
-    stop("the new taxon ids are not unique")
-  }
-
-  ta$taxa <-
-    ta$taxa %>%
-    rename(taxon_new = !! taxon_new) %>%
-    mutate_at("taxon_new", as.character)
-
-  ta$abundances <-
-    ta$abundances %>%
-    left_join(ta$taxa %>% select(taxon, taxon_new)) %>%
-    select(- taxon) %>%
-    rename(taxon = taxon_new)
-
-  ta$taxa <-
-    ta$taxa %>%
-    select(- taxon) %>%
-    rename(taxon = taxon_new)
-
-  ta
-
-}
-
 reset_ids <- function(ta) {
 
   ta %>%
@@ -119,8 +55,8 @@ reset_ids <- function(ta) {
     mutate_taxa(taxon_prev = taxon) %>%
     mutate_samples(sample_new = str_c("s", 1:n())) %>%
     mutate_taxa(taxon_new = str_c("t", 1:n())) %>%
-    change_sample_ids(sample_new = "sample_new") %>%
-    change_taxon_ids(taxon_new = "taxon_new")
+    change_ids_samples(sample_new = "sample_new") %>%
+    change_ids_taxa(taxon_new = "taxon_new")
 
 }
 
@@ -129,11 +65,11 @@ as_phyloseq <- function(ta, sample_id = "sample_name", taxon_id = "sequence") {
   if ("phyloseq" %in% class(ta)) return(ta)
 
   if (! is.null(sample_id)) {
-    ta <- change_sample_ids(ta, sample_new = sample_id)
+    ta <- change_ids_samples(ta, sample_new = sample_id)
   }
 
   if (! is.null(taxon_id)) {
-    ta <- change_taxon_ids(ta, taxon_new = taxon_id)
+    ta <- change_ids_taxa(ta, taxon_new = taxon_id)
   }
 
   otu_table <-
@@ -204,6 +140,87 @@ as_tidyamplicons <- function(ps) {
 
 }
 
+# convert matrix with abundances to tidy data frame
+as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE, value = "abundance") {
+
+  if (
+    ! is.matrix(abundances_matrix) |
+    ! is.numeric(abundances_matrix)
+  ) stop("first argument should be an abundances matrix")
+
+  if (! taxa_are_columns) abundances_matrix = t(abundances_matrix)
+
+  abundances_matrix %>%
+    as_tibble() %>%
+    mutate(sample = row.names(abundances_matrix)) %>%
+    gather(key = "taxon", value = !! value, - sample) %>%
+    filter(!! value > 0)
+
+}
+
+# convert abundances tidy data frame to matrix
+as_abundances_matrix <- function(abundances, value = abundance) {
+
+  if (
+    ! is.data.frame(abundances) |
+    is.null(abundances$taxon) |
+    is.null(abundances$sample)
+  ) stop("first argument should be an abundances table (data frame)")
+
+  value <- enquo(value)
+
+  abundances_wide <- abundances %>%
+    select(sample, taxon, !! value) %>%
+    spread(key = taxon, value = !! value, fill = 0)
+
+  abundances_wide %>%
+    select(- sample) %>%
+    as.matrix() %>%
+    `row.names<-`(abundances_wide$sample)
+
+}
+
+# requires that both as objects have a "run" variable in their samples table
+merge_tidyamplicons <- function(ta1, ta2) {
+
+  # make sure that sample names are unique
+  ta1$samples <- ta1$samples %>%
+    mutate(sample_new = paste(run, sample, sep = "_"))
+  ta2$samples <- ta2$samples %>%
+    mutate(sample_new = paste(run, sample, sep = "_"))
+  ta1 <- process_new_sample_name(ta1)
+  ta2 <- process_new_sample_name(ta2)
+
+  # merge sample tables
+  samples <- bind_rows(ta1$samples, ta2$samples)
+
+  # merge taxa tables
+  taxa <- bind_rows(ta1$taxa, ta2$taxa) %>%
+    select(taxon, kingdom, phylum, class, order, family, genus, species) %>%
+    group_by(taxon) %>%
+    summarize_all(function(x) {
+      x <- unique(x)
+      x <- x[! is.na(x)]
+      if (length(x) == 1) return(x)
+      as.character(NA)
+    })
+
+  # merge abundances tables
+  abundances <- bind_rows(ta1$abundances, ta2$abundances)
+
+  # make new ta object
+  ta <- make_tidyamplicons(samples, taxa, abundances)
+
+  # give new sample names in new ta object
+  ta$samples <- ta$samples %>%
+    mutate(sample_new = paste("m", 1:n(), sep = ""))
+  ta <- process_new_sample_name(ta)
+
+  # return ta object
+  ta
+
+}
+
 # DEPRECATED
 make_tidyamplicons <- function(samples, taxa, abundances) {
 
@@ -261,4 +278,3 @@ tidy_phyloseq <- function(ps) {
   )
 
 }
-
