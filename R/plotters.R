@@ -1,5 +1,5 @@
 
-get_bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
+bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
   # convert promise to formula
   x <- substitute(x)
@@ -39,8 +39,10 @@ get_bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
 }
 
+get_bar_plot <- bar_plot
+
 # needs lib_sizes table
-get_history_plot <- function(ta, col = NULL) {
+history_plot <- function(ta, col = NULL) {
 
   # convert promise to formula
   col <- substitute(col)
@@ -57,6 +59,58 @@ get_history_plot <- function(ta, col = NULL) {
     scale_color_brewer(palette = "Paired") +
     theme(axis.text.x = element_text(angle = 90, vjust = 1),
           panel.background = element_rect(fill = "white", colour = "black"))
+
+}
+
+get_history_plot <- history_plot
+
+# sample should be the name of a variable you want to use to identify samples in
+# the plot; please quote this variable name
+sample_plot <- function(ta, sample = NULL, n = 15, nrow = NULL) {
+
+  # if rel_abundance not present: add and remove on exit
+  if (! "rel_abundance" %in% names(ta$abundances)) {
+    ta <- add_rel_abundance(ta)
+  }
+
+  # add taxon_name_color if not present
+  if (! "taxon_name" %in% names(ta$taxa)) {
+    ta <- add_taxon_name(ta)
+  }
+
+  # add taxon_name_color if not present
+  if (! "taxon_name_color" %in% names(ta$taxa)) {
+    ta <- add_taxon_name_color(ta, n = min(c(n, 12)))
+  }
+
+  if (! is.null(sample)) {
+    ta <- change_ids_samples(ta, sample_id_new = sample)
+  }
+
+  data <-
+    ta %>%
+    everything() %>%
+    group_by(sample_id) %>%
+    arrange(desc(rel_abundance)) %>%
+    slice(1:n) %>%
+    ungroup() %>%
+    arrange(sample_id, rel_abundance) %>%
+    mutate(row = 1:n())
+
+  data %>%
+    ggplot(aes(x = row, y = rel_abundance, fill = taxon_name_color)) +
+    geom_col() +
+    facet_wrap(~ sample_id, scales = "free", nrow) +
+    coord_flip() +
+    theme_bw() +
+    scale_x_continuous(
+      breaks = data$row,
+      labels = data$taxon_name,
+      expand = c(0,0)
+    ) +
+    scale_fill_brewer(palette = "Paired", name = "taxon") +
+    xlab("taxon name") +
+    ylab("relative abundance")
 
 }
 

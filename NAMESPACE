@@ -33,8 +33,11 @@ export(abundances)
 export(perform_adonis)
 
 # plotters
-export(get_bar_plot)
-export(get_history_plot)
+export(bar_plot)
+export(get_bar_plot) # synonym
+export(history_plot)
+export(get_history_plot) # synonym
+export(sample_plot)
 
 # handlers
 export(change_ids_samples)

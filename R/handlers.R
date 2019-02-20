@@ -84,9 +84,27 @@ aggregate_samples <- function(ta) {
 
 }
 
-# Preprocessing: delete all taxonomic levels you do not want and all other junk,
-# but keep the taxon_id variable!
-aggregate_taxa <- function(ta) {
+# Two options to call this function:
+# - if the rank you are interested in is in the standard list, just supply it as
+# an argument
+# - if not, delete all taxon variables except taxon_id and the ranks you are
+# still interested in prior to calling this function
+aggregate_taxa <- function(ta, rank = NULL) {
+
+  if (! is.null(rank)) {
+
+    ranks <- c("kingdom", "phylum", "class", "order", "family", "genus")
+
+    if (! rank %in% ranks) {
+      stop("the rank you supplied is not one of the standard ranks; ...
+           it should be lower case")
+    }
+
+    rank_index <- which(ranks == rank)
+    ranks_to_keep <- ranks[1:rank_index]
+    ta <- select_taxa(ta, taxon_id, !! ranks_to_keep)
+
+  }
 
   # this avoids some problems
   ta$taxa[is.na(ta$taxa)] <- "unknown"
