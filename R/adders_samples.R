@@ -14,9 +14,9 @@ add_lib_size <- function(ta, step = "current") {
 
     # make table with sample and library size
     lib_sizes <- ta$abundances %>%
-      group_by(sample) %>%
+      group_by(sample_id) %>%
       summarize(lib_size = sum(abundance)) %>%
-      select(sample, lib_size)
+      select(sample_id, lib_size)
 
   } else {
 
@@ -24,7 +24,7 @@ add_lib_size <- function(ta, step = "current") {
     step_of_interest <- step
     lib_sizes <- ta$lib_sizes %>%
       filter(step == step_of_interest) %>%
-      select(sample, lib_size)
+      select(sample_id, lib_size)
 
   }
 
@@ -48,7 +48,7 @@ add_diversity_measures <- function(ta) {
 
   # make table with sample, divObserved and divInvSimpson
   diversities <- ta$abundances %>%
-    group_by(sample) %>%
+    group_by(sample_id) %>%
     summarize(
       div_observed = n(),
       div_inv_simpson = 1 / sum(rel_abundance ^ 2)
@@ -76,8 +76,8 @@ add_sample_clustered <- function(ta) {
 
   # make table with samples in order of clustering
   samples_clustered <- tibble(
-    sample = clust$labels[clust$order],
-    sample_clustered = factor(sample, levels = sample)
+    sample_id = clust$labels[clust$order],
+    sample_clustered = factor(sample_id, levels = sample_id)
   )
 
   # add sample_clustered to samples table
@@ -102,7 +102,7 @@ add_pcoa <- function(ta) {
   pcoa_variances <- pcoa$eig/sum(pcoa$eig)
   pcoa_dimensions <- pcoa$points %>%
     as_tibble() %>%
-    mutate(sample = !! rownames(pcoa$points)) %>%
+    mutate(sample_id = !! rownames(pcoa$points)) %>%
     rename(pcoa1 = V1, pcoa2 = V2)
 
   # add PCoA dimensions to sample table
@@ -129,8 +129,8 @@ add_spike_ratio <- function(ta, spike_taxon) {
 
   # make sample table with spike abundances
   spike_abundances <- ta$abundances %>%
-    filter(taxon == spike_taxon) %>%
-    select(sample, spike_abundance = abundance)
+    filter(taxon_id == spike_taxon) %>%
+    select(sample_id, spike_abundance = abundance)
 
   # calculate spike ratio (non-spike abundance to spike abundance)
   ta$samples <- ta$samples %>%
@@ -160,7 +160,7 @@ add_cluster <- function(ta, n_clusters) {
 
   samples_clusters <-
     tibble(
-      sample = clust$labels,
+      sample_id = clust$labels,
       cluster = cutree(clust, k = n_clusters)
     ) %>%
     mutate(cluster = str_c("cluster", cluster, sep = " "))

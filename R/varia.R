@@ -3,14 +3,14 @@
 process_sample_selection <- function(ta) {
 
   # filter abundance table
-  selected_samples <- ta$samples$sample
+  selected_samples <- ta$samples$sample_id
   ta$abundances <- ta$abundances %>%
-    filter(sample %in% selected_samples)
+    filter(sample_id %in% selected_samples)
 
   # filter taxon table
-  selected_taxa <- ta$abundances$taxon %>% unique()
+  selected_taxa <- ta$abundances$taxon_id %>% unique()
   ta$taxa <- ta$taxa %>%
-    filter(taxon %in% selected_taxa)
+    filter(taxon_id %in% selected_taxa)
 
   # return ta object
   ta
@@ -21,9 +21,9 @@ process_sample_selection <- function(ta) {
 process_taxon_selection <- function(ta) {
 
   # filter abundance table
-  selected_taxa <- ta$taxa$taxon
+  selected_taxa <- ta$taxa$taxon_id
   ta$abundances <- ta$abundances %>%
-    filter(taxon %in% selected_taxa)
+    filter(taxon_id %in% selected_taxa)
 
   # return ta object
   ta
@@ -34,9 +34,9 @@ process_taxon_selection <- function(ta) {
 process_abundance_selection <- function(ta) {
 
   # filter taxon table
-  selected_taxa <- ta$abundances$taxon %>% unique()
+  selected_taxa <- ta$abundances$taxon_id %>% unique()
   ta$taxa <- ta$taxa %>%
-    filter(taxon %in% selected_taxa)
+    filter(taxon_id %in% selected_taxa)
 
   # return ta object
   ta
@@ -47,16 +47,16 @@ process_abundance_selection <- function(ta) {
 process_new_sample_name <- function(ta) {
 
   names <- ta$samples %>%
-    select(sample, sample_new)
+    select(sample_id, sample_id_new)
 
   ta$abundances <- ta$abundances %>%
     left_join(names) %>%
-    mutate(sample = sample_new) %>%
-    select(- sample_new)
+    mutate(sample_id = sample_id_new) %>%
+    select(- sample_id_new)
 
   ta$samples <- ta$samples %>%
-    mutate(sample = sample_new) %>%
-    select(- sample_new)
+    mutate(sample_id = sample_id_new) %>%
+    select(- sample_id_new)
 
   # return ta object
   ta
@@ -67,7 +67,7 @@ update_lib_sizes <- function(ta, step) {
 
   # current lib_size in tidy table
   lib_sizes_new <- ta$abundances %>%
-    group_by(sample) %>%
+    group_by(sample_id) %>%
     summarize(lib_size = sum(abundance)) %>%
     mutate(step = step)
 
@@ -94,7 +94,7 @@ merge_redundant_taxa <- function(ta) {
 
   # merge taxa in taxon table
   ta$taxa <- ta$taxa %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     summarize_all(function(x) {
       x <- unique(x)
       x <- x[! is.na(x)]
@@ -104,7 +104,7 @@ merge_redundant_taxa <- function(ta) {
 
   # merge taxa in abundances table
   ta$abundances <- ta$abundances %>%
-    group_by(sample, taxon) %>%
+    group_by(sample_id, taxon_id) %>%
     summarise(abundance = sum(abundance)) %>%
     ungroup()
 

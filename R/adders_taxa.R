@@ -37,7 +37,7 @@
 #' # Add taxon tibble to tidyamplicons object
 #' data <- data %>%
 #' add_taxon_tibble(taxon_tibble)
-#' 
+#'
 
 
 add_taxon_tibble <- function(ta, taxon_tibble) {
@@ -56,7 +56,7 @@ add_max_rel_abundance <- function(ta) {
 
   # make table with taxon and maximum relative abundance
   max_rel_abundances <- ta$abundances %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     summarize(max_rel_abundance = max(rel_abundance))
 
   # add max relative abundance to taxon table
@@ -77,7 +77,7 @@ add_total_rel_abundance <- function(ta) {
 
   # make table with taxon and total relative abundance
   total_rel_abundances <- ta$abundances %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     summarize(total_rel_abundance = sum(rel_abundance)/nrow(ta$samples))
 
   # add total relative abundance to taxon table
@@ -95,7 +95,7 @@ add_rel_occurrence <- function(ta) {
 
   # make table with taxon and relative occurrence
   rel_occurrences <- ta$abundances %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     summarize(occurrence = sum(abundance > 0)) %>%
     mutate(rel_occurrence = occurrence/nrow(ta$samples)) %>%
     select(- occurrence)
@@ -179,7 +179,7 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
 
   # take subset of samples if requested
   if (! is.null(samples)) {
-    ta_subset$samples <- filter(ta_subset$samples, sample %in% samples)
+    ta_subset$samples <- filter(ta_subset$samples, sample_id %in% samples)
     ta_subset <- process_sample_selection(ta_subset)
   }
 
@@ -195,7 +195,7 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
 
   # take subset of taxa if requested
   if (! is.null(taxa)) {
-    ta_subset$taxa <- filter(ta_subset$taxa, taxon %in% taxa)
+    ta_subset$taxa <- filter(ta_subset$taxa, taxon_id %in% taxa)
     ta_subset <- process_taxon_selection(ta_subset)
   }
 
@@ -245,8 +245,8 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
   # perform jervis bardy calculation
   taxa_jb <- ta_jb$abundances %>%
-    left_join(ta_jb$samples %>% select(sample, dna_conc = !! dna_conc)) %>%
-    group_by(taxon) %>%
+    left_join(ta_jb$samples %>% select(sample_id, dna_conc = !! dna_conc)) %>%
+    group_by(taxon_id) %>%
     filter(n() >= !! min_pres) %>%
     do(jb = cor.test(x = .$rel_abundance, y = .$dna_conc, alternative = "less", method = "spearman")) %>%
     mutate(jb_cor = jb$estimate, jb_p = jb$p.value) %>%
@@ -272,11 +272,11 @@ add_presence_counts <- function(ta, condition) {
 
   taxa_counts <- counts_tidy %>%
     mutate(presence_in_condition = str_c(presence, !! condition, sep = "_in_")) %>%
-    select(taxon, presence_in_condition, n) %>%
+    select(taxon_id, presence_in_condition, n) %>%
     spread(value = n, key = presence_in_condition)
 
   taxa_fisher <- counts_tidy %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     arrange(!! condition, presence) %>%
     do(fisher = c(.$n) %>%
          matrix(ncol = 2, byrow = T) %>%
@@ -310,7 +310,7 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
 
     taxa_fischer <-
       occurrences %>%
-      group_by(taxon) %>%
+      group_by(taxon_id) %>%
       arrange(!! condition_sym, presence) %>%
       do(
         fisher = c(.$n) %>%
@@ -323,7 +323,7 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
     taxa_occurrences <-
       occurrences %>%
       filter(presence == "present") %>%
-      select(taxon, !! condition_sym, occurrence = n) %>%
+      select(taxon_id, !! condition_sym, occurrence = n) %>%
       mutate_at(condition, ~ str_c("occurrence_in", ., sep = "_")) %>%
       spread(value = "occurrence", key = condition) %>%
       left_join(taxa_fischer)
@@ -393,8 +393,8 @@ add_mean_rel_abundances <- function(ta, condition = NULL, t_test = F) {
     taxa_t_tests <-
       abundances(ta) %>%
       left_join(ta$samples) %>%
-      complete(nesting(sample, !! condition_sym), taxon, fill = list(rel_abundance = 0)) %>%
-      group_by(taxon) %>%
+      complete(nesting(sample_id, !! condition_sym), taxon_id, fill = list(rel_abundance = 0)) %>%
+      group_by(taxon_id) %>%
       do(t_test = t.test(data = ., rel_abundance ~ !! condition_sym)) %>%
       mutate(t_test_p = t_test$p.value, t_test_t = t_test$statistic) %>%
       select(- t_test)

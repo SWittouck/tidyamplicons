@@ -9,8 +9,6 @@
 #'
 #' @param abundance_matrix Numerical matrix containing the abundance data.
 #' @param taxa_are_columns A logical scalar. Are the taxa defined in columns?
-#' @param taxon_names_are_sequences A logical scalar. Are the taxon names the
-#'   full length sequences they present?
 #'
 #' @examples
 #' # Initiate abundance matrix
@@ -30,8 +28,7 @@
 #' \dontrun{
 #' tidyamplicons("a")
 #' }
-
-create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE, taxon_names_are_sequences = TRUE) {
+create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 
   if (
     ! is.matrix(abundance_matrix) |
@@ -49,32 +46,28 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE, taxo
   n_samples <- nrow(abundance_matrix)
   n_taxa <- ncol(abundance_matrix)
 
-  sample_names <- str_c("s", 1:n_samples)
-  taxon_names <- str_c("t", 1:n_taxa)
+  sample_ids <- str_c("s", 1:n_samples)
+  taxon_ids <- str_c("t", 1:n_taxa)
 
   ta$abundances <-
     abundance_matrix %>%
     as.vector() %>%
     tibble(abundance = .) %>%
-    mutate(sample = rep(!! sample_names, times = !! n_taxa)) %>%
-    mutate(taxon = rep(!! taxon_names, each = !! n_samples)) %>%
+    mutate(sample_id = rep(!! sample_ids, times = !! n_taxa)) %>%
+    mutate(taxon_id = rep(!! taxon_ids, each = !! n_samples)) %>%
     filter(abundance > 0)
 
   ta$samples <-
     abundance_matrix %>%
     rownames() %>%
-    tibble(sample_name = .) %>%
-    mutate(sample = !! sample_names)
+    tibble(sample = .) %>%
+    mutate(sample_id = !! sample_ids)
 
   ta$taxa <-
     abundance_matrix %>%
     colnames() %>%
-    tibble(sequence = .) %>%
-    mutate(taxon = !! taxon_names)
-
-  if (! taxon_names_are_sequences) {
-    ta$taxa <- rename(ta$taxa, taxon_name = sequence)
-  }
+    tibble(taxon = .) %>%
+    mutate(taxon_id = !! taxon_ids)
 
   ta
 
@@ -83,33 +76,33 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE, taxo
 reset_ids <- function(ta) {
 
   ta %>%
-    mutate_samples(sample_prev = sample) %>%
-    mutate_taxa(taxon_prev = taxon) %>%
-    mutate_samples(sample_new = str_c("s", 1:n())) %>%
-    mutate_taxa(taxon_new = str_c("t", 1:n())) %>%
-    change_ids_samples(sample_new = "sample_new") %>%
-    change_ids_taxa(taxon_new = "taxon_new")
+    mutate_samples(sample_id_prev = sample_id) %>%
+    mutate_taxa(taxon_id_prev = taxon_id) %>%
+    mutate_samples(sample_id_new = str_c("s", 1:n())) %>%
+    mutate_taxa(taxon_id_new = str_c("t", 1:n())) %>%
+    change_ids_samples(sample_id_new = "sample_id_new") %>%
+    change_ids_taxa(taxon_id_new = "taxon_id_new")
 
 }
 
-as_phyloseq <- function(ta, sample_id = "sample_name", taxon_id = "sequence") {
+as_phyloseq <- function(ta, sample = "sample", taxon = "taxon") {
 
   if ("phyloseq" %in% class(ta)) return(ta)
 
-  if (! is.null(sample_id)) {
-    ta <- change_ids_samples(ta, sample_new = sample_id)
+  if (! is.null(sample)) {
+    ta <- change_ids_samples(ta, sample_id_new = sample)
   }
 
   if (! is.null(taxon_id)) {
-    ta <- change_ids_taxa(ta, taxon_new = taxon_id)
+    ta <- change_ids_taxa(ta, taxon_id_new = taxon)
   }
 
   otu_table <-
     ta$abundances %>%
-    spread(key = taxon, value = abundance, fill = 0) %>%
+    spread(key = taxon_id, value = abundance, fill = 0) %>%
     `attr<-`("class", "data.frame") %>%
-    `rownames<-`(.$sample) %>%
-    select(- sample) %>%
+    `rownames<-`(.$sample_id) %>%
+    select(- sample_id) %>%
     as.matrix() %>%
     phyloseq::otu_table(taxa_are_rows = F)
 
@@ -124,15 +117,15 @@ as_phyloseq <- function(ta, sample_id = "sample_name", taxon_id = "sequence") {
   sample_data <-
     ta$samples %>%
     `attr<-`("class", "data.frame") %>%
-    `rownames<-`(.$sample) %>%
-    select(- sample) %>%
+    `rownames<-`(.$sample_id) %>%
+    select(- sample_id) %>%
     phyloseq::sample_data()
 
   tax_table <-
     ta$taxa %>%
     `attr<-`("class", "data.frame") %>%
-    `rownames<-`(.$taxon) %>%
-    select(- taxon) %>%
+    `rownames<-`(.$taxon_id) %>%
+    select(- taxon_id) %>%
     as.matrix() %>%
     phyloseq::tax_table()
 
@@ -151,7 +144,7 @@ as_tidyamplicons <- function(ps) {
     phyloseq::sample_data(ps)@.Data %>%
     `names<-`(phyloseq::sample_data(ps)@names) %>%
     do.call(what = tibble) %>%
-    mutate(sample_name = phyloseq::sample_data(ps)@row.names)
+    mutate(sample = phyloseq::sample_data(ps)@row.names)
 
   # convert taxon table to tibble
   taxa <-
@@ -184,8 +177,8 @@ as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE, value = "a
 
   abundances_matrix %>%
     as_tibble() %>%
-    mutate(sample = row.names(abundances_matrix)) %>%
-    gather(key = "taxon", value = !! value, - sample) %>%
+    mutate(sample_id = row.names(abundances_matrix)) %>%
+    gather(key = "taxon_id", value = !! value, - sample_id) %>%
     filter(!! value > 0)
 
 }
@@ -195,20 +188,20 @@ as_abundances_matrix <- function(abundances, value = abundance) {
 
   if (
     ! is.data.frame(abundances) |
-    is.null(abundances$taxon) |
-    is.null(abundances$sample)
+    is.null(abundances$taxon_id) |
+    is.null(abundances$sample_id)
   ) stop("first argument should be an abundances table (data frame)")
 
   value <- enquo(value)
 
   abundances_wide <- abundances %>%
-    select(sample, taxon, !! value) %>%
-    spread(key = taxon, value = !! value, fill = 0)
+    select(sample_id, taxon_id, !! value) %>%
+    spread(key = taxon_id, value = !! value, fill = 0)
 
   abundances_wide %>%
-    select(- sample) %>%
+    select(- sample_id) %>%
     as.matrix() %>%
-    `row.names<-`(abundances_wide$sample)
+    `row.names<-`(abundances_wide$sample_id)
 
 }
 
@@ -217,9 +210,9 @@ merge_tidyamplicons <- function(ta1, ta2) {
 
   # make sure that sample names are unique
   ta1$samples <- ta1$samples %>%
-    mutate(sample_new = paste(run, sample, sep = "_"))
+    mutate(sample_new = paste(run, sample_id, sep = "_"))
   ta2$samples <- ta2$samples %>%
-    mutate(sample_new = paste(run, sample, sep = "_"))
+    mutate(sample_new = paste(run, sample_id, sep = "_"))
   ta1 <- process_new_sample_name(ta1)
   ta2 <- process_new_sample_name(ta2)
 
@@ -228,8 +221,8 @@ merge_tidyamplicons <- function(ta1, ta2) {
 
   # merge taxa tables
   taxa <- bind_rows(ta1$taxa, ta2$taxa) %>%
-    select(taxon, kingdom, phylum, class, order, family, genus, species) %>%
-    group_by(taxon) %>%
+    select(taxon_id, kingdom, phylum, class, order, family, genus, species) %>%
+    group_by(taxon_id) %>%
     summarize_all(function(x) {
       x <- unique(x)
       x <- x[! is.na(x)]
@@ -245,7 +238,7 @@ merge_tidyamplicons <- function(ta1, ta2) {
 
   # give new sample names in new ta object
   ta$samples <- ta$samples %>%
-    mutate(sample_new = paste("m", 1:n(), sep = ""))
+    mutate(sample_new = paste("s", 1:n(), sep = ""))
   ta <- process_new_sample_name(ta)
 
   # return ta object
@@ -287,12 +280,12 @@ tidy_phyloseq <- function(ps) {
     phyloseq::sample_data(ps)@.Data %>%
     `names<-`(phyloseq::sample_data(ps)@names) %>%
     do.call(what = tibble) %>%
-    mutate(sample = phyloseq::sample_data(ps)@row.names)
+    mutate(sample_id = phyloseq::sample_data(ps)@row.names)
 
   # convert taxon table
   taxa <- phyloseq::tax_table(ps)@.Data %>%
     as_tibble() %>%
-    mutate(taxon = phyloseq::tax_table(ps) %>% row.names()) %>%
+    mutate(taxon_id = phyloseq::tax_table(ps) %>% row.names()) %>%
     set_names(names(.) %>% str_to_lower())
 
   # make sure that taxa are columns in taxon table

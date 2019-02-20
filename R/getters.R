@@ -83,11 +83,11 @@ taxon_counts_in_conditions <- function(ta, condition) {
   ta$abundances %>%
     filter(abundance > 0) %>%
     left_join(ta$samples) %>%
-    select(taxon, sample, condition = !! condition) %>%
+    select(taxon_id, sample_id, condition = !! condition) %>%
     mutate(presence = "present") %>%
-    complete(nesting(condition, sample), taxon, fill = list(presence = "absent")) %>%
-    count(taxon, condition, presence) %>%
-    complete(taxon, condition, presence, fill = list(n = 0)) %>%
+    complete(nesting(condition, sample_id), taxon_id, fill = list(presence = "absent")) %>%
+    count(taxon_id, condition, presence) %>%
+    complete(taxon_id, condition, presence, fill = list(n = 0)) %>%
     rename(!! condition_name := condition)
 
 }
@@ -106,7 +106,7 @@ occurrences <- function(ta, condition = NULL, pres_abs = F) {
   if (is.null(condition)) {
 
     abundances_extended %>%
-      count(taxon) %>%
+      count(taxon_id) %>%
       rename(occurrence = n)
 
   } else if (pres_abs) {
@@ -114,20 +114,20 @@ occurrences <- function(ta, condition = NULL, pres_abs = F) {
     condition <- sym(condition)
 
     abundances_extended %>%
-      select(taxon, sample, !! condition) %>%
+      select(taxon_id, sample_id, !! condition) %>%
       mutate(presence = "present") %>%
-      complete(nesting(!! condition, sample), taxon, fill = list(presence = "absent")) %>%
-      count(taxon, !! condition, presence) %>%
-      complete(taxon, !! condition, presence, fill = list(n = 0))
+      complete(nesting(!! condition, sample_id), taxon_id, fill = list(presence = "absent")) %>%
+      count(taxon_id, !! condition, presence) %>%
+      complete(taxon_id, !! condition, presence, fill = list(n = 0))
 
   } else {
 
     condition <- sym(condition)
 
     abundances_extended %>%
-      count(taxon, !! condition) %>%
+      count(taxon_id, !! condition) %>%
       rename(occurrence = n) %>%
-      complete(taxon, !! condition, fill = list(occurrence = 0))
+      complete(taxon_id, !! condition, fill = list(occurrence = 0))
 
   }
 
@@ -147,9 +147,9 @@ mean_rel_abundances <- function(ta, condition = NULL) {
   if (is.null(condition)) {
 
     ta$abundances %>%
-      select(sample, taxon, rel_abundance) %>%
-      complete(sample, taxon, fill = list(rel_abundance = 0)) %>%
-      group_by(taxon) %>%
+      select(sample_id, taxon_id, rel_abundance) %>%
+      complete(sample_id, taxon_id, fill = list(rel_abundance = 0)) %>%
+      group_by(taxon_id) %>%
       summarize(mean_rel_abundance = mean(rel_abundance)) %>%
       ungroup()
 
@@ -159,9 +159,9 @@ mean_rel_abundances <- function(ta, condition = NULL) {
 
     ta$abundances %>%
       left_join(ta$samples) %>%
-      select(!! condition, sample, taxon, rel_abundance) %>%
-      complete(nesting(!! condition, sample), taxon, fill = list(rel_abundance = 0)) %>%
-      group_by(taxon, !! condition) %>%
+      select(!! condition, sample_id, taxon_id, rel_abundance) %>%
+      complete(nesting(!! condition, sample_id), taxon_id, fill = list(rel_abundance = 0)) %>%
+      group_by(taxon_id, !! condition) %>%
       summarize(mean_rel_abundance = mean(rel_abundance)) %>%
       ungroup()
 
@@ -202,7 +202,7 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
 
   formula_RHS <- paste0(predictors, collapse = " + ")
 
-  metadata <- tibble(sample = rownames(abundances_matrix)) %>%
+  metadata <- tibble(sample_id = rownames(abundances_matrix)) %>%
     left_join(ta$samples)
 
   adonis(
