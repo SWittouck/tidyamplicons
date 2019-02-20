@@ -9,10 +9,11 @@ import(vegan)
 export(tidyamplicons)
 export(add_sample_tibble)
 export(add_taxon_tibble)
+export(reset_ids)
 export(as_phyloseq)
 export(as_tidyamplicons)
-export(make_tidyamplicons)
-export(tidy_phyloseq)
+export(make_tidyamplicons) # dep
+export(tidy_phyloseq) # dep
 
 # helpers
 export(as_abundances)
@@ -21,7 +22,7 @@ export(as_abundances_matrix)
 # library_sizes
 export(update_lib_sizes)
 
-# getters_data
+# getters
 export(report_numbers)
 export(get_numbers)
 export(get_rel_abundance_matrix)
@@ -33,27 +34,37 @@ export(everything)
 export(samples)
 export(taxa)
 export(abundances)
+export(perform_adonis) # change name
 
-# getters_plots
+# plotters
 export(get_bar_plot)
 export(get_history_plot)
 
-# mergers
+# data_handlers
 export(aggregate_samples)
 export(aggregate_taxa)
 export(merge_tidyamplicons)
 export(trim_asvs)
+export(select_samples)
+export(select_taxa)
+export(select_abundances)
+export(mutate_samples)
+export(mutate_taxa)
+export(mutate_abundances)
+export(filter_samples)
+export(filter_taxa)
+export(filter_abundances)
 
 # processors
-export(process_sample_selection)
-export(process_taxon_selection)
-export(process_abundance_selection)
-export(process_new_sample_name)
+export(process_sample_selection) # dep
+export(process_taxon_selection) # dep
+export(process_abundance_selection) # dep
+export(process_new_sample_name) # dep
 
-# secondary_variables_abundances
+# adders_abundances
 export(add_rel_abundance)
 
-# secondary_variables_samples
+# adders_samples
 export(add_lib_size)
 export(add_diversity_measures)
 export(add_sample_clustered)
@@ -61,7 +72,7 @@ export(add_pcoa)
 export(add_spike_ratio)
 export(add_cluster)
 
-# secondary_variables_taxa
+# adders_taxa
 export(add_max_rel_abundance)
 export(add_total_rel_abundance)
 export(add_rel_occurrence)
@@ -77,16 +88,5 @@ export(get_abundances_extended)
 export(merge_samples)
 export(merge_taxa)
 
-# verbs
-export(select_samples)
-export(select_taxa)
-export(select_abundances)
-export(mutate_samples)
-export(mutate_taxa)
-export(mutate_abundances)
-export(filter_samples)
-export(filter_taxa)
-export(filter_abundances)
-
 # analyses
-export(perform_adonis)
+
