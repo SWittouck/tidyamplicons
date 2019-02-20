@@ -1,5 +1,37 @@
+#' Initiate tidyamplicons object
+#'
+#' \code{tidyamplicons} returns a tidyamplicons object given a numeric matrix.
+#'
+#' This function initiates a tidyamplicons object based on a numeric matrix. It
+#' will automatically create a dummy taxa and sample table which will need to be
+#' updated using the functions \code{\link{add_taxon_tibble}} and
+#' \code{\link{add_sample_tibble}}.
+#'
+#' @param abundance_matrix Numerical matrix containing the abundance data.
+#' @param taxa_are_columns A logical scalar. Are the taxa defined in columns?
+#' @param taxon_names_are_sequences A logical scalar. Are the taxon names the
+#'   full length sequences they present?
+#'
+#' @examples
+#' # Initiate abundance matrix
+#' x <- matrix(
+#'  c(1500, 1300, 280, 356),
+#'  ncol = 2
+#' )
+#' rownames(x) <- c("taxon1", "taxon2")
+#' colnames(x) <- c("sample1", "sample2")
+#'
+#' # Convert to tidyamplicons object
+#' data <- create_tidyamplicons(x,
+#'                      taxa_are_columns = FALSE,
+#'                      taxon_names_are_sequences = FALSE)
+#'
+#'
+#' \dontrun{
+#' tidyamplicons("a")
+#' }
 
-tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE, taxon_names_are_sequences = TRUE) {
+create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE, taxon_names_are_sequences = TRUE) {
 
   if (
     ! is.matrix(abundance_matrix) |
