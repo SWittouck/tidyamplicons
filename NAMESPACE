@@ -6,7 +6,7 @@ import(stringr)
 import(vegan)
 
 # converters
-export(tidyamplicons)
+export(create_tidyamplicons)
 export(reset_ids)
 export(as_phyloseq)
 export(as_tidyamplicons)
