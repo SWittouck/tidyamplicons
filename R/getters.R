@@ -30,7 +30,7 @@ get_rel_abundance_matrix <- function(ta) {
 }
 
 # get sample distances as a tidy table
-get_betas <- function(ta, unique = T, method = "bray", binary = F) {
+betas <- function(ta, unique = T, method = "bray", binary = F) {
 
   # make "dist" object with beta values
   rel_abundance_matrix <- get_rel_abundance_matrix(ta)
@@ -44,8 +44,8 @@ get_betas <- function(ta, unique = T, method = "bray", binary = F) {
 
     betas <- expand.grid(i = 1:n, j = 1:n) %>%
       filter(i < j) %>%
-      mutate(sample_1 = labels(betas_dist)[i]) %>%
-      mutate(sample_2 = labels(betas_dist)[j]) %>%
+      mutate(sample_id_1 = labels(betas_dist)[i]) %>%
+      mutate(sample_id_2 = labels(betas_dist)[j]) %>%
       mutate(beta = betas_dist[n * (i - 1) - i * (i - 1) / 2 + j - i]) %>%
       select(- i, - j)
 
@@ -71,6 +71,9 @@ get_betas <- function(ta, unique = T, method = "bray", binary = F) {
   betas
 
 }
+
+# synonym
+get_betas <- betas
 
 # DEPRICATED: use occurrences()
 # Returns a tidy table of taxon presence and absence counts in sample conditions.

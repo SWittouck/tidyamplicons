@@ -21,7 +21,8 @@ export(tidy_phyloseq) # dep
 export(report_numbers)
 export(get_numbers)
 export(get_rel_abundance_matrix)
-export(get_betas)
+export(betas)
+export(get_betas) # synonym
 export(taxon_counts_in_conditions)
 export(occurrences)
 export(mean_rel_abundances)
