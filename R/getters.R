@@ -1,3 +1,30 @@
+#' Report numbers
+#'
+#' \code{report_numbers} returns the number of samples, taxa and reads in a
+#' tidyamplicons object.
+#'
+#' This function prints the number of samples, taxa and reads in a tidyamplicons
+#' object. To retrieve the numbers stored in named numeric vector, use
+#' \code{\link{get_numbers}} instead.
+#'
+#' @param ta Tidyamplicons object.
+#'
+#' @examples
+#' # Initiate abundance matrix
+#' x <- matrix(
+#'  c(1500, 1300, 280, 356),
+#'  ncol = 2
+#' )
+#' rownames(x) <- c("taxon1", "taxon2")
+#' colnames(x) <- c("sample1", "sample2")
+#'
+#' # Convert to tidyamplicons object
+#' data <- create_tidyamplicons(x,
+#'                      taxa_are_columns = FALSE
+#'                      )
+#' # Report numbers
+#' data %>%
+#'  report_numbers()
 
 report_numbers <- function(ta) {
 
@@ -7,6 +34,33 @@ report_numbers <- function(ta) {
 
 }
 
+#' Get numbers
+#'
+#' \code{get_numbers} returns the number of samples, taxa and reads in a
+#' tidyamplicons object.
+#'
+#' This function returns the number of samples, taxa and reads in a tidyamplicons
+#' object, stored in a named numeric vector. To print the numbers, use
+#' \code{\link{report_numbers}} instead.
+#'
+#' @param ta Tidyamplicons object.
+#'
+#' @examples
+#' # Initiate abundance matrix
+#' x <- matrix(
+#'  c(1500, 1300, 280, 356),
+#'  ncol = 2
+#' )
+#' rownames(x) <- c("taxon1", "taxon2")
+#' colnames(x) <- c("sample1", "sample2")
+#'
+#' # Convert to tidyamplicons object
+#' data <- create_tidyamplicons(x,
+#'                      taxa_are_columns = FALSE
+#'                      )
+#' # Report numbers
+#' numbers <- data %>%
+#'  get_numbers()
 get_numbers <- function(ta) {
 
   c(

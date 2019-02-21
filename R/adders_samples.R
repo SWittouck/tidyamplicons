@@ -33,7 +33,7 @@
 #' environment <- c("food fermentation", "human stool")
 #' sample_tibble <- tibble(sample, environment)
 #'
-#' # Add taxon tibble to tidyamplicons object
+#' # Add sample tibble to tidyamplicons object
 #' data <- data %>%
 #' add_sample_tibble(sample_tibble)
 
