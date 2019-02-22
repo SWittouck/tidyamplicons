@@ -83,7 +83,40 @@ get_rel_abundance_matrix <- function(ta) {
 
 }
 
-# get sample distances as a tidy table
+#' Get betas
+#'
+#' \code{betas} returns a tidy tibble with the beta diversity for each
+#' combination of samples.
+#'
+#' This function calculates the beta diversity using the
+#' \code{\link[vegan]{vegdist}} function of Vegan. It will report one diversity
+#' estimate for each combination of samples.
+#'
+#'
+#' @param ta Tidyamplicons object.
+#' @param unique A logical scalar. Avoid redundancy by removing all self sample
+#'   comparisons and keep only one of two pairwise comparisons? Default is TRUE.
+#' @param method The dissimilarity index. See \code{\link[vegan]{vegdist}} for
+#'   all options. Default is "bray".
+#' @param binary A logical scalar. Perform presence/absence standardization
+#'   before analysis. See \code{\link[vegan]{vegdist}}. Default is FALSE.
+#'
+#' @examples
+#' # Initiate abundance matrix
+#' x <- matrix(
+#'  c(1500, 1300, 280, 356),
+#'  ncol = 2
+#' )
+#' rownames(x) <- c("taxon1", "taxon2")
+#' colnames(x) <- c("sample1", "sample2")
+#'
+#' # Convert to tidyamplicons object
+#' data <- create_tidyamplicons(x,
+#'                      taxa_are_columns = FALSE
+#'                      )
+#' # Report numbers
+#' numbers <- data %>%
+#'  get_betas()
 betas <- function(ta, unique = T, method = "bray", binary = F) {
 
   # make "dist" object with beta values
@@ -127,6 +160,40 @@ betas <- function(ta, unique = T, method = "bray", binary = F) {
 }
 
 # synonym
+#' Get betas
+#'
+#' \code{get_betas} returns a tidy tibble with the beta diversity for each
+#' combination of samples.
+#'
+#' This function calculates the beta diversity using the
+#' \code{\link[vegan]{vegdist}} function of Vegan. It will report one diversity
+#' estimate for each combination of samples.
+#'
+#'
+#' @param ta Tidyamplicons object.
+#' @param unique A logical scalar. Avoid redundancy by removing all self sample
+#'   comparisons and keep only one of two pairwise comparisons? Default is TRUE.
+#' @param method The dissimilarity index. See \code{\link[vegan]{vegdist}} for
+#'   all options. Default is "bray".
+#' @param binary A logical scalar. Perform presence/absence standardization
+#'   before analysis. See \code{\link[vegan]{vegdist}}. Default is FALSE.
+#'
+#' @examples
+#' # Initiate abundance matrix
+#' x <- matrix(
+#'  c(1500, 1300, 280, 356),
+#'  ncol = 2
+#' )
+#' rownames(x) <- c("taxon1", "taxon2")
+#' colnames(x) <- c("sample1", "sample2")
+#'
+#' # Convert to tidyamplicons object
+#' data <- create_tidyamplicons(x,
+#'                      taxa_are_columns = FALSE
+#'                      )
+#' # Report numbers
+#' numbers <- data %>%
+#'  get_betas()
 get_betas <- betas
 
 # DEPRICATED: use occurrences()
