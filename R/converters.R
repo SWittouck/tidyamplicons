@@ -172,7 +172,7 @@ as_phyloseq <- function(ta, sample = "sample", taxon = "taxon") {
 #' \code{\link{as_phyloseq}}.
 #'
 #' @param ps Phyloseq object.
-#' 
+#'
 as_tidyamplicons <- function(ps) {
 
   if ("tidyamplicons" %in% class(ps)) return(ps)
@@ -217,7 +217,7 @@ as_tidyamplicons <- function(ps) {
 #'   Default is TRUE.
 #' @param value Name of resulting colum containing the abundance data. Default
 #'   is "abundance".
-#'   
+#'
 as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE, value = "abundance") {
 
   if (
@@ -247,7 +247,7 @@ as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE, value = "a
 #' @param abundances The abundance tidy data frame that will be converted.
 #' @param value Name of colum containing the abundance data. Default is
 #'   "abundance".
-#'   
+#'
 as_abundances_matrix <- function(abundances, value = abundance) {
 
   if (
@@ -284,18 +284,21 @@ as_abundances_matrix <- function(abundances, value = abundance) {
 merge_tidyamplicons <- function(ta1, ta2) {
 
   # make sure that sample names are unique
-  ta1$samples <- ta1$samples %>%
-    mutate(sample_new = paste(run, sample_id, sep = "_"))
-  ta2$samples <- ta2$samples %>%
-    mutate(sample_new = paste(run, sample_id, sep = "_"))
-  ta1 <- process_new_sample_name(ta1)
-  ta2 <- process_new_sample_name(ta2)
+  ta1 <-
+    ta1 %>%
+    mutate_samples(sample_id_new = paste(run, sample_id, sep = "_")) %>%
+    change_ids_samples(sample_id_new = "sample_id_new")
+  ta2 <-
+    ta2 %>%
+    mutate_samples(sample_id_new = paste(run, sample_id, sep = "_")) %>%
+    change_ids_samples(sample_id_new = "sample_id_new")
 
   # merge sample tables
   samples <- bind_rows(ta1$samples, ta2$samples)
 
   # merge taxa tables
-  taxa <- bind_rows(ta1$taxa, ta2$taxa) %>%
+  taxa <-
+    bind_rows(ta1$taxa, ta2$taxa) %>%
     select(taxon_id, kingdom, phylum, class, order, family, genus, species) %>%
     group_by(taxon_id) %>%
     summarize_all(function(x) {
@@ -312,9 +315,7 @@ merge_tidyamplicons <- function(ta1, ta2) {
   ta <- make_tidyamplicons(samples, taxa, abundances)
 
   # give new sample names in new ta object
-  ta$samples <- ta$samples %>%
-    mutate(sample_new = paste("s", 1:n(), sep = ""))
-  ta <- process_new_sample_name(ta)
+  ta <- reset_ids(ta)
 
   # return ta object
   ta
