@@ -72,11 +72,18 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 
 }
 
-reset_ids <- function(ta) {
+reset_ids <- function(ta, keep_prev = F) {
+
+  if (keep_prev) {
+
+    ta <-
+      ta %>%
+      mutate_samples(sample_id_prev = sample_id) %>%
+      mutate_taxa(taxon_id_prev = taxon_id)
+
+  }
 
   ta %>%
-    mutate_samples(sample_id_prev = sample_id) %>%
-    mutate_taxa(taxon_id_prev = taxon_id) %>%
     mutate_samples(sample_id_new = str_c("s", 1:n())) %>%
     mutate_taxa(taxon_id_new = str_c("t", 1:n())) %>%
     change_ids_samples(sample_id_new = "sample_id_new") %>%
