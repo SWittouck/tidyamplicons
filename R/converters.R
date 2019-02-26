@@ -72,6 +72,23 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 
 }
 
+#' Update old tidyamplicons object to new one.
+#'
+#' \code{update_id_names} updates an old tidyamplicons object to a new one.
+#'
+#' This function will update a tidyamplicons object created prior to version
+#' 0.1.0 to a tidyamplicons object compatible with version 0.1.0.
+#'
+#' @param ta Old tidyamplicons object.
+update_tidyamplicons <- function(ta) {
+
+  ta %>%
+    update_id_names() %>%
+    mutate_taxa(sequence = taxon_id) %>%
+    reset_ids()
+
+}
+
 reset_ids <- function(ta, keep_prev = F) {
 
   if (keep_prev) {
@@ -91,14 +108,6 @@ reset_ids <- function(ta, keep_prev = F) {
 
 }
 
-#' Update old tidyamplicons object to new one.
-#'
-#' \code{update_id_names} updates an old tidyamplicons object to a new one.
-#'
-#' This function will update a tidyamplicons object created prior to version
-#' 0.1.0 to a tidyamplicons object compatible with version 0.1.0.
-#'
-#' @param ta Old tidyamplicons object.
 update_id_names <- function(ta) {
 
   ta %>%
