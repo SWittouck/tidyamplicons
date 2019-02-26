@@ -20,6 +20,7 @@ export(tidy_phyloseq) # dep
 
 # getters
 export(report_numbers)
+export(numbers)
 export(get_numbers)
 export(get_rel_abundance_matrix)
 export(betas)
@@ -62,6 +63,7 @@ export(add_rel_abundance)
 # adders_samples
 export(add_sample_tibble)
 export(add_lib_size)
+export(add_alphas)
 export(add_diversity_measures)
 export(add_sample_clustered)
 export(add_pcoa)

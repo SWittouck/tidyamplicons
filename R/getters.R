@@ -61,7 +61,7 @@ report_numbers <- function(ta) {
 #' # Report numbers
 #' numbers <- data %>%
 #'  get_numbers()
-get_numbers <- function(ta) {
+numbers <- function(ta) {
 
   c(
     n_samples = nrow(ta$samples),
@@ -70,6 +70,8 @@ get_numbers <- function(ta) {
   )
 
 }
+
+get_numbers <- numbers
 
 # for internal use - do not export
 get_rel_abundance_matrix <- function(ta) {

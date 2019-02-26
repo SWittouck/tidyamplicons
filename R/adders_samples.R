@@ -111,7 +111,7 @@ add_lib_size <- function(ta, step = "current") {
 #'
 #' This function adds two alpha diversity measures (observed and inverse
 #' Simpson) to the samples tibble of a tidyamplicons object under the variable
-#' names div_observed and div_inv_simpson, respectively. This function will also
+#' names observed and inverse_simpson, respectively. This function will also
 #' add relative abundances if not present using \code{\link{add_rel_abundance}}.
 #'
 #' @param ta Tidyamplicons object.
@@ -133,8 +133,8 @@ add_lib_size <- function(ta, step = "current") {
 #' # Add total abundance
 #' data <- data %>%
 #'  add_diversity_measures()
-#' 
-add_diversity_measures <- function(ta) {
+#'
+add_alphas <- function(ta) {
 
   # if rel abundances not present: add and remove again on exit
   if (! "rel_abundance" %in% names(ta$abundances)) {
@@ -146,8 +146,8 @@ add_diversity_measures <- function(ta) {
   diversities <- ta$abundances %>%
     group_by(sample_id) %>%
     summarize(
-      div_observed = n(),
-      div_inv_simpson = 1 / sum(rel_abundance ^ 2)
+      observed = n(),
+      inverse_simpson = 1 / sum(rel_abundance ^ 2)
     ) %>%
     ungroup()
 
@@ -156,6 +156,14 @@ add_diversity_measures <- function(ta) {
 
   # return ta object
   ta
+
+ }
+
+add_diversity_measures <- function(ta) {
+
+  ta %>%
+    add_alphas %>%
+    modify_at("samples", rename, div_observed = observed, div_inv_simpson = inverse_simpson)
 
 }
 
@@ -190,7 +198,7 @@ add_diversity_measures <- function(ta) {
 #' # Add total abundance
 #' data <- data %>%
 #'  add_sample_clustered()
-#' 
+#'
 add_sample_clustered <- function(ta) {
 
   # make relative abundance matrix
@@ -248,7 +256,7 @@ add_sample_clustered <- function(ta) {
 #' # Add total abundance
 #' data <- data %>%
 #'  add_pcoa()
-#' 
+#'
 add_pcoa <- function(ta) {
 
   # make relative abundance matrix
@@ -310,7 +318,7 @@ add_pcoa <- function(ta) {
 #' # Add total abundance
 #' data <- data %>%
 #'  add_spike_ratio(spike_taxon = "t1")
-#' 
+#'
 
 # Credits to Wenke Smets for the idea of spiking samples prior to 16S sequencing
 # (Smets et al., 2016) and the initial implementation of this function
@@ -371,7 +379,7 @@ add_spike_ratio <- function(ta, spike_taxon) {
 #' # Add total abundance
 #' data <- data %>%
 #'  add_cluster(n_clusters = 5)
-#' 
+#'
 
 # Adds a variable "cluster" to the samples table
 # To do: merge with add_sample_clustered somehow
