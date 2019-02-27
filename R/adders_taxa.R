@@ -339,7 +339,8 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
 
   if (relative & is.null(condition)) {
 
-    taxa_occurrences %>%
+    taxa_occurrences <-
+      taxa_occurrences %>%
       mutate(occurrence = occurrence / nrow(ta$samples))
 
   }
