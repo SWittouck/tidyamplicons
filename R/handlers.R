@@ -1,14 +1,15 @@
 
-change_ids_samples <- function(ta, sample_id_new) {
+# sample_id_new should be an expression that evaluates to a unique sample
+# identifier
+change_id_samples <- function(ta, sample_id_new) {
 
-  if (any(duplicated(ta$samples[[sample_id_new]]))) {
+  sample_id_new <- rlang::enexpr(sample_id_new)
+
+  ta <- mutate_samples(ta, sample_id_new = as.character(!! sample_id_new))
+
+  if (any(duplicated(ta$samples$sample_id_new))) {
     stop("the new sample ids are not unique")
   }
-
-  ta$samples <-
-    ta$samples %>%
-    rename(sample_id_new = !! sample_id_new) %>%
-    mutate_at("sample_id_new", as.character)
 
   ta$abundances <-
     ta$abundances %>%
@@ -25,16 +26,17 @@ change_ids_samples <- function(ta, sample_id_new) {
 
 }
 
-change_ids_taxa <- function(ta, taxon_id_new) {
+# taxon_id_new should be an expression that evaluates to a unique taxon
+# identifier
+change_id_taxa <- function(ta, taxon_id_new) {
 
-  if (any(duplicated(ta$taxa[[taxon_id_new]]))) {
+  taxon_id_new <- rlang::enexpr(taxon_id_new)
+
+  ta <- mutate_taxa(ta, taxon_id_new = as.character(!! taxon_id_new))
+
+  if (any(duplicated(ta$taxataxon_id_new))) {
     stop("the new taxon ids are not unique")
   }
-
-  ta$taxa <-
-    ta$taxa %>%
-    rename(taxon_id_new = !! taxon_id_new) %>%
-    mutate_at("taxon_id_new", as.character)
 
   ta$abundances <-
     ta$abundances %>%

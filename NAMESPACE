@@ -42,8 +42,8 @@ export(get_history_plot) # synonym
 export(sample_plot)
 
 # handlers
-export(change_ids_samples)
-export(change_ids_taxa)
+export(change_id_samples)
+export(change_id_taxa)
 export(aggregate_samples)
 export(aggregate_taxa)
 export(trim_asvs)

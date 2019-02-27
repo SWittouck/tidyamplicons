@@ -101,10 +101,8 @@ reset_ids <- function(ta, keep_prev = F) {
   }
 
   ta %>%
-    mutate_samples(sample_id_new = str_c("s", 1:n())) %>%
-    mutate_taxa(taxon_id_new = str_c("t", 1:n())) %>%
-    change_ids_samples(sample_id_new = "sample_id_new") %>%
-    change_ids_taxa(taxon_id_new = "taxon_id_new")
+    change_id_samples(sample_id_new = str_c("s", 1:n())) %>%
+    change_id_taxa(taxon_id_new = str_c("t", 1:n()))
 
 }
 
@@ -130,17 +128,15 @@ update_id_names <- function(ta) {
 #'   "sample" column in sample tibble of the tidyamplicons object.
 #' @param taxon The taxon names required for a phyloseq object. Default is
 #'   "taxon" column in taxon tibble of the tidyamplicons object.
-as_phyloseq <- function(ta, sample = "sample", taxon = "taxon") {
+as_phyloseq <- function(ta, sample = sample, taxon = taxon) {
 
   if ("phyloseq" %in% class(ta)) return(ta)
 
-  if (! is.null(sample)) {
-    ta <- change_ids_samples(ta, sample_id_new = sample)
-  }
+  sample <- rlang::enexpr(sample)
+  taxon <- rlang::enexpr(taxon)
 
-  if (! is.null(taxon_id)) {
-    ta <- change_ids_taxa(ta, taxon_id_new = taxon)
-  }
+  ta <- change_id_samples(ta, sample_id_new = !! sample)
+  ta <- change_id_taxa(ta, taxon_id_new = !! taxon)
 
   otu_table <-
     ta$abundances %>%
@@ -297,25 +293,24 @@ as_abundances_matrix <- function(abundances, value = abundance) {
 #'
 #' @param ta1 The first tidyamplicons object.
 #' @param ta2 The second tidyamplicons object.
-merge_tidyamplicons <- function(ta1, ta2) {
+merge_tidyamplicons <- function(ta1, ta2, taxon_identifier = sequence) {
+
+  taxon_identifier <- rlang::ensym(taxon_identifier)
 
   # make sure that sample names are unique
-  ta1 <-
-    ta1 %>%
-    mutate_samples(sample_id_new = paste(run, sample_id, sep = "_")) %>%
-    change_ids_samples(sample_id_new = "sample_id_new")
-  ta2 <-
-    ta2 %>%
-    mutate_samples(sample_id_new = paste(run, sample_id, sep = "_")) %>%
-    change_ids_samples(sample_id_new = "sample_id_new")
+  ta1 <- change_id_samples(ta1, paste("ta1", sample_id, sep = "_"))
+  ta2 <- change_id_samples(ta2, paste("ta2", sample_id, sep = "_"))
 
   # merge sample tables
   samples <- bind_rows(ta1$samples, ta2$samples)
 
+  # change taxon ids to something meaningful across ta objects
+  ta1 <- change_id_taxa(ta1, taxon_id_new = !! taxon_identifier)
+  ta2 <- change_id_taxa(ta2, taxon_id_new = !! taxon_identifier)
+
   # merge taxa tables
   taxa <-
     bind_rows(ta1$taxa, ta2$taxa) %>%
-    select(taxon_id, kingdom, phylum, class, order, family, genus, species) %>%
     group_by(taxon_id) %>%
     summarize_all(function(x) {
       x <- unique(x)
@@ -328,7 +323,8 @@ merge_tidyamplicons <- function(ta1, ta2) {
   abundances <- bind_rows(ta1$abundances, ta2$abundances)
 
   # make new ta object
-  ta <- make_tidyamplicons(samples, taxa, abundances)
+  ta <- list(samples = samples, taxa = taxa, abundances = abundances)
+  class(ta) <- "tidyamplicons"
 
   # give new sample names in new ta object
   ta <- reset_ids(ta)
