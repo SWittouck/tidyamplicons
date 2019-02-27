@@ -16,7 +16,9 @@ Imports:
     dplyr,
     stringr,
     vegan
-Suggests: knitr,
+Suggests: 
+    knitr,
     rmarkdown,
     phyloseq
 VignetteBuilder: knitr
+RoxygenNote: 6.1.0
