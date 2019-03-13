@@ -1,4 +1,22 @@
 
+rank_names <- function(ta) {
+
+  if (! is.null(ta$rank_names)) {
+    ta$rank_names
+  } else {
+    c("kingdom", "phylum", "class", "order", "family", "genus")
+  }
+
+}
+
+set_rank_names <- function(ta, rank_names) {
+
+  ta$rank_names <- rank_names
+
+  ta
+
+}
+
 # Execute after samples are selected in samples
 process_sample_selection <- function(ta) {
 

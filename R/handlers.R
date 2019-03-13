@@ -95,48 +95,53 @@ aggregate_taxa <- function(ta, rank = NULL) {
 
   if (! is.null(rank)) {
 
-    ranks <- c("kingdom", "phylum", "class", "order", "family", "genus")
+    rank_names <-
+      rank_names(ta) %>%
+      intersect(names(ta$taxa))
 
-    if (! rank %in% ranks) {
-      stop("the rank you supplied is not one of the standard ranks; ...
-           it should be lower case")
+    if (length(rank_names) == 0) {
+      stop("at least one of the taxonomic rank names should be present ",
+           "in the taxa table")
     }
 
-    rank_index <- which(ranks == rank)
-    ranks_to_keep <- ranks[1:rank_index]
-    ta <- select_taxa(ta, taxon_id, !! ranks_to_keep)
+    if (! rank %in% rank_names) {
+      stop("the rank you supplied should be one of the rank names")
+    }
+
+    rank_index <- which(rank_names == rank)
+    rank_names_to_keep <- rank_names[1:rank_index]
+    ta <- select_taxa(ta, taxon_id, !! rank_names_to_keep)
 
   }
 
   # this avoids some problems
   ta$taxa[is.na(ta$taxa)] <- "unknown"
+  on.exit(ta$taxa[ta$taxa == "unknown"] <- NA)
 
-  # taxon table with only old and new taxon names
-  names <- ta$taxa %>%
-    select(- taxon_id) %>%
-    distinct() %>%
-    mutate(taxon_id_new = paste("t", 1:n(), sep = "")) %>%
-    right_join(ta$taxa) %>%
+  ta$taxa <-
+    ta$taxa %>%
+    group_by_at(vars(- taxon_id)) %>%
+    nest(taxon_id) %>%
+    mutate(taxon_id_new = paste("t", 1:n(), sep = ""))
+
+  id_conversion <-
+    ta$taxa %>%
+    unnest() %>%
     select(taxon_id, taxon_id_new)
 
-  # adapt taxon table with new names
-  ta$taxa <- ta$taxa %>%
-    left_join(names) %>%
-    select(- taxon_id) %>%
-    rename(taxon_id = taxon_id_new) %>%
-    distinct()
+  ta$taxa <-
+    ta$taxa %>%
+    select(- data) %>%
+    rename(taxon_id = taxon_id_new)
 
-  # merge taxa in abundance table and adapt with new names
-  ta$abundances <- ta$abundances %>%
-    left_join(names) %>%
+  ta$abundances <-
+    ta$abundances %>%
+    left_join(id_conversion) %>%
     select(- taxon_id) %>%
     group_by(taxon_id_new, sample_id) %>%
     summarize(abundance = sum(abundance)) %>%
     ungroup() %>%
     rename(taxon_id = taxon_id_new)
-
-  # this avoids some problems (part 2)
-  ta$taxa[ta$taxa == "unknown"] <- NA
 
   # return ta object
   ta

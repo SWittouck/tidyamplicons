@@ -38,8 +38,6 @@
 #' data <- data %>%
 #' add_taxon_tibble(taxon_tibble)
 #'
-
-
 add_taxon_tibble <- function(ta, taxon_tibble) {
 
   modify_at(ta, "taxa", left_join, taxon_tibble)
@@ -108,66 +106,83 @@ add_rel_occurrence <- function(ta) {
 
 }
 
-add_taxon_name <- function(ta, method = "max_rel_abundance", include_species = F) {
+add_taxon_name <- function(ta, method = "total_rel_abundance", include_species = F) {
 
-  # throw error if method unknown
-  if (! method %in% c("max_rel_abundance", "total_rel_abundance")) {
-    stop("method unknown")
+  if (method == "total_rel_abundance") {
+
+    # if total_rel_abundance not present: add and remove on exit
+    if (! "total_rel_abundance" %in% names(ta$taxa)) {
+      ta <- add_total_rel_abundance(ta)
+      on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
+    }
+
+    ta <- mutate_taxa(ta, arrange_by_me = total_rel_abundance)
+
+  } else if (method == "max_rel_abundance") {
+
+    # if total_rel_abundance not present: add and remove on exit
+    if (! "max_rel_abundance" %in% names(ta$taxa)) {
+      ta <- add_max_rel_abundance(ta)
+      on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
+    }
+
+    ta <- mutate_taxa(arrange_by_me = max_rel_abundance)
+
+  } else {
+
+    # throw error if method unknown
+    if (! method %in% c("total_rel_abundance", "max_rel_abundance")) {
+      stop("method unknown")
+    }
+
   }
 
-  # make quosure of method
-  var <- quo(get(method))
+  on.exit(ta$taxa$arrange_by_me <- NULL, add = T)
 
-  # if max_rel_abundance not present: add and remove on exit
-  if (! "max_rel_abundance" %in% names(ta$taxa)) {
-    ta <- add_max_rel_abundance(ta)
-    on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
+  rank_names <-
+    rank_names(ta) %>%
+    purrr::when(include_species ~ c(., "species"), ~ .) %>%
+    intersect(names(ta$taxa))
+
+  if (length(rank_names) == 0) {
+
+    ta <- mutate_taxa(ta, best_classification = "unclassified")
+
+  } else {
+
+    ta$taxa <-
+      ta$taxa %>%
+      mutate(
+        best_classification =
+          pmap_chr(
+            ta$taxa[, rank_names],
+            function(...) {
+              classification = as.character(list(...))
+              if (all(is.na(classification))) return("unclassified")
+              classification %>% na.omit() %>% last()
+            }
+          )
+      )
+
   }
 
-  # if total_rel_abundance not present: add and remove on exit
-  if (! "total_rel_abundance" %in% names(ta$taxa)) {
-    ta <- add_total_rel_abundance(ta)
-    on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
-  }
-
-  # make version of taxon table with taxonomy levels in the right order
-  tax_levels <- c("kingdom", "phylum", "class", "order", "family", "genus")
-  tax_levels <- tax_levels[tax_levels %in% names(ta$taxa)]
-  if (include_species) tax_levels <- c(tax_levels, "species")
-  taxa <- ta$taxa[, tax_levels]
-
-  # make temporary taxon name: most specific level of taxonomy available
-  taxon_name_temp <- apply(taxa, 1, FUN = function(row) {
-    if(is.na(row["kingdom"])) return("unclassified")
-    row %>% na.omit() %>% last()
-  })
-
-  # add temporary taxon name to taxon table and add numbers if
-  # temporary name is not unique
-  ta$taxa <- ta$taxa %>%
-    mutate(taxon_name_temp = taxon_name_temp) %>%
-    group_by(taxon_name_temp) %>%
-    arrange(desc(!!var)) %>%
+  ta$taxa <-
+    ta$taxa %>%
+    group_by(best_classification) %>%
+    arrange(desc(arrange_by_me)) %>%
     mutate(n_taxa = n()) %>%
-    mutate(taxon_number = ifelse(n_taxa > 1, as.character(1:n()), "")) %>%
-    mutate(taxon_name = paste(taxon_name_temp, taxon_number, sep = " ")) %>%
+    mutate(taxon_number = if_else(n_taxa > 1, as.character(1:n()), "")) %>%
+    mutate(taxon_name = str_c(best_classification, taxon_number, sep = " ")) %>%
+    mutate_at("taxon_name", str_trim) %>%
     ungroup() %>%
-    select(- taxon_name_temp, - n_taxa, - taxon_number)
+    select(- best_classification, - n_taxa, - taxon_number)
 
   # return ta object
   ta
 
 }
 
-add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, samples = NULL, taxa = NULL) {
-
-  # throw error if method unknown
-  if (! method %in% c("max_rel_abundance", "total_rel_abundance")) {
-    stop("method unknown")
-  }
-
-  # make quosure of method
-  var <- quo(get(method))
+add_taxon_name_color <- function(ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL) {
 
   # if taxon_name not present: add and remove on exit
   if (! "taxon_name" %in% names(ta$taxa)) {
@@ -175,41 +190,60 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
     on.exit(ta$taxa$taxon_name <- NULL, add = T)
   }
 
+  if (method == "total_rel_abundance") {
+
+    # if total_rel_abundance not present: add and remove on exit
+    if (! "total_rel_abundance" %in% names(ta$taxa)) {
+      ta <- add_total_rel_abundance(ta)
+      on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
+    }
+
+    ta <- mutate_taxa(ta, arrange_by_me = total_rel_abundance)
+
+  } else if (method == "max_rel_abundance") {
+
+    # if total_rel_abundance not present: add and remove on exit
+    if (! "max_rel_abundance" %in% names(ta$taxa)) {
+      ta <- add_max_rel_abundance(ta)
+      on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
+    }
+
+    ta <- mutate_taxa(arrange_by_me = max_rel_abundance)
+
+  } else {
+
+    # throw error if method unknown
+    if (! method %in% c("total_rel_abundance", "max_rel_abundance")) {
+      stop("method unknown")
+    }
+
+  }
+
   ta_subset <- ta
 
   # take subset of samples if requested
   if (! is.null(samples)) {
-    ta_subset$samples <- filter(ta_subset$samples, sample_id %in% samples)
-    ta_subset <- process_sample_selection(ta_subset)
-  }
-
-  # if max_rel_abundance not present: add and remove on exit
-  if (! "max_rel_abundance" %in% names(ta_subset$taxa)) {
-    ta_subset <- add_max_rel_abundance(ta_subset)
-  }
-
-  # if total_rel_abundance not present: add and remove on exit
-  if (! "total_rel_abundance" %in% names(ta_subset$taxa)) {
-    ta_subset <- add_total_rel_abundance(ta_subset)
+    ta_subset <- filter_samples(ta_subset, sample_id %in% !! samples)
   }
 
   # take subset of taxa if requested
   if (! is.null(taxa)) {
-    ta_subset$taxa <- filter(ta_subset$taxa, taxon_id %in% taxa)
-    ta_subset <- process_taxon_selection(ta_subset)
+    ta_subset <- filter_taxa(ta_subset, taxon_id %in% !! taxa)
   }
 
   # extract taxon names to visualize, in order
-  levels <- ta_subset$taxa %>%
-    arrange(desc(!!var)) %>%
+  levels <-
+    ta_subset$taxa %>%
+    arrange(desc(arrange_by_me)) %>%
     pull(taxon_name) %>%
-    `[`(1:(n-1))
-  levels <- levels[order(levels)]
-  levels <- c( "residual", levels)
+    `[`(1:(n-1)) %>%
+    sort() %>%
+    purrr::prepend("residual")
 
   # add taxon_name_color factor to taxa table
-  ta$taxa <- ta$taxa %>%
-    mutate(taxon_name_color = ifelse(taxon_name %in% levels, taxon_name, "residual")) %>%
+  ta$taxa <-
+    ta$taxa %>%
+    mutate(taxon_name_color = if_else(taxon_name %in% levels, taxon_name, "residual")) %>%
     mutate(taxon_name_color = factor(taxon_name_color, levels = levels))
 
   # return ta object

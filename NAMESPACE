@@ -83,6 +83,8 @@ export(add_occurrences)
 export(add_mean_rel_abundances)
 
 # varia
+export(set_rank_names)
+export(rank_names)
 export(process_sample_selection)
 export(process_taxon_selection)
 export(process_abundance_selection)
