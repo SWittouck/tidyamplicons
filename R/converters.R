@@ -230,7 +230,8 @@ as_tidyamplicons <- function(ps) {
 #' @param value Name of resulting colum containing the abundance data. Default
 #'   is "abundance".
 #'
-as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE, value = "abundance") {
+as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE,
+                          value = "abundance") {
 
   if (
     ! is.matrix(abundances_matrix) |
@@ -334,27 +335,22 @@ merge_tidyamplicons <- function(ta1, ta2, taxon_identifier = sequence) {
 
 }
 
-# DEPRECATED
-make_tidyamplicons <- function(samples, taxa, abundances) {
+make_tidyamplicons <- function(samples, taxa, abundances,
+                               sample_name = sample, taxon_name = taxon) {
 
-  # remove abundances of zero
-  abundances <- abundances %>%
-    filter(abundance > 0)
+  sample_name <- rlang::enexpr(sample_name)
+  taxon_name <- rlang::enexpr(taxon_name)
 
-  # make tidyamplicons (ta) object
-  ta <- list(
-    samples = samples,
-    taxa = taxa,
-    abundances = abundances
-  )
-  class(ta) <- "tidyamplicons"
-
-  # make sure that all tables contain the same unique
-  # taxa and samples, and return ta object
-  ta %>%
-    process_abundance_selection() %>%
-    process_sample_selection() %>%
-    process_taxon_selection()
+  list(samples = samples, taxa = taxa, abundances = abundances) %>%
+    modify_at("samples", mutate, sample_id = !! sample_name) %>%
+    modify_at("taxa", mutate, taxon_id = !! taxon_name) %>%
+    modify_at("abundances", rename, sample_id = !! sample_name) %>%
+    modify_at("abundances", rename, taxon_id = !! taxon_name) %>%
+    modify_at("abundances", filter, abundance > 0) %>%
+    modify_at("abundances", filter, sample_id %in% .$samples$sample_id) %>%
+    modify_at("abundances", filter, taxon_id %in% .$taxa$taxon_id) %>%
+    `class<-`("tidyamplicons") %>%
+    reset_ids()
 
 }
 
