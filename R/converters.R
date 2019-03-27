@@ -200,7 +200,7 @@ as_tidyamplicons <- function(ps) {
   taxa <-
     phyloseq::tax_table(ps)@.Data %>%
     as_tibble() %>%
-    mutate(sequence = phyloseq::tax_table(ps) %>% row.names()) %>%
+    mutate(taxon = phyloseq::tax_table(ps) %>% row.names()) %>%
     set_names(names(.) %>% str_to_lower())
 
   # make sure that taxa are columns in abundances table
@@ -209,7 +209,7 @@ as_tidyamplicons <- function(ps) {
   }
 
   phyloseq::otu_table(ps)@.Data %>%
-    tidyamplicons() %>%
+    create_tidyamplicons() %>%
     add_sample_tibble(samples) %>%
     add_taxon_tibble(taxa)
 
