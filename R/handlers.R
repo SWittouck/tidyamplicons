@@ -1,3 +1,20 @@
+rarefy <- function(ta, n) {
+
+  ta$abundances <-
+    ta$abundances %>%
+    group_by(sample_id) %>%
+    mutate(
+      abundance =
+        sample(x = sum(abundance), size = !! n, replace = F) %>%
+        cut(breaks = c(0, cumsum(abundance)), labels = taxon_id) %>%
+        table() %>%
+        unname()
+    ) %>%
+    ungroup()
+
+  ta
+
+}
 
 # sample_id_new should be an expression that evaluates to a unique sample
 # identifier

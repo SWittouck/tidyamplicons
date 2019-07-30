@@ -42,6 +42,7 @@ export(get_history_plot) # synonym
 export(sample_plot)
 
 # handlers
+export(rarefy)
 export(change_id_samples)
 export(change_id_taxa)
 export(aggregate_samples)
