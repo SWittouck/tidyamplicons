@@ -144,6 +144,7 @@ add_alphas <- function(ta) {
 
   # make table with sample, divObserved and divInvSimpson
   diversities <- ta$abundances %>%
+    filter(abundance > 0) %>%
     group_by(sample_id) %>%
     summarize(
       observed = n(),
