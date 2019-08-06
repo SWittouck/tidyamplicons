@@ -1,18 +1,20 @@
-rarefy <- function(ta, n) {
+rarefy <- function(ta, n, replace = F) {
 
   ta$abundances <-
     ta$abundances %>%
     group_by(sample_id) %>%
     mutate(
       abundance =
-        sample(x = sum(abundance), size = !! n, replace = F) %>%
+        sample(x = 1:sum(abundance), size = !! n, replace = !! replace) %>%
         cut(breaks = c(0, cumsum(abundance)), labels = taxon_id) %>%
         table() %>%
         unname()
     ) %>%
     ungroup()
 
-  ta
+  ta %>%
+    modify_at("abundances", filter, abundance > 0) %>%
+    process_abundance_selection()
 
 }
 
