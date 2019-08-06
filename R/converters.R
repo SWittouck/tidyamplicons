@@ -101,8 +101,8 @@ reset_ids <- function(ta, keep_prev = F) {
   }
 
   ta %>%
-    change_id_samples(sample_id_new = str_c("s", 1:n())) %>%
-    change_id_taxa(taxon_id_new = str_c("t", 1:n()))
+    change_id_samples(sample_id_new = str_c("s", seq_len(n()))) %>%
+    change_id_taxa(taxon_id_new = str_c("t", seq_len(n())))
 
 }
 
