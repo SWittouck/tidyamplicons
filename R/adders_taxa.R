@@ -86,7 +86,7 @@ add_total_rel_abundance <- function(ta) {
 
 }
 
-# DEPRICATED: use add_occurrences()
+# DEPRECATED: use add_occurrences()
 # percentage of samples in which a taxon is present
 # credits to Wenke Smets for the idea and initial implementation
 add_rel_occurrence <- function(ta) {
@@ -294,7 +294,7 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
 }
 
-# DEPRICATED: use add_occurrences()
+# DEPRECATED: use add_occurrences()
 # Adds taxon presence and absence counts in sample conditions to the taxa table,
 # as well as a fisher exact test for differential presence.
 # Condition is a variable that should be present in the samples table.
@@ -403,11 +403,24 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
 
 }
 
-# Adds taxon average relative abundances (overall or per condition) to the taxa
-# table.
-# Condition should be a categorical variable present in the samples table.
-# Supply condition as a string.
-add_mean_rel_abundances <- function(ta, condition = NULL, t_test = F) {
+#' Add average relative abundances
+#'
+#' This function adds mean relative abundance values for each taxon to the taxa
+#' table, overall or per sample group.
+#'
+#' If `condition` is specified, the mean relative abundances will be calculated
+#' separately for each group defined by the condition variable. This variable
+#' should be present in the sample table.
+#'
+#' If `wilcox` is TRUE, a wilcoxon rank sum test is performed to test
+#' differential abundance of taxa between groups of samples.
+#'
+#' @param ta A tidyamplicons object
+#' @param condition A condition variable (character)
+#' @param wilcox Should a wilcoxon rank sum tests be performed
+#'
+#' @return A tidyamplicons object
+add_mean_rel_abundances <- function(ta, condition = NULL, wilcox = F) {
 
   mean_rel_abundances <- mean_rel_abundances(ta, condition = condition)
 
@@ -415,7 +428,7 @@ add_mean_rel_abundances <- function(ta, condition = NULL, t_test = F) {
 
     taxa_mean_rel_abundances <- mean_rel_abundances
 
-  } else if(t_test) {
+  } else if(wilcox) {
 
     condition_sym <- ensym(condition)
 
@@ -425,20 +438,20 @@ add_mean_rel_abundances <- function(ta, condition = NULL, t_test = F) {
       on.exit(ta$abundances$rel_abundance <- NULL)
     }
 
-    taxa_t_tests <-
+    taxa_wilcox <-
       abundances(ta) %>%
       left_join(ta$samples) %>%
       complete(nesting(sample_id, !! condition_sym), taxon_id, fill = list(rel_abundance = 0)) %>%
       group_by(taxon_id) %>%
-      do(t_test = t.test(data = ., rel_abundance ~ !! condition_sym)) %>%
-      mutate(t_test_p = t_test$p.value, t_test_t = t_test$statistic) %>%
-      select(- t_test)
+      do(wilcox = wilcox.test(data = ., rel_abundance ~ !! condition_sym)) %>%
+      mutate(wilcox_p = wilcox$p.value, wilcox_stat = wilcox$statistic) %>%
+      select(- wilcox)
 
     taxa_mean_rel_abundances <-
       mean_rel_abundances %>%
       mutate_at(condition, ~ str_c("mean_rel_abundance_in", ., sep = "_")) %>%
       spread(value = mean_rel_abundance, key = condition) %>%
-      left_join(taxa_t_tests)
+      left_join(taxa_wilcox)
 
   } else {
 
