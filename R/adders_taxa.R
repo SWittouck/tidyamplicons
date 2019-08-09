@@ -439,18 +439,19 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
       on.exit(ta$abundances$rel_abundance <- NULL)
     }
 
-    taxa_test <-
+    rel_abundances_complete <-
       abundances(ta) %>%
       left_join(ta$samples) %>%
+      select(sample_id, !! condition_sym, taxon_id, rel_abundance) %>%
       complete(
         nesting(sample_id, !! condition_sym), taxon_id,
         fill = list(rel_abundance = 0)
-      ) %>%
-      group_by(taxon_id)
+      )
 
     if (test == "wilcox") {
       taxa_test <-
-        taxa_test %>%
+        rel_abundances_complete %>%
+        group_by(taxon_id) %>%
         do(result = wilcox.test(
           data = ., rel_abundance ~ !! condition_sym
         )) %>%
@@ -458,12 +459,15 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
         select(- result)
     } else if (test == "t-test") {
       taxa_test <-
-        taxa_test  %>%
+        rel_abundances_complete %>%
+        group_by(taxon_id) %>%
         do(result = t.test(
           data = ., rel_abundance ~ !! condition_sym
         )) %>%
         mutate(t_test_p = result$p.value, t_test_stat = result$statistic) %>%
         select(- result)
+    } else {
+      stop("please supply a valid test")
     }
 
     taxa_mean_rel_abundances <-
