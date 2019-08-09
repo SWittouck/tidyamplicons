@@ -4,14 +4,14 @@
 \alias{add_mean_rel_abundances}
 \title{Add average relative abundances}
 \usage{
-add_mean_rel_abundances(ta, condition = NULL, wilcox = F)
+add_mean_rel_abundances(ta, condition = NULL, test = NULL)
 }
 \arguments{
 \item{ta}{A tidyamplicons object}
 
 \item{condition}{A condition variable (character)}
 
-\item{wilcox}{Should a wilcoxon rank sum tests be performed}
+\item{test}{Differential abundance test to perform}
 }
 \value{
 A tidyamplicons object
@@ -25,6 +25,7 @@ If `condition` is specified, the mean relative abundances will be calculated
 separately for each group defined by the condition variable. This variable
 should be present in the sample table.
 
-If `wilcox` is TRUE, a wilcoxon rank sum test is performed to test
-differential abundance of taxa between groups of samples.
+If `condition` is specified, differential abundance testing can be performed
+by setting the `test` argument. Options are NULL (default), "wilcox" or
+"t-test".
 }

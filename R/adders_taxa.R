@@ -412,15 +412,16 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
 #' separately for each group defined by the condition variable. This variable
 #' should be present in the sample table.
 #'
-#' If `wilcox` is TRUE, a wilcoxon rank sum test is performed to test
-#' differential abundance of taxa between groups of samples.
+#' If `condition` is specified, differential abundance testing can be performed
+#' by setting the `test` argument. Options are NULL (default), "wilcox" or
+#' "t-test".
 #'
 #' @param ta A tidyamplicons object
 #' @param condition A condition variable (character)
-#' @param wilcox Should a wilcoxon rank sum tests be performed
+#' @param test Differential abundance test to perform
 #'
 #' @return A tidyamplicons object
-add_mean_rel_abundances <- function(ta, condition = NULL, wilcox = F) {
+add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
 
   mean_rel_abundances <- mean_rel_abundances(ta, condition = condition)
 
@@ -428,7 +429,7 @@ add_mean_rel_abundances <- function(ta, condition = NULL, wilcox = F) {
 
     taxa_mean_rel_abundances <- mean_rel_abundances
 
-  } else if(wilcox) {
+  } else if (! is.null(test)) {
 
     condition_sym <- ensym(condition)
 
@@ -438,20 +439,38 @@ add_mean_rel_abundances <- function(ta, condition = NULL, wilcox = F) {
       on.exit(ta$abundances$rel_abundance <- NULL)
     }
 
-    taxa_wilcox <-
+    taxa_test <-
       abundances(ta) %>%
       left_join(ta$samples) %>%
-      complete(nesting(sample_id, !! condition_sym), taxon_id, fill = list(rel_abundance = 0)) %>%
-      group_by(taxon_id) %>%
-      do(wilcox = wilcox.test(data = ., rel_abundance ~ !! condition_sym)) %>%
-      mutate(wilcox_p = wilcox$p.value, wilcox_stat = wilcox$statistic) %>%
-      select(- wilcox)
+      complete(
+        nesting(sample_id, !! condition_sym), taxon_id,
+        fill = list(rel_abundance = 0)
+      ) %>%
+      group_by(taxon_id)
+
+    if (test == "wilcox") {
+      taxa_test <-
+        taxa_test %>%
+        do(result = wilcox.test(
+          data = ., rel_abundance ~ !! condition_sym
+        )) %>%
+        mutate(wilcox_p = result$p.value, wilcox_stat = result$statistic) %>%
+        select(- result)
+    } else if (test == "t-test") {
+      taxa_test <-
+        taxa_test  %>%
+        do(result = t.test(
+          data = ., rel_abundance ~ !! condition_sym
+        )) %>%
+        mutate(t_test_p = result$p.value, t_test_stat = result$statistic) %>%
+        select(- result)
+    }
 
     taxa_mean_rel_abundances <-
       mean_rel_abundances %>%
       mutate_at(condition, ~ str_c("mean_rel_abundance_in", ., sep = "_")) %>%
       spread(value = mean_rel_abundance, key = condition) %>%
-      left_join(taxa_wilcox)
+      left_join(taxa_test, by = "taxon_id")
 
   } else {
 
