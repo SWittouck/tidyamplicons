@@ -4,7 +4,7 @@
 \alias{as_phyloseq}
 \title{Convert tidyamplicons object to phyloseq object}
 \usage{
-as_phyloseq(ta, sample = "sample", taxon = "taxon")
+as_phyloseq(ta, sample = sample, taxon = taxon)
 }
 \arguments{
 \item{ta}{Tidyamplicons object.}

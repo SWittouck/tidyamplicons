@@ -4,7 +4,7 @@
 \alias{merge_tidyamplicons}
 \title{Merge two tidyamplicons objects.}
 \usage{
-merge_tidyamplicons(ta1, ta2)
+merge_tidyamplicons(ta1, ta2, taxon_identifier = sequence)
 }
 \arguments{
 \item{ta1}{The first tidyamplicons object.}
