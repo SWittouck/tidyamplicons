@@ -1,13 +1,10 @@
 Package: tidyamplicons
 Type: Package
-Title: Functions to Manipulate and Visualize Amplicon Count Data
-Version: 0.0.0.9000
-Author: Stijn Wittouck
-Description: These functions are an alternative to, or at least complementary to the
-    phyloseq package. They are based on the tidy data pardigm and allow for
-    easier, more intuitive data access, processing and visualization. You will like
-    it if you like the tidyverse way of data handling. 
-License: GPL (>= 2)
+Title: Functions to Manipulate and Visualize Amplicon Abundance Data
+Version: 0.1.0
+Authors@R: c(person("Stijn", "Wittouck", email = "stijn.wittouck@uantwerpen.be", role = c("aut", "cre"))) 
+Description: A toolkit for processing and visualizing amplicon abundance data, based on the tidyverse framework. 
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
