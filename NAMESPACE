@@ -5,11 +5,26 @@ import(dplyr)
 import(stringr)
 import(vegan)
 
-# getters_data
+# converters
+export(create_tidyamplicons)
+export(update_tidyamplicons)
+export(reset_ids)
+export(update_id_names)
+export(as_phyloseq)
+export(as_tidyamplicons)
+export(as_abundances)
+export(as_abundances_matrix)
+export(merge_tidyamplicons)
+export(make_tidyamplicons) # dep
+export(tidy_phyloseq) # dep
+
+# getters
 export(report_numbers)
+export(numbers)
 export(get_numbers)
 export(get_rel_abundance_matrix)
-export(get_betas)
+export(betas)
+export(get_betas) # synonym
 export(taxon_counts_in_conditions)
 export(occurrences)
 export(mean_rel_abundances)
@@ -17,63 +32,22 @@ export(everything)
 export(samples)
 export(taxa)
 export(abundances)
+export(perform_adonis)
 
-# getters_plots
-export(get_bar_plot)
-export(get_history_plot)
+# plotters
+export(bar_plot)
+export(get_bar_plot) # synonym
+export(history_plot)
+export(get_history_plot) # synonym
+export(sample_plot)
 
-# helpers
-export(as_abundances)
-export(as_abundances_matrix)
-
-# initializers
-export(make_tidyamplicons)
-export(tidy_phyloseq)
-export(as_phyloseq)
-
-# library_sizes
-export(update_lib_sizes)
-
-# mergers
+# handlers
+export(rarefy)
+export(change_id_samples)
+export(change_id_taxa)
 export(aggregate_samples)
 export(aggregate_taxa)
-export(merge_tidyamplicons)
 export(trim_asvs)
-
-# processors
-export(process_sample_selection)
-export(process_taxon_selection)
-export(process_abundance_selection)
-export(process_new_sample_name)
-
-# secondary_variables_abundances
-export(add_rel_abundance)
-
-# secondary_variables_samples
-export(add_lib_size)
-export(add_diversity_measures)
-export(add_sample_clustered)
-export(add_pcoa)
-export(add_spike_ratio)
-export(add_cluster)
-
-# secondary_variables_taxa
-export(add_max_rel_abundance)
-export(add_total_rel_abundance)
-export(add_rel_occurrence)
-export(add_taxon_name)
-export(add_taxon_name_color)
-export(add_jervis_bardy)
-export(add_presence_counts)
-export(add_occurrences)
-export(add_mean_rel_abundances)
-
-# synonyms
-export(get_abundances_extended)
-export(merge_samples)
-export(merge_taxa)
-
-# verbs
 export(select_samples)
 export(select_taxa)
 export(select_abundances)
@@ -84,5 +58,41 @@ export(filter_samples)
 export(filter_taxa)
 export(filter_abundances)
 
-# analyses
-export(perform_adonis)
+# adders_abundances
+export(add_rel_abundance)
+
+# adders_samples
+export(add_sample_tibble)
+export(add_lib_size)
+export(add_alphas)
+export(add_diversity_measures)
+export(add_sample_clustered)
+export(add_pcoa)
+export(add_spike_ratio)
+export(add_cluster)
+
+# adders_taxa
+export(add_taxon_tibble)
+export(add_max_rel_abundance)
+export(add_total_rel_abundance)
+export(add_rel_occurrence)
+export(add_taxon_name)
+export(add_taxon_name_color)
+export(add_jervis_bardy)
+export(add_presence_counts)
+export(add_occurrences)
+export(add_mean_rel_abundances)
+
+# varia
+export(set_rank_names)
+export(rank_names)
+export(process_sample_selection)
+export(process_taxon_selection)
+export(process_abundance_selection)
+export(process_new_sample_name)
+export(update_lib_sizes)
+
+# synonyms
+export(get_abundances_extended)
+export(merge_samples)
+export(merge_taxa)

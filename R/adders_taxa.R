@@ -1,3 +1,48 @@
+#' Add taxa table to the tidyamplicons object
+#'
+#' \code{add_taxon_tibble} adds a taxon tibble to the tidyamplicons object.
+#'
+#' This function adds a taxon tibble containing taxon data (e.g. taxon ranks
+#' such as genus, family, ...) for each taxon to the tidyamplicons object. It is
+#' used after initiating a tidyamplicons object using a numerical abundance
+#' matrix and the function \code{\link{create_tidyamplicons}}. Also see
+#' \code{\link{add_sample_tibble}} to update the sample data of the
+#' tidyamplicons object.
+#'
+#' @param ta Tidyamplicons object.
+#' @param taxon_tibble A tibble containing taxon data for each taxon. Taxa
+#'   should be rows, while taxon data should be columns. At least one column
+#'   name needs to be shared with the taxon tibble of ta. The default shared
+#'   column name is 'taxon'.
+#'
+#' @examples
+#' # Initiate abundance matrix
+#' x <- matrix(
+#'  c(1500, 1300, 280, 356),
+#'  ncol = 2
+#' )
+#' rownames(x) <- c("taxon1", "taxon2")
+#' colnames(x) <- c("sample1", "sample2")
+#'
+#' # Convert to tidyamplicons object
+#' data <- create_tidyamplicons(x,
+#'                      taxa_are_columns = FALSE,
+#'                      taxon_names_are_sequences = FALSE)
+#'
+#' # Initiate taxon tibble
+#' taxon <- c("taxon1", "taxon2")
+#' genus <- c("Salmonella", "Lactobacillus")
+#' taxon_tibble <- tibble(taxa, genus)
+#'
+#' # Add taxon tibble to tidyamplicons object
+#' data <- data %>%
+#' add_taxon_tibble(taxon_tibble)
+#'
+add_taxon_tibble <- function(ta, taxon_tibble) {
+
+  modify_at(ta, "taxa", left_join, taxon_tibble)
+
+}
 
 add_max_rel_abundance <- function(ta) {
 
@@ -9,7 +54,7 @@ add_max_rel_abundance <- function(ta) {
 
   # make table with taxon and maximum relative abundance
   max_rel_abundances <- ta$abundances %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     summarize(max_rel_abundance = max(rel_abundance))
 
   # add max relative abundance to taxon table
@@ -30,7 +75,7 @@ add_total_rel_abundance <- function(ta) {
 
   # make table with taxon and total relative abundance
   total_rel_abundances <- ta$abundances %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     summarize(total_rel_abundance = sum(rel_abundance)/nrow(ta$samples))
 
   # add total relative abundance to taxon table
@@ -41,14 +86,14 @@ add_total_rel_abundance <- function(ta) {
 
 }
 
-# DEPRICATED: use add_occurrences()
+# DEPRECATED: use add_occurrences()
 # percentage of samples in which a taxon is present
 # credits to Wenke Smets for the idea and initial implementation
 add_rel_occurrence <- function(ta) {
 
   # make table with taxon and relative occurrence
   rel_occurrences <- ta$abundances %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     summarize(occurrence = sum(abundance > 0)) %>%
     mutate(rel_occurrence = occurrence/nrow(ta$samples)) %>%
     select(- occurrence)
@@ -61,66 +106,83 @@ add_rel_occurrence <- function(ta) {
 
 }
 
-add_taxon_name <- function(ta, method = "max_rel_abundance", include_species = F) {
+add_taxon_name <- function(ta, method = "total_rel_abundance", include_species = F) {
 
-  # throw error if method unknown
-  if (! method %in% c("max_rel_abundance", "total_rel_abundance")) {
-    stop("method unknown")
+  if (method == "total_rel_abundance") {
+
+    # if total_rel_abundance not present: add and remove on exit
+    if (! "total_rel_abundance" %in% names(ta$taxa)) {
+      ta <- add_total_rel_abundance(ta)
+      on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
+    }
+
+    ta <- mutate_taxa(ta, arrange_by_me = total_rel_abundance)
+
+  } else if (method == "max_rel_abundance") {
+
+    # if total_rel_abundance not present: add and remove on exit
+    if (! "max_rel_abundance" %in% names(ta$taxa)) {
+      ta <- add_max_rel_abundance(ta)
+      on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
+    }
+
+    ta <- mutate_taxa(arrange_by_me = max_rel_abundance)
+
+  } else {
+
+    # throw error if method unknown
+    if (! method %in% c("total_rel_abundance", "max_rel_abundance")) {
+      stop("method unknown")
+    }
+
   }
 
-  # make quosure of method
-  var <- quo(get(method))
+  on.exit(ta$taxa$arrange_by_me <- NULL, add = T)
 
-  # if max_rel_abundance not present: add and remove on exit
-  if (! "max_rel_abundance" %in% names(ta$taxa)) {
-    ta <- add_max_rel_abundance(ta)
-    on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
+  rank_names <-
+    rank_names(ta) %>%
+    purrr::when(include_species ~ c(., "species"), ~ .) %>%
+    intersect(names(ta$taxa))
+
+  if (length(rank_names) == 0) {
+
+    ta <- mutate_taxa(ta, best_classification = "unclassified")
+
+  } else {
+
+    ta$taxa <-
+      ta$taxa %>%
+      mutate(
+        best_classification =
+          pmap_chr(
+            ta$taxa[, rank_names],
+            function(...) {
+              classification = as.character(list(...))
+              if (all(is.na(classification))) return("unclassified")
+              classification %>% na.omit() %>% last()
+            }
+          )
+      )
+
   }
 
-  # if total_rel_abundance not present: add and remove on exit
-  if (! "total_rel_abundance" %in% names(ta$taxa)) {
-    ta <- add_total_rel_abundance(ta)
-    on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
-  }
-
-  # make version of taxon table with taxonomy levels in the right order
-  tax_levels <- c("kingdom", "phylum", "class", "order", "family", "genus")
-  tax_levels <- tax_levels[tax_levels %in% names(ta$taxa)]
-  if (include_species) tax_levels <- c(tax_levels, "species")
-  taxa <- ta$taxa[, tax_levels]
-
-  # make temporary taxon name: most specific level of taxonomy available
-  taxon_name_temp <- apply(taxa, 1, FUN = function(row) {
-    if(is.na(row["kingdom"])) return("unclassified")
-    row %>% na.omit() %>% last()
-  })
-
-  # add temporary taxon name to taxon table and add numbers if
-  # temporary name is not unique
-  ta$taxa <- ta$taxa %>%
-    mutate(taxon_name_temp = taxon_name_temp) %>%
-    group_by(taxon_name_temp) %>%
-    arrange(desc(!!var)) %>%
+  ta$taxa <-
+    ta$taxa %>%
+    group_by(best_classification) %>%
+    arrange(desc(arrange_by_me)) %>%
     mutate(n_taxa = n()) %>%
-    mutate(taxon_number = ifelse(n_taxa > 1, as.character(1:n()), "")) %>%
-    mutate(taxon_name = paste(taxon_name_temp, taxon_number, sep = " ")) %>%
+    mutate(taxon_number = if_else(n_taxa > 1, as.character(1:n()), "")) %>%
+    mutate(taxon_name = str_c(best_classification, taxon_number, sep = " ")) %>%
+    mutate_at("taxon_name", str_trim) %>%
     ungroup() %>%
-    select(- taxon_name_temp, - n_taxa, - taxon_number)
+    select(- best_classification, - n_taxa, - taxon_number)
 
   # return ta object
   ta
 
 }
 
-add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, samples = NULL, taxa = NULL) {
-
-  # throw error if method unknown
-  if (! method %in% c("max_rel_abundance", "total_rel_abundance")) {
-    stop("method unknown")
-  }
-
-  # make quosure of method
-  var <- quo(get(method))
+add_taxon_name_color <- function(ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL) {
 
   # if taxon_name not present: add and remove on exit
   if (! "taxon_name" %in% names(ta$taxa)) {
@@ -128,41 +190,60 @@ add_taxon_name_color <- function(ta, method = "max_rel_abundance", n = 12, sampl
     on.exit(ta$taxa$taxon_name <- NULL, add = T)
   }
 
+  if (method == "total_rel_abundance") {
+
+    # if total_rel_abundance not present: add and remove on exit
+    if (! "total_rel_abundance" %in% names(ta$taxa)) {
+      ta <- add_total_rel_abundance(ta)
+      on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
+    }
+
+    ta <- mutate_taxa(ta, arrange_by_me = total_rel_abundance)
+
+  } else if (method == "max_rel_abundance") {
+
+    # if total_rel_abundance not present: add and remove on exit
+    if (! "max_rel_abundance" %in% names(ta$taxa)) {
+      ta <- add_max_rel_abundance(ta)
+      on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
+    }
+
+    ta <- mutate_taxa(arrange_by_me = max_rel_abundance)
+
+  } else {
+
+    # throw error if method unknown
+    if (! method %in% c("total_rel_abundance", "max_rel_abundance")) {
+      stop("method unknown")
+    }
+
+  }
+
   ta_subset <- ta
 
   # take subset of samples if requested
   if (! is.null(samples)) {
-    ta_subset$samples <- filter(ta_subset$samples, sample %in% samples)
-    ta_subset <- process_sample_selection(ta_subset)
-  }
-
-  # if max_rel_abundance not present: add and remove on exit
-  if (! "max_rel_abundance" %in% names(ta_subset$taxa)) {
-    ta_subset <- add_max_rel_abundance(ta_subset)
-  }
-
-  # if total_rel_abundance not present: add and remove on exit
-  if (! "total_rel_abundance" %in% names(ta_subset$taxa)) {
-    ta_subset <- add_total_rel_abundance(ta_subset)
+    ta_subset <- filter_samples(ta_subset, sample_id %in% !! samples)
   }
 
   # take subset of taxa if requested
   if (! is.null(taxa)) {
-    ta_subset$taxa <- filter(ta_subset$taxa, taxon %in% taxa)
-    ta_subset <- process_taxon_selection(ta_subset)
+    ta_subset <- filter_taxa(ta_subset, taxon_id %in% !! taxa)
   }
 
   # extract taxon names to visualize, in order
-  levels <- ta_subset$taxa %>%
-    arrange(desc(!!var)) %>%
+  levels <-
+    ta_subset$taxa %>%
+    arrange(desc(arrange_by_me)) %>%
     pull(taxon_name) %>%
-    `[`(1:(n-1))
-  levels <- levels[order(levels)]
-  levels <- c( "residual", levels)
+    `[`(1:(n-1)) %>%
+    sort() %>%
+    purrr::prepend("residual")
 
   # add taxon_name_color factor to taxa table
-  ta$taxa <- ta$taxa %>%
-    mutate(taxon_name_color = ifelse(taxon_name %in% levels, taxon_name, "residual")) %>%
+  ta$taxa <-
+    ta$taxa %>%
+    mutate(taxon_name_color = if_else(taxon_name %in% levels, taxon_name, "residual")) %>%
     mutate(taxon_name_color = factor(taxon_name_color, levels = levels))
 
   # return ta object
@@ -198,8 +279,8 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
   # perform jervis bardy calculation
   taxa_jb <- ta_jb$abundances %>%
-    left_join(ta_jb$samples %>% select(sample, dna_conc = !! dna_conc)) %>%
-    group_by(taxon) %>%
+    left_join(ta_jb$samples %>% select(sample_id, dna_conc = !! dna_conc)) %>%
+    group_by(taxon_id) %>%
     filter(n() >= !! min_pres) %>%
     do(jb = cor.test(x = .$rel_abundance, y = .$dna_conc, alternative = "less", method = "spearman")) %>%
     mutate(jb_cor = jb$estimate, jb_p = jb$p.value) %>%
@@ -213,7 +294,7 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
 }
 
-# DEPRICATED: use add_occurrences()
+# DEPRECATED: use add_occurrences()
 # Adds taxon presence and absence counts in sample conditions to the taxa table,
 # as well as a fisher exact test for differential presence.
 # Condition is a variable that should be present in the samples table.
@@ -225,11 +306,11 @@ add_presence_counts <- function(ta, condition) {
 
   taxa_counts <- counts_tidy %>%
     mutate(presence_in_condition = str_c(presence, !! condition, sep = "_in_")) %>%
-    select(taxon, presence_in_condition, n) %>%
+    select(taxon_id, presence_in_condition, n) %>%
     spread(value = n, key = presence_in_condition)
 
   taxa_fisher <- counts_tidy %>%
-    group_by(taxon) %>%
+    group_by(taxon_id) %>%
     arrange(!! condition, presence) %>%
     do(fisher = c(.$n) %>%
          matrix(ncol = 2, byrow = T) %>%
@@ -263,7 +344,7 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
 
     taxa_fischer <-
       occurrences %>%
-      group_by(taxon) %>%
+      group_by(taxon_id) %>%
       arrange(!! condition_sym, presence) %>%
       do(
         fisher = c(.$n) %>%
@@ -276,7 +357,7 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
     taxa_occurrences <-
       occurrences %>%
       filter(presence == "present") %>%
-      select(taxon, !! condition_sym, occurrence = n) %>%
+      select(taxon_id, !! condition_sym, occurrence = n) %>%
       mutate_at(condition, ~ str_c("occurrence_in", ., sep = "_")) %>%
       spread(value = "occurrence", key = condition) %>%
       left_join(taxa_fischer)
@@ -292,7 +373,8 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
 
   if (relative & is.null(condition)) {
 
-    taxa_occurrences %>%
+    taxa_occurrences <-
+      taxa_occurrences %>%
       mutate(occurrence = occurrence / nrow(ta$samples))
 
   }
@@ -321,11 +403,25 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
 
 }
 
-# Adds taxon average relative abundances (overall or per condition) to the taxa
-# table.
-# Condition should be a categorical variable present in the samples table.
-# Supply condition as a string.
-add_mean_rel_abundances <- function(ta, condition = NULL, t_test = F) {
+#' Add average relative abundances
+#'
+#' This function adds mean relative abundance values for each taxon to the taxa
+#' table, overall or per sample group.
+#'
+#' If `condition` is specified, the mean relative abundances will be calculated
+#' separately for each group defined by the condition variable. This variable
+#' should be present in the sample table.
+#'
+#' If `condition` is specified, differential abundance testing can be performed
+#' by setting the `test` argument. Options are NULL (default), "wilcox" or
+#' "t-test".
+#'
+#' @param ta A tidyamplicons object
+#' @param condition A condition variable (character)
+#' @param test Differential abundance test to perform
+#'
+#' @return A tidyamplicons object
+add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
 
   mean_rel_abundances <- mean_rel_abundances(ta, condition = condition)
 
@@ -333,7 +429,7 @@ add_mean_rel_abundances <- function(ta, condition = NULL, t_test = F) {
 
     taxa_mean_rel_abundances <- mean_rel_abundances
 
-  } else if(t_test) {
+  } else if (! is.null(test)) {
 
     condition_sym <- ensym(condition)
 
@@ -343,20 +439,42 @@ add_mean_rel_abundances <- function(ta, condition = NULL, t_test = F) {
       on.exit(ta$abundances$rel_abundance <- NULL)
     }
 
-    taxa_t_tests <-
+    rel_abundances_complete <-
       abundances(ta) %>%
       left_join(ta$samples) %>%
-      complete(nesting(sample, !! condition_sym), taxon, fill = list(rel_abundance = 0)) %>%
-      group_by(taxon) %>%
-      do(t_test = t.test(data = ., rel_abundance ~ !! condition_sym)) %>%
-      mutate(t_test_p = t_test$p.value, t_test_t = t_test$statistic) %>%
-      select(- t_test)
+      select(sample_id, !! condition_sym, taxon_id, rel_abundance) %>%
+      complete(
+        nesting(sample_id, !! condition_sym), taxon_id,
+        fill = list(rel_abundance = 0)
+      )
+
+    if (test == "wilcox") {
+      taxa_test <-
+        rel_abundances_complete %>%
+        group_by(taxon_id) %>%
+        do(result = wilcox.test(
+          data = ., rel_abundance ~ !! condition_sym
+        )) %>%
+        mutate(wilcox_p = result$p.value, wilcox_stat = result$statistic) %>%
+        select(- result)
+    } else if (test == "t-test") {
+      taxa_test <-
+        rel_abundances_complete %>%
+        group_by(taxon_id) %>%
+        do(result = t.test(
+          data = ., rel_abundance ~ !! condition_sym
+        )) %>%
+        mutate(t_test_p = result$p.value, t_test_stat = result$statistic) %>%
+        select(- result)
+    } else {
+      stop("please supply a valid test")
+    }
 
     taxa_mean_rel_abundances <-
       mean_rel_abundances %>%
       mutate_at(condition, ~ str_c("mean_rel_abundance_in", ., sep = "_")) %>%
       spread(value = mean_rel_abundance, key = condition) %>%
-      left_join(taxa_t_tests)
+      left_join(taxa_test, by = "taxon_id")
 
   } else {
 
