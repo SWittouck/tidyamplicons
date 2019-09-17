@@ -139,13 +139,12 @@ aggregate_taxa <- function(ta, rank = NULL) {
 
   ta$taxa <-
     ta$taxa %>%
-    group_by_at(vars(- taxon_id)) %>%
     nest(taxon_id) %>%
     mutate(taxon_id_new = paste("t", 1:n(), sep = ""))
 
   id_conversion <-
     ta$taxa %>%
-    unnest() %>%
+    unnest(data) %>%
     select(taxon_id, taxon_id_new)
 
   ta$taxa <-
