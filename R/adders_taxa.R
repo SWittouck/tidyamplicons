@@ -126,7 +126,7 @@ add_taxon_name <- function(ta, method = "total_rel_abundance", include_species =
       on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
     }
 
-    ta <- mutate_taxa(arrange_by_me = max_rel_abundance)
+    ta <- mutate_taxa(ta, arrange_by_me = max_rel_abundance)
 
   } else {
 
