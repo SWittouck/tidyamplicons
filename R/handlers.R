@@ -120,7 +120,7 @@ aggregate_taxa <- function(ta, rank = NULL) {
 
     if (length(rank_names) == 0) {
       stop("at least one of the taxonomic rank names should be present ",
-           "in the taxa table")
+           "in the taxon table")
     }
 
     if (! rank %in% rank_names) {
@@ -139,25 +139,33 @@ aggregate_taxa <- function(ta, rank = NULL) {
 
   ta$taxa <-
     ta$taxa %>%
-    nest(taxon_id) %>%
+    chop(taxon_id) %>%
     mutate(taxon_id_new = paste("t", 1:n(), sep = ""))
 
   id_conversion <-
     ta$taxa %>%
-    unnest(data) %>%
+    unnest(taxon_id) %>%
     select(taxon_id, taxon_id_new)
 
   ta$taxa <-
     ta$taxa %>%
-    select(- data) %>%
+    select(- taxon_id) %>%
     rename(taxon_id = taxon_id_new)
 
   ta$abundances <-
     ta$abundances %>%
-    left_join(id_conversion) %>%
+    left_join(id_conversion, by = "taxon_id") %>%
     select(- taxon_id) %>%
     group_by(taxon_id_new, sample_id) %>%
-    summarize(abundance = sum(abundance)) %>%
+    {
+      if ("rel_abundance" %in% names(ta$abundances)) {
+        summarize(
+          ., abundance = sum(abundance), rel_abundance = sum(rel_abundance)
+        )
+      } else {
+        summarize(., abundance = sum(abundance))
+      }
+    } %>%
     ungroup() %>%
     rename(taxon_id = taxon_id_new)
 
