@@ -1,7 +1,7 @@
 Package: tidyamplicons
 Type: Package
 Title: Functions to Manipulate and Visualize Amplicon Abundance Data
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(person("Stijn", "Wittouck", email = "stijn.wittouck@uantwerpen.be", role = c("aut", "cre"))) 
 Description: A toolkit for processing and visualizing amplicon abundance data, based on the tidyverse framework. 
 License: GPL-3
