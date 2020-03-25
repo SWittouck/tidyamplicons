@@ -32,7 +32,9 @@ change_id_samples <- function(ta, sample_id_new) {
 
   ta$abundances <-
     ta$abundances %>%
-    left_join(ta$samples %>% select(sample_id, sample_id_new)) %>%
+    left_join(
+      ta$samples %>% select(sample_id, sample_id_new), by = "sample_id"
+    ) %>%
     select(- sample_id) %>%
     rename(sample_id = sample_id_new)
 
@@ -59,7 +61,7 @@ change_id_taxa <- function(ta, taxon_id_new) {
 
   ta$abundances <-
     ta$abundances %>%
-    left_join(ta$taxa %>% select(taxon_id, taxon_id_new)) %>%
+    left_join(ta$taxa %>% select(taxon_id, taxon_id_new), by = "taxon_id") %>%
     select(- taxon_id) %>%
     rename(taxon_id = taxon_id_new)
 
@@ -86,14 +88,14 @@ aggregate_samples <- function(ta) {
 
   # adapt sample table with new names
   ta$samples <- ta$samples %>%
-    left_join(names) %>%
+    left_join(names, by = "sample_id") %>%
     select(- sample_id) %>%
     rename(sample_id = sample_id_new) %>%
     distinct()
 
   # merge samples in abundance table and adapt with new names
   ta$abundances <- ta$abundances %>%
-    left_join(names) %>%
+    left_join(names, by = "sample_id") %>%
     select(- sample_id) %>%
     group_by(sample_id_new, taxon_id) %>%
     summarize(abundance = sum(abundance)) %>%

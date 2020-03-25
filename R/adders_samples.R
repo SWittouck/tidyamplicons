@@ -95,7 +95,9 @@ add_lib_size <- function(ta, step = "current") {
   }
 
   # add library size to sample table
-  ta$samples <- left_join(ta$samples, lib_sizes) %>%
+  ta$samples <-
+    ta$samples %>%
+    left_join(lib_sizes, by = "sample_id") %>%
     mutate(lib_size = ifelse(is.na(lib_size), 0, lib_size))
 
   # return ta object
@@ -153,7 +155,7 @@ add_alphas <- function(ta) {
     ungroup()
 
   # add diversity measure to sample table
-  ta$samples = left_join(ta$samples, diversities)
+  ta$samples = left_join(ta$samples, diversities, by = "sample_id")
 
   # return ta object
   ta
@@ -219,7 +221,7 @@ add_sample_clustered <- function(ta) {
 
   # add sample_clustered to samples table
   ta$samples <- ta$samples %>%
-    left_join(samples_clustered)
+    left_join(samples_clustered, by = "sample_id")
 
   # return ta object
   ta
@@ -276,7 +278,7 @@ add_pcoa <- function(ta) {
 
   # add PCoA dimensions to sample table
   ta$samples <- ta$samples %>%
-    left_join(pcoa_dimensions)
+    left_join(pcoa_dimensions, by = "sample_id")
 
   # add PCoA variances to ta object
   ta$pcoa_variances <- pcoa_variances
@@ -338,7 +340,7 @@ add_spike_ratio <- function(ta, spike_taxon) {
 
   # calculate spike ratio (non-spike abundance to spike abundance)
   ta$samples <- ta$samples %>%
-    left_join(spike_abundances) %>%
+    left_join(spike_abundances, by = "sample_id") %>%
     mutate(spike_ratio = ( lib_size - spike_abundance ) / spike_abundance)
 
   # remove spike_abundance
@@ -403,7 +405,7 @@ add_cluster <- function(ta, n_clusters) {
     mutate(cluster = str_c("cluster", cluster, sep = " "))
 
   ta$samples <-
-    left_join(ta$samples, samples_clusters)
+    left_join(ta$samples, samples_clusters, by = "sample_id")
 
   ta
 

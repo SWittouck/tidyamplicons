@@ -68,7 +68,7 @@ process_new_sample_name <- function(ta) {
     select(sample_id, sample_id_new)
 
   ta$abundances <- ta$abundances %>%
-    left_join(names) %>%
+    left_join(names, by = "sample_id") %>%
     mutate(sample_id = sample_id_new) %>%
     select(- sample_id_new)
 

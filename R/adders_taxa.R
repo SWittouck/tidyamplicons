@@ -58,7 +58,7 @@ add_max_rel_abundance <- function(ta) {
     summarize(max_rel_abundance = max(rel_abundance))
 
   # add max relative abundance to taxon table
-  ta$taxa <- left_join(ta$taxa, max_rel_abundances)
+  ta$taxa <- left_join(ta$taxa, max_rel_abundances, by = "taxon_id")
 
   # return ta object
   ta
@@ -79,7 +79,7 @@ add_total_rel_abundance <- function(ta) {
     summarize(total_rel_abundance = sum(rel_abundance)/nrow(ta$samples))
 
   # add total relative abundance to taxon table
-  ta$taxa <- left_join(ta$taxa, total_rel_abundances)
+  ta$taxa <- left_join(ta$taxa, total_rel_abundances, by = "taxon_id")
 
   # return ta object
   ta
@@ -99,7 +99,7 @@ add_rel_occurrence <- function(ta) {
     select(- occurrence)
 
   # add relative occurrence to taxon table
-  ta$taxa <- left_join(ta$taxa, rel_occurrences)
+  ta$taxa <- left_join(ta$taxa, rel_occurrences, by = "taxon_id")
 
   # return ta object
   ta
@@ -279,15 +279,23 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
   # perform jervis bardy calculation
   taxa_jb <- ta_jb$abundances %>%
-    left_join(ta_jb$samples %>% select(sample_id, dna_conc = !! dna_conc)) %>%
+    left_join(
+      ta_jb$samples %>% select(sample_id, dna_conc = !! dna_conc),
+      by = "sample_id"
+    ) %>%
     group_by(taxon_id) %>%
     filter(n() >= !! min_pres) %>%
-    do(jb = cor.test(x = .$rel_abundance, y = .$dna_conc, alternative = "less", method = "spearman")) %>%
+    do(
+      jb = cor.test(
+        x = .$rel_abundance, y = .$dna_conc, alternative = "less",
+        method = "spearman"
+      )
+    ) %>%
     mutate(jb_cor = jb$estimate, jb_p = jb$p.value) %>%
     select(- jb)
 
   # add jb_p and jb_cor to taxa table
-  ta$taxa <- left_join(ta$taxa, taxa_jb)
+  ta$taxa <- left_join(ta$taxa, taxa_jb, by = "taxon_id")
 
   # return ta object
   ta
@@ -305,7 +313,9 @@ add_presence_counts <- function(ta, condition) {
   counts_tidy <- taxon_counts_in_conditions(ta, !! condition)
 
   taxa_counts <- counts_tidy %>%
-    mutate(presence_in_condition = str_c(presence, !! condition, sep = "_in_")) %>%
+    mutate(
+      presence_in_condition = str_c(presence, !! condition, sep = "_in_")
+    ) %>%
     select(taxon_id, presence_in_condition, n) %>%
     spread(value = n, key = presence_in_condition)
 
@@ -320,8 +330,8 @@ add_presence_counts <- function(ta, condition) {
     select(- fisher)
 
   ta %>%
-    modify_at("taxa", left_join, taxa_counts) %>%
-    modify_at("taxa", left_join, taxa_fisher)
+    modify_at("taxa", left_join, taxa_counts, by = "taxon_id") %>%
+    modify_at("taxa", left_join, taxa_fisher, by = "taxon_id")
 
 }
 
@@ -360,7 +370,7 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
       select(taxon_id, !! condition_sym, occurrence = n) %>%
       mutate_at(condition, ~ str_c("occurrence_in", ., sep = "_")) %>%
       spread(value = "occurrence", key = condition) %>%
-      left_join(taxa_fischer)
+      left_join(taxa_fischer, by = "taxon_id")
 
   } else {
 
@@ -399,7 +409,7 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
   }
 
   ta %>%
-    modify_at("taxa", left_join, taxa_occurrences)
+    modify_at("taxa", left_join, taxa_occurrences, by = "taxon_id")
 
 }
 
@@ -441,7 +451,7 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
 
     rel_abundances_complete <-
       abundances(ta) %>%
-      left_join(ta$samples) %>%
+      left_join(ta$samples, by = "sample_id") %>%
       select(sample_id, !! condition_sym, taxon_id, rel_abundance) %>%
       complete(
         nesting(sample_id, !! condition_sym), taxon_id,
@@ -486,6 +496,6 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
   }
 
   ta %>%
-    modify_at("taxa", left_join, taxa_mean_rel_abundances)
+    modify_at("taxa", left_join, taxa_mean_rel_abundances, by = "taxon_id")
 
 }

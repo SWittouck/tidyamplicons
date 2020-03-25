@@ -52,7 +52,7 @@ history_plot <- function(ta, col = NULL) {
 
   # make plot and return
   ta$lib_sizes %>%
-    left_join(ta$samples) %>%
+    left_join(ta$samples, by = "sample_id") %>%
     ggplot(aes_(x = ~step, y = ~lib_size, group = ~sample_id, col = col)) +
     geom_line(size = 0.5) +
     scale_y_log10() +

@@ -151,10 +151,10 @@ betas <- function(ta, unique = T, method = "bray", binary = F) {
   # add sample info to betas table
   betas <- ta$samples %>%
     `names<-`(names(.) %>% str_c("_2")) %>%
-    right_join(betas)
+    right_join(betas, by = "sample_id_2")
   betas <- ta$samples %>%
     `names<-`(names(.) %>% str_c("_1")) %>%
-    right_join(betas)
+    right_join(betas, by = "sample_id_1")
 
   # return betas table
   betas
@@ -208,7 +208,7 @@ taxon_counts_in_conditions <- function(ta, condition) {
 
   ta$abundances %>%
     filter(abundance > 0) %>%
-    left_join(ta$samples) %>%
+    left_join(ta$samples, by = "sample_id") %>%
     select(taxon_id, sample_id, condition = !! condition) %>%
     mutate(presence = "present") %>%
     complete(nesting(condition, sample_id), taxon_id, fill = list(presence = "absent")) %>%
@@ -227,7 +227,7 @@ occurrences <- function(ta, condition = NULL, pres_abs = F) {
   abundances_extended <-
     ta$abundances %>%
     filter(abundance > 0) %>%
-    left_join(ta$samples)
+    left_join(ta$samples, by = "sample_id")
 
   if (is.null(condition)) {
 
@@ -284,7 +284,7 @@ mean_rel_abundances <- function(ta, condition = NULL) {
     condition <- sym(condition)
 
     ta$abundances %>%
-      left_join(ta$samples) %>%
+      left_join(ta$samples, by = "sample_id") %>%
       select(!! condition, sample_id, taxon_id, rel_abundance) %>%
       complete(nesting(!! condition, sample_id), taxon_id, fill = list(rel_abundance = 0)) %>%
       group_by(taxon_id, !! condition) %>%
@@ -300,8 +300,8 @@ everything <- function(ta) {
 
   # make and return large table
   ta$abundances %>%
-    left_join(ta$samples) %>%
-    left_join(ta$taxa)
+    left_join(ta$samples, by = "sample_id") %>%
+    left_join(ta$taxa, by = "taxon_id")
 
 }
 
@@ -329,7 +329,7 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
   formula_RHS <- paste0(predictors, collapse = " + ")
 
   metadata <- tibble(sample_id = rownames(abundances_matrix)) %>%
-    left_join(ta$samples)
+    left_join(ta$samples, by = "sample_id")
 
   adonis(
     as.formula(paste("abundances_matrix", formula_RHS, sep = " ~ ")),
