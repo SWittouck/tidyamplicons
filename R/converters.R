@@ -201,7 +201,7 @@ as_tidyamplicons <- function(ps) {
     phyloseq::tax_table(ps)@.Data %>%
     as_tibble() %>%
     mutate(taxon = phyloseq::tax_table(ps) %>% row.names()) %>%
-    set_names(names(.) %>% str_to_lower())
+    `names<-`(names(.) %>% str_to_lower())
 
   # make sure that taxa are columns in abundances table
   if (phyloseq::taxa_are_rows(ps)) {

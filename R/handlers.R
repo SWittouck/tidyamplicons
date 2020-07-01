@@ -8,7 +8,7 @@ rarefy <- function(ta, n, replace = F) {
         sample(x = 1:sum(abundance), size = !! n, replace = !! replace) %>%
         cut(breaks = c(0, cumsum(abundance)), labels = taxon_id) %>%
         table() %>%
-        unname()
+        as.integer()
     ) %>%
     ungroup()
 
