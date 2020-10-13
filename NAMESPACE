@@ -33,6 +33,7 @@ export(samples)
 export(taxa)
 export(abundances)
 export(perform_adonis)
+export(abundances_matrix)
 
 # plotters
 export(bar_plot)

@@ -25,7 +25,6 @@
 #' # Report numbers
 #' data %>%
 #'  report_numbers()
-
 report_numbers <- function(ta) {
 
   sprintf("samples: %i", nrow(ta$samples)) %>% message()
@@ -336,5 +335,38 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
     metadata,
     permutations = permutations
   )
+
+}
+
+#' Return an abundances matrix
+#'
+#' This function returns the abundances table in the form of a matrix where the
+#' rows are samples and the column are taxa.
+#'
+#' @param ta A tidyamplicons object.
+#' @param value The name of a variable in the abundances table that contains the
+#'   abundances (unquoted). Could be relative abundances, if present.
+#' @param sample_name The name of the variable in the sample table to use as row
+#'   names (unquoted).
+#' @param taxon_name The name of the variable in the taxon table to use as
+#'   column names (unquoted).
+#' @return A matrix with abundance values.
+#'
+abundances_matrix <-
+  function(ta, value = abundance, sample_name = sample, taxon_name = taxon) {
+
+  if (
+    ! "tidyamplicons" %in% class(ta)
+  ) stop("first argument should be a tidyamplicons object")
+
+  value <- rlang::enquo(value)
+  sample_name <- rlang::enquo(sample_name)
+  taxon_name <- rlang::enquo(taxon_name)
+
+  ta %>%
+    change_id_samples(sample_id_new = {{sample_name}}) %>%
+    change_id_taxa(taxon_id_new = {{taxon_name}}) %>%
+    abundances() %>%
+    as_abundances_matrix(value = {{value}})
 
 }

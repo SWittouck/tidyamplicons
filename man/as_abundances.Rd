@@ -4,8 +4,7 @@
 \alias{as_abundances}
 \title{Convert matrix with abundances to tidy data frame}
 \usage{
-as_abundances(abundances_matrix, taxa_are_columns = TRUE,
-  value = "abundance")
+as_abundances(abundances_matrix, taxa_are_columns = TRUE, value = "abundance")
 }
 \arguments{
 \item{abundances_matrix}{The ambundance matrix that will be converted.}
