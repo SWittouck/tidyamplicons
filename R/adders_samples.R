@@ -36,7 +36,7 @@
 #' # Add sample tibble to tidyamplicons object
 #' data <- data %>%
 #' add_sample_tibble(sample_tibble)
-
+#'
 add_sample_tibble <- function(ta, sample_tibble) {
 
   modify_at(ta, "samples", left_join, sample_tibble)
@@ -322,9 +322,9 @@ add_pcoa <- function(ta) {
 #' data <- data %>%
 #'  add_spike_ratio(spike_taxon = "t1")
 #'
-
 # Credits to Wenke Smets for the idea of spiking samples prior to 16S sequencing
 # (Smets et al., 2016) and the initial implementation of this function
+#
 add_spike_ratio <- function(ta, spike_taxon) {
 
   # if lib_size not present: add and remove again on exit
@@ -383,9 +383,9 @@ add_spike_ratio <- function(ta, spike_taxon) {
 #' data <- data %>%
 #'  add_cluster(n_clusters = 5)
 #'
-
 # Adds a variable "cluster" to the samples table
 # To do: merge with add_sample_clustered somehow
+#
 add_cluster <- function(ta, n_clusters) {
 
   # make relative abundance matrix

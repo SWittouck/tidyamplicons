@@ -46,4 +46,5 @@ sample_tibble <- tibble(sample, environment)
 # Add sample tibble to tidyamplicons object
 data <- data \%>\%
 add_sample_tibble(sample_tibble)
+
 }

@@ -84,6 +84,12 @@ export(add_presence_counts)
 export(add_occurrences)
 export(add_mean_rel_abundances)
 
+# codifab
+export(add_logratios)
+export(add_codifab)
+export(codifab_plot)
+export(add_copca)
+
 # varia
 export(set_rank_names)
 export(rank_names)
