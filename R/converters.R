@@ -298,6 +298,11 @@ merge_tidyamplicons <- function(ta1, ta2, taxon_identifier = sequence) {
 
   taxon_identifier <- rlang::ensym(taxon_identifier)
 
+  ti <- rlang::as_string(taxon_identifier)
+  if (! (ti %in% names(ta1$taxa) & ti %in% names(ta2$taxa))) {
+    stop("the taxon identifier was not found in one or both of the ta objects")
+  }
+
   # make sure that sample names are unique
   ta1 <- change_id_samples(ta1, paste("ta1", sample_id, sep = "_"))
   ta2 <- change_id_samples(ta2, paste("ta2", sample_id, sep = "_"))
