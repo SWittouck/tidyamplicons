@@ -138,11 +138,9 @@ add_lib_size <- function(ta, step = "current") {
 #'
 add_alphas <- function(ta) {
 
-  # if rel abundances not present: add and remove again on exit
-  if (! "rel_abundance" %in% names(ta$abundances)) {
-    ta <- add_rel_abundance(ta)
-    on.exit(ta$abundances$rel_abundance <- NULL)
-  }
+  # if rel abundances not present: add temporarily
+  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
+  if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
 
   # make table with sample, divObserved and divInvSimpson
   diversities <- ta$abundances %>%
@@ -157,10 +155,13 @@ add_alphas <- function(ta) {
   # add diversity measure to sample table
   ta$samples = left_join(ta$samples, diversities, by = "sample_id")
 
+  # cleanup
+  if (rel_abundance_tmp) ta$abundances$rel_abundance <- NULL
+
   # return ta object
   ta
 
- }
+}
 
 add_diversity_measures <- function(ta) {
 
@@ -327,11 +328,9 @@ add_pcoa <- function(ta) {
 #
 add_spike_ratio <- function(ta, spike_taxon) {
 
-  # if lib_size not present: add and remove again on exit
-  if (! "lib_size" %in% names(ta$samples)) {
-    ta <- add_lib_size(ta)
-    on.exit(ta$samples$lib_size <- NULL)
-  }
+  # if lib_size not present: add temporarily
+  lib_size_tmp <- ! "lib_size" %in% names(ta$samples)
+  if (lib_size_tmp) ta <- add_lib_size(ta)
 
   # make sample table with spike abundances
   spike_abundances <- ta$abundances %>%
@@ -345,6 +344,9 @@ add_spike_ratio <- function(ta, spike_taxon) {
 
   # remove spike_abundance
   ta$samples$spike_abundance <- NULL
+
+  # cleanup
+  if (lib_size_tmp) ta$samples$lib_size <- NULL
 
   # return ta object
   ta

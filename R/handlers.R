@@ -137,7 +137,6 @@ aggregate_taxa <- function(ta, rank = NULL) {
 
   # this avoids some problems
   ta$taxa[is.na(ta$taxa)] <- "unknown"
-  on.exit(ta$taxa[ta$taxa == "unknown"] <- NA)
 
   ta$taxa <-
     ta$taxa %>%
@@ -171,7 +170,9 @@ aggregate_taxa <- function(ta, rank = NULL) {
     ungroup() %>%
     rename(taxon_id = taxon_id_new)
 
-  # return ta object
+  # cleanup
+  ta$taxa[ta$taxa == "unknown"] <- NA
+
   ta
 
 }

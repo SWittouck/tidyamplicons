@@ -191,11 +191,9 @@ codifab_plot <- function(ta, diffabun_var) {
 # add compositional principal components analysis
 add_copca <- function(ta) {
 
-  # if logratios not present: add and remove on exit
-  if (! "logratios" %in% names(ta)) {
-    ta <- add_logratios(ta)
-    on.exit(ta$logratios <- NULL)
-  }
+  # if logratios not present: add temporarily
+  logratios_tmp <- ! "logratios" %in% names(ta)
+  if (logratios_tmp) ta <- add_logratios(ta)
 
   logratio_matrix <-
     ta$logratios %>%
@@ -216,6 +214,9 @@ add_copca <- function(ta) {
 
   # add PCA dimensions to sample table
   ta$samples <- ta$samples %>% left_join(samples_pca, by = "sample_id")
+
+  # cleanup
+  if (logratios_tmp) ta$logratios <- NULL
 
   ta
 

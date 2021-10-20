@@ -46,11 +46,9 @@ add_taxon_tibble <- function(ta, taxon_tibble) {
 
 add_max_rel_abundance <- function(ta) {
 
-  # if rel_abundance not present: add and remove on exit
-  if (! "rel_abundance" %in% names(ta$abundances)) {
-    ta <- add_rel_abundance(ta)
-    on.exit(ta$abundances$rel_abundance <- NULL)
-  }
+  # if rel_abundance not present: add temporarily
+  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
+  if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
 
   # make table with taxon and maximum relative abundance
   max_rel_abundances <- ta$abundances %>%
@@ -60,6 +58,9 @@ add_max_rel_abundance <- function(ta) {
   # add max relative abundance to taxon table
   ta$taxa <- left_join(ta$taxa, max_rel_abundances, by = "taxon_id")
 
+  # cleanup
+  if (rel_abundance_tmp) ta$abundances$rel_abundance <- NULL
+
   # return ta object
   ta
 
@@ -67,11 +68,9 @@ add_max_rel_abundance <- function(ta) {
 
 add_total_rel_abundance <- function(ta) {
 
-  # if rel_abundance not present: add and remove on exit
-  if (! "rel_abundance" %in% names(ta$abundances)) {
-    ta <- add_rel_abundance(ta)
-    on.exit(ta$abundances$rel_abundance <- NULL)
-  }
+  # if rel_abundance not present: add temporarily
+  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
+  if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
 
   # make table with taxon and total relative abundance
   total_rel_abundances <- ta$abundances %>%
@@ -80,6 +79,9 @@ add_total_rel_abundance <- function(ta) {
 
   # add total relative abundance to taxon table
   ta$taxa <- left_join(ta$taxa, total_rel_abundances, by = "taxon_id")
+
+  # cleanup
+  if (rel_abundance_tmp) ta$abundances$rel_abundance <- NULL
 
   # return ta object
   ta
@@ -110,21 +112,17 @@ add_taxon_name <- function(ta, method = "total_rel_abundance", include_species =
 
   if (method == "total_rel_abundance") {
 
-    # if total_rel_abundance not present: add and remove on exit
-    if (! "total_rel_abundance" %in% names(ta$taxa)) {
-      ta <- add_total_rel_abundance(ta)
-      on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
-    }
+    # if total_rel_abundance not present: add temporarily
+    total_rel_ab_tmp <- ! "total_rel_abundance" %in% names(ta$taxa)
+    if (total_rel_ab_tmp) ta <- add_total_rel_abundance(ta)
 
     ta <- mutate_taxa(ta, arrange_by_me = total_rel_abundance)
 
   } else if (method == "max_rel_abundance") {
 
-    # if total_rel_abundance not present: add and remove on exit
-    if (! "max_rel_abundance" %in% names(ta$taxa)) {
-      ta <- add_max_rel_abundance(ta)
-      on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
-    }
+    # if max_rel_abundance not present: add temporarily
+    max_rel_ab_tmp <- ! "max_rel_abundance" %in% names(ta$taxa)
+    if (max_rel_ab_tmp) ta <- add_max_rel_abundance(ta)
 
     ta <- mutate_taxa(ta, arrange_by_me = max_rel_abundance)
 
@@ -136,8 +134,6 @@ add_taxon_name <- function(ta, method = "total_rel_abundance", include_species =
     }
 
   }
-
-  on.exit(ta$taxa$arrange_by_me <- NULL, add = T)
 
   rank_names <-
     rank_names(ta) %>%
@@ -177,6 +173,11 @@ add_taxon_name <- function(ta, method = "total_rel_abundance", include_species =
     ungroup() %>%
     select(- best_classification, - n_taxa, - taxon_number)
 
+  # cleanup
+  if (exists("total_rel_ab_tmp")) ta$taxa$total_rel_abundance <- NULL
+  if (exists("max_rel_ab_tmp")) ta$taxa$max_rel_abundance <- NULL
+  ta$taxa$arrange_by_me <- NULL
+
   # return ta object
   ta
 
@@ -184,29 +185,23 @@ add_taxon_name <- function(ta, method = "total_rel_abundance", include_species =
 
 add_taxon_name_color <- function(ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL) {
 
-  # if taxon_name not present: add and remove on exit
-  if (! "taxon_name" %in% names(ta$taxa)) {
-    ta <- add_taxon_name(ta)
-    on.exit(ta$taxa$taxon_name <- NULL, add = T)
-  }
+  # if taxon_name not present: add temporarily
+  taxon_name_tmp <- ! "taxon_name" %in% names(ta$taxa)
+  if (taxon_name_tmp) ta <- add_taxon_name(ta)
 
   if (method == "total_rel_abundance") {
 
-    # if total_rel_abundance not present: add and remove on exit
-    if (! "total_rel_abundance" %in% names(ta$taxa)) {
-      ta <- add_total_rel_abundance(ta)
-      on.exit(ta$taxa$total_rel_abundance <- NULL, add = T)
-    }
+    # if total_rel_abundance not present: add temporarily
+    total_rel_ab_tmp <- ! "total_rel_abundance" %in% names(ta$taxa)
+    if (total_rel_ab_tmp) ta <- add_total_rel_abundance(ta)
 
     ta <- mutate_taxa(ta, arrange_by_me = total_rel_abundance)
 
   } else if (method == "max_rel_abundance") {
 
-    # if total_rel_abundance not present: add and remove on exit
-    if (! "max_rel_abundance" %in% names(ta$taxa)) {
-      ta <- add_max_rel_abundance(ta)
-      on.exit(ta$taxa$max_rel_abundance <- NULL, add = T)
-    }
+    # if max_rel_abundance not present: add temporarily
+    max_rel_ab_tmp <- ! "max_rel_abundance" %in% names(ta$taxa)
+    if (max_rel_ab_tmp) ta <- add_max_rel_abundance(ta)
 
     ta <- mutate_taxa(arrange_by_me = max_rel_abundance)
 
@@ -246,6 +241,11 @@ add_taxon_name_color <- function(ta, method = "total_rel_abundance", n = 12, sam
     mutate(taxon_name_color = if_else(taxon_name %in% levels, taxon_name, "residual")) %>%
     mutate(taxon_name_color = factor(taxon_name_color, levels = levels))
 
+  # cleanup
+  if (taxon_name_tmp) ta$taxa$taxon_name <- NULL
+  if (exists("total_rel_ab_tmp")) ta$taxa$total_rel_abundance <- NULL
+  if (exists("max_rel_ab_tmp")) ta$taxa$max_rel_abundance <- NULL
+
   # return ta object
   ta
 
@@ -263,11 +263,9 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
   dna_conc <- enquo(dna_conc)
   sample_condition <- enquo(sample_condition)
 
-  # if rel_abundance not present: add and remove on exit
-  if (! "rel_abundance" %in% names(ta$abundances)) {
-    ta <- add_rel_abundance(ta)
-    on.exit(ta$abundances$rel_abundance <- NULL)
-  }
+  # if rel_abundance not present: add temporarily
+  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
+  if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
 
   # if sample condition is given, use only samples that fulfill it
   if (is.null(sample_condition)) {
@@ -296,6 +294,9 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
   # add jb_p and jb_cor to taxa table
   ta$taxa <- left_join(ta$taxa, taxa_jb, by = "taxon_id")
+
+  # cleanup
+  if (rel_abundance_tmp) ta$abundances$rel_abundance <- NULL
 
   # return ta object
   ta
@@ -443,11 +444,9 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
 
     condition_sym <- ensym(condition)
 
-    # if rel_abundance not present: add and remove on exit
-    if (! "rel_abundance" %in% names(ta$abundances)) {
-      ta <- add_rel_abundance(ta)
-      on.exit(ta$abundances$rel_abundance <- NULL)
-    }
+    # if rel_abundance not present: add temporarily
+    rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
+    if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
 
     rel_abundances_complete <-
       abundances(ta) %>%
@@ -494,6 +493,9 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
       spread(value = mean_rel_abundance, key = condition)
 
   }
+
+  # cleanup
+  if (exists("rel_abundance_tmp")) ta$abundances$rel_abundance <- NULL
 
   ta %>%
     modify_at("taxa", left_join, taxa_mean_rel_abundances, by = "taxon_id")
