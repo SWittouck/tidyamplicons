@@ -1,3 +1,77 @@
+#' (Re)classify amplicon sequences
+#'
+#' This function requires the DADA2 package to be installed.
+#'
+#' This function will (re)classify either all or a subset of the taxa, given
+#' that a variable is present in the taxon table that contains (representative)
+#' sequences of the taxa.
+#'
+#' Ranks can be supplied as a named integer vector, where the names represent
+#' taxonomic ranks and the integers represent positions of these ranks in the
+#' taxonomy strings present in the reference database. Ranks can also be
+#' supplied as just a character vector with the rank names; in that case, it is
+#' assumed that the database taxonomy string follows the default order {domain,
+#' phylum, class, order, family, genus, species}. If no ranks are supplied, taxa
+#' will be (re)classified at all default ranks.
+#'
+#' @param ta A tidyamplicons object.
+#' @param refdb The path to a DADA2-compatible reference database.
+#' @param taxa An expression that specifies which taxa to (re)classify.
+#' @param ranks A vector that specifies which ranks to (re)classify.
+#' @param sequence_var The (quoted) name of a variable within the taxa table
+#'   that contains (representative) sequences of the taxa.
+#' @param multithread A boolean indicating whether to use multiple threads.
+#' @param min_boot The minimum bootstrap value for taxonomy assignment.
+#' @param n_ranks The number of ranks present in the reference database.
+#'
+#' @return An updated tidyamplicons object.
+classify_taxa <- function(
+  ta, refdb, taxa = rep(T, times = length(taxon_id)), ranks = "default",
+  sequence_var = "sequence", multithread = T, min_boot = 50, n_ranks = 7
+) {
+
+  # throw error if sequence_var doesn't exist
+  if (! sequence_var %in% names(ta$taxa)) {
+    stop(paste0("variable '", sequence_var, "' not found in taxon table"))
+  }
+
+  # convert taxa argument to an expression
+  taxa <- rlang::enexpr(taxa)
+
+  # determine which taxa to (re)classify
+  to_reclassify <- eval(taxa, ta$taxa)
+  to_reclassify <- to_reclassify & ! is.na(to_reclassify)
+
+  # throw error if no taxa to (re)classify
+  if (sum(to_reclassify) == 0) stop("zero taxa obey the given criteria")
+
+  # lookup default ranks and/or rank numbers if not given
+  if (! is.numeric(ranks)) {
+    default_ranks <- 1:7
+    names(default_ranks) <-
+      c("domain", "phylum", "class", "order", "family", "genus", "species")
+    if (ranks[1] == "default") ranks <- names(default_ranks)
+    ranks <- default_ranks[ranks]
+    ranks <- ranks[! is.na(ranks)]
+  }
+
+  # throw error if a rank number exceeds the number of ranks in the db
+  if (max(ranks) > n_ranks) stop("not enough ranks in the database")
+
+  # perform (re)classification
+  # tryRC is important; see <https://github.com/benjjneb/dada2/issues/1441>
+  taxa_reclassified <-
+    ta$taxa[to_reclassify, ][[sequence_var]] %>%
+    dada2::assignTaxonomy(
+      refFasta = refdb, multithread = multithread, minBoot = min_boot,
+      tryRC = T, taxLevels = letters[1:n_ranks]
+    )
+  ta$taxa[to_reclassify, names(ranks)] <- taxa_reclassified[ , ranks]
+
+  ta
+
+}
+
 #' Add taxa table to the tidyamplicons object
 #'
 #' \code{add_taxon_tibble} adds a taxon tibble to the tidyamplicons object.
