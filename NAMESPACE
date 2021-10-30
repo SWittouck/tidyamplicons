@@ -7,6 +7,8 @@ import(vegan)
 
 # converters
 export(create_tidyamplicons)
+export(write_tidyamplicons)
+export(read_tidyamplicons)
 export(update_tidyamplicons)
 export(reset_ids)
 export(update_id_names)
@@ -73,6 +75,7 @@ export(add_spike_ratio)
 export(add_cluster)
 
 # adders_taxa
+export(classify_taxa)
 export(add_taxon_tibble)
 export(add_max_rel_abundance)
 export(add_total_rel_abundance)

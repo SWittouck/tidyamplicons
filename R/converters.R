@@ -72,9 +72,28 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 
 }
 
+#' Write community data in tidyamplicons format
+write_tidyamplicons <- function(ta, dout) {
+  dir.create(dout)
+  write_csv(ta$samples, paste0(dout, "/samples.csv"))
+  write_csv(ta$taxa, paste0(dout, "/taxa.csv"))
+  write_csv(ta$abundances, paste0(dout, "/abundances.csv"))
+}
+
+#' Read community data written by tidyamplicons
+read_tidyamplicons <- function(din, samples = "samples.csv", taxa = "taxa.csv",
+                               abundances = "abundances.csv") {
+  samples <- read_csv(paste0(din, "/", samples), col_types = cols())
+  taxa <- read_csv(paste0(din, "/", taxa), col_types = cols())
+  abundances <- read_csv(paste0(din, "/", abundances), col_types = cols())
+  make_tidyamplicons(
+    samples, taxa, abundances, sample_name = sample_id, taxon_name = taxon_id
+  )
+}
+
 #' Update old tidyamplicons object to new one.
 #'
-#' \code{update_id_names} updates an old tidyamplicons object to a new one.
+#' \code{update_tidyamplicons} updates an old tidyamplicons object to a new one.
 #'
 #' This function will update a tidyamplicons object created prior to version
 #' 0.1.0 to a tidyamplicons object compatible with version 0.1.0.
