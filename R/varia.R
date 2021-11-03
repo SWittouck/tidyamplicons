@@ -1,4 +1,6 @@
-
+#' Return rank names associated with a tidyamplicons object
+#'
+#' @export
 rank_names <- function(ta) {
 
   if (! is.null(ta$rank_names)) {
@@ -9,6 +11,9 @@ rank_names <- function(ta) {
 
 }
 
+#' Set rank names for a tidyamplicons object
+#'
+#' @export
 set_rank_names <- function(ta, rank_names) {
 
   ta$rank_names <- rank_names
@@ -17,7 +22,13 @@ set_rank_names <- function(ta, rank_names) {
 
 }
 
-# Execute after samples are selected in samples
+#' Apply a sample filtering to the taxon and abundance tables
+#'
+#' DEPRECATED, see \code{\link{filter_samples}}
+#'
+#' Should only be used internally.
+#'
+#' @export
 process_sample_selection <- function(ta) {
 
   # filter abundance table
@@ -35,7 +46,13 @@ process_sample_selection <- function(ta) {
 
 }
 
-# Execute after taxa are selected in taxa
+#' Apply a taxon filtering to the abundance table
+#'
+#' DEPRECATED, see \code{\link{filter_taxa}}
+#'
+#' Should only be used internally.
+#'
+#' @export
 process_taxon_selection <- function(ta) {
 
   # filter abundance table
@@ -48,7 +65,13 @@ process_taxon_selection <- function(ta) {
 
 }
 
-# Execute after selection on abundances
+#' Apply an abundance filtering to the taxon table
+#'
+#' DEPRECATED, see \code{\link{filter_abundances}}
+#'
+#' Should only be used internally.
+#'
+#' @export
 process_abundance_selection <- function(ta) {
 
   # filter taxon table
@@ -61,26 +84,11 @@ process_abundance_selection <- function(ta) {
 
 }
 
-# required that you made a variable "sample_new" in samples
-process_new_sample_name <- function(ta) {
-
-  names <- ta$samples %>%
-    select(sample_id, sample_id_new)
-
-  ta$abundances <- ta$abundances %>%
-    left_join(names, by = "sample_id") %>%
-    mutate(sample_id = sample_id_new) %>%
-    select(- sample_id_new)
-
-  ta$samples <- ta$samples %>%
-    mutate(sample_id = sample_id_new) %>%
-    select(- sample_id_new)
-
-  # return ta object
-  ta
-
-}
-
+#' Update library sizes in the lib_size table
+#'
+#' DEPRECATED, lib_size tables are no longer supported
+#'
+#' @export
 update_lib_sizes <- function(ta, step) {
 
   # current lib_size in tidy table
@@ -108,6 +116,7 @@ update_lib_sizes <- function(ta, step) {
 
 }
 
+# for internal use, I think
 merge_redundant_taxa <- function(ta) {
 
   # merge taxa in taxon table

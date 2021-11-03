@@ -34,4 +34,5 @@ data <- create_tidyamplicons(x,
 # Report numbers
 data \%>\%
  report_numbers()
+
 }

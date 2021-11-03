@@ -25,6 +25,8 @@
 #' # Report numbers
 #' data %>%
 #'  report_numbers()
+#'
+#' @export
 report_numbers <- function(ta) {
 
   sprintf("samples: %i", nrow(ta$samples)) %>% message()
@@ -33,14 +35,14 @@ report_numbers <- function(ta) {
 
 }
 
-#' Get numbers
+#' Return some descriptive numbers
 #'
 #' \code{get_numbers} returns the number of samples, taxa and reads in a
 #' tidyamplicons object.
 #'
-#' This function returns the number of samples, taxa and reads in a tidyamplicons
-#' object, stored in a named numeric vector. To print the numbers, use
-#' \code{\link{report_numbers}} instead.
+#' This function returns the number of samples, taxa and reads in a
+#' tidyamplicons object, stored in a named numeric vector. To print the numbers,
+#' use \code{\link{report_numbers}} instead.
 #'
 #' @param ta Tidyamplicons object.
 #'
@@ -54,12 +56,12 @@ report_numbers <- function(ta) {
 #' colnames(x) <- c("sample1", "sample2")
 #'
 #' # Convert to tidyamplicons object
-#' data <- create_tidyamplicons(x,
-#'                      taxa_are_columns = FALSE
-#'                      )
+#' data <- create_tidyamplicons(x, taxa_are_columns = FALSE)
+#'
 #' # Report numbers
-#' numbers <- data %>%
-#'  get_numbers()
+#' numbers <- data %>% get_numbers()
+#'
+#' @export
 numbers <- function(ta) {
 
   c(
@@ -70,9 +72,18 @@ numbers <- function(ta) {
 
 }
 
+#' Return some descriptive numbers
+#'
+#' DEPRECATED, use \code{\link{numbers}}
+#'
+#' @export
 get_numbers <- numbers
 
-# for internal use - do not export
+#' Return a relative abundance matrix
+#'
+#' DEPRECATED, use \code{\link{abundances_matrix}}
+#'
+#' @export
 get_rel_abundance_matrix <- function(ta) {
 
   # add relative abundances if not present
@@ -84,7 +95,7 @@ get_rel_abundance_matrix <- function(ta) {
 
 }
 
-#' Get betas
+#' Get beta diversity table
 #'
 #' \code{betas} returns a tidy tibble with the beta diversity for each
 #' combination of samples.
@@ -112,12 +123,13 @@ get_rel_abundance_matrix <- function(ta) {
 #' colnames(x) <- c("sample1", "sample2")
 #'
 #' # Convert to tidyamplicons object
-#' data <- create_tidyamplicons(x,
-#'                      taxa_are_columns = FALSE
-#'                      )
+#' data <-
+#'   create_tidyamplicons(x, taxa_are_columns = FALSE)
+#'
 #' # Report numbers
-#' numbers <- data %>%
-#'  get_betas()
+#' numbers <- data %>% betas()
+#'
+#' @export
 betas <- function(ta, unique = T, method = "bray", binary = F) {
 
   # make "dist" object with beta values
@@ -160,46 +172,18 @@ betas <- function(ta, unique = T, method = "bray", binary = F) {
 
 }
 
-# synonym
-#' Get betas
+#' Get beta diversity table
 #'
-#' \code{get_betas} returns a tidy tibble with the beta diversity for each
-#' combination of samples.
+#' DEPRECATED, use \code{\link{betas}}
 #'
-#' This function calculates the beta diversity using the
-#' \code{\link[vegan]{vegdist}} function of Vegan. It will report one diversity
-#' estimate for each combination of samples.
-#'
-#'
-#' @param ta Tidyamplicons object.
-#' @param unique A logical scalar. Avoid redundancy by removing all self sample
-#'   comparisons and keep only one of two pairwise comparisons? Default is TRUE.
-#' @param method The dissimilarity index. See \code{\link[vegan]{vegdist}} for
-#'   all options. Default is "bray".
-#' @param binary A logical scalar. Perform presence/absence standardization
-#'   before analysis. See \code{\link[vegan]{vegdist}}. Default is FALSE.
-#'
-#' @examples
-#' # Initiate abundance matrix
-#' x <- matrix(
-#'  c(1500, 1300, 280, 356),
-#'  ncol = 2
-#' )
-#' rownames(x) <- c("taxon1", "taxon2")
-#' colnames(x) <- c("sample1", "sample2")
-#'
-#' # Convert to tidyamplicons object
-#' data <- create_tidyamplicons(x,
-#'                      taxa_are_columns = FALSE
-#'                      )
-#' # Report numbers
-#' numbers <- data %>%
-#'  get_betas()
+#' @export
 get_betas <- betas
 
-# DEPRICATED: use occurrences()
-# Returns a tidy table of taxon presence and absence counts in sample conditions.
-# Condition is a variable that should be present in the samples table.
+#' Get occurrences of taxa in general or in conditions
+#'
+#' DEPRECATED, use \code{\link{occurrences}}
+#'
+#' @export
 taxon_counts_in_conditions <- function(ta, condition) {
 
   condition <- enquo(condition)
@@ -217,10 +201,15 @@ taxon_counts_in_conditions <- function(ta, condition) {
 
 }
 
-# Returns a tidy table of occurrences: taxon presence counts in samples, overall
-# or per condition.
-# Condition should be a categorical variable present in the samples table.
-# Supply condition as a string.
+#' Get occurrences of taxa in general or per condition
+#'
+#' Returns a tidy table of occurrences: taxon presence counts in samples,
+#' overall or per condition.
+#'
+#' Condition should be a categorical variable present in the samples table.
+#' Supply condition as a string.
+#'
+#' @export
 occurrences <- function(ta, condition = NULL, pres_abs = F) {
 
   abundances_extended <-
@@ -258,10 +247,15 @@ occurrences <- function(ta, condition = NULL, pres_abs = F) {
 
 }
 
-# Returns tidy table with average relatively abundances of taxa, overall or per
-# condition.
-# Condition should be a categorical variable present in the samples table.
-# Supply condition as a string.
+#' Get mean relative abundances of taxa in general or per condition
+#'
+#' Returns tidy table with average relatively abundances of taxa, overall or per
+#' condition.
+#'
+#' Condition should be a categorical variable present in the samples table.
+#' Supply condition as a string.
+#'
+#' @export
 mean_rel_abundances <- function(ta, condition = NULL) {
 
   # if rel_abundance not present: add and remove on exit
@@ -294,7 +288,9 @@ mean_rel_abundances <- function(ta, condition = NULL) {
 
 }
 
-# Returns joined tibble with all abundances, samples and taxa variables
+#' Get all data in one single table
+#'
+#' @export
 everything <- function(ta) {
 
   # make and return large table
@@ -304,18 +300,30 @@ everything <- function(ta) {
 
 }
 
-# Returns samples tibble
+#' Extract the sample table
+#'
+#' @export
 samples <- function(ta) ta$samples
 
-# Returns taxa tibble
+#' Extract the taxon table
+#'
+#' @export
 taxa <- function(ta) ta$taxa
 
-# Returns abundances
+#' Extract the abundance table
+#'
+#' @export
 abundances <- function(ta) ta$abundances
 
-# Performs adonis function of the vegan package and returns output.
-# Predictors should be a character vector.
-# Samples where one of the predictors is NA are removed.
+#' Perform an adonis test
+#'
+#' This function executes the adonis function of the vegan package and returns
+#' the result.
+#'
+#' Predictors should be a character vector. Samples where one of the predictors
+#' is NA are removed.
+#'
+#' @export
 perform_adonis <- function(ta, predictors, permutations = 999) {
 
   abundances_matrix <- ta %>%
@@ -352,6 +360,7 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
 #'   column names (unquoted).
 #' @return A matrix with abundance values.
 #'
+#' @export
 abundances_matrix <-
   function(ta, value = abundance, sample_name = sample, taxon_name = taxon) {
 

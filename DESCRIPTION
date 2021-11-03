@@ -18,4 +18,4 @@ Suggests:
     rmarkdown,
     phyloseq
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

@@ -25,6 +25,8 @@
 #' @param n_ranks The number of ranks present in the reference database.
 #'
 #' @return An updated tidyamplicons object.
+#'
+#' @export
 classify_taxa <- function(
   ta, refdb, taxa = rep(T, times = length(taxon_id)), ranks = "default",
   sequence_var = "sequence", multithread = T, min_boot = 50, n_ranks = 7
@@ -72,7 +74,7 @@ classify_taxa <- function(
 
 }
 
-#' Add taxa table to the tidyamplicons object
+#' Add taxon metadata to the tidyamplicons object
 #'
 #' \code{add_taxon_tibble} adds a taxon tibble to the tidyamplicons object.
 #'
@@ -112,12 +114,16 @@ classify_taxa <- function(
 #' data <- data %>%
 #' add_taxon_tibble(taxon_tibble)
 #'
+#' @export
 add_taxon_tibble <- function(ta, taxon_tibble) {
 
   modify_at(ta, "taxa", left_join, taxon_tibble)
 
 }
 
+#' Add the maximum relative abundance of taxa to the taxon table
+#'
+#' @export
 add_max_rel_abundance <- function(ta) {
 
   # if rel_abundance not present: add temporarily
@@ -140,6 +146,9 @@ add_max_rel_abundance <- function(ta) {
 
 }
 
+#' Add the total relative abundance of taxa to the taxon table
+#'
+#' @export
 add_total_rel_abundance <- function(ta) {
 
   # if rel_abundance not present: add temporarily
@@ -162,9 +171,13 @@ add_total_rel_abundance <- function(ta) {
 
 }
 
-# DEPRECATED: use add_occurrences()
-# percentage of samples in which a taxon is present
-# credits to Wenke Smets for the idea and initial implementation
+#' Add the relative occurrence of taxa to the taxon table
+#'
+#' DEPRECATED, use \code{\link{add_occurrences}}
+#'
+#' Credits to Wenke Smets for the idea and initial implementation.
+#'
+#' @export
 add_rel_occurrence <- function(ta) {
 
   # make table with taxon and relative occurrence
@@ -182,7 +195,12 @@ add_rel_occurrence <- function(ta) {
 
 }
 
-add_taxon_name <- function(ta, method = "total_rel_abundance", include_species = F) {
+#' Create sensible names for the taxa and add to taxon table
+#'
+#' @export
+add_taxon_name <- function(
+  ta, method = "total_rel_abundance", include_species = F
+  ) {
 
   if (method == "total_rel_abundance") {
 
@@ -257,7 +275,12 @@ add_taxon_name <- function(ta, method = "total_rel_abundance", include_species =
 
 }
 
-add_taxon_name_color <- function(ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL) {
+#' Create taxon names suitable for visualization with color
+#'
+#' @export
+add_taxon_name_color <- function(
+  ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL
+  ) {
 
   # if taxon_name not present: add temporarily
   taxon_name_tmp <- ! "taxon_name" %in% names(ta$taxa)
@@ -277,7 +300,7 @@ add_taxon_name_color <- function(ta, method = "total_rel_abundance", n = 12, sam
     max_rel_ab_tmp <- ! "max_rel_abundance" %in% names(ta$taxa)
     if (max_rel_ab_tmp) ta <- add_max_rel_abundance(ta)
 
-    ta <- mutate_taxa(arrange_by_me = max_rel_abundance)
+    ta <- mutate_taxa(ta, arrange_by_me = max_rel_abundance)
 
   } else {
 
@@ -319,19 +342,33 @@ add_taxon_name_color <- function(ta, method = "total_rel_abundance", n = 12, sam
   if (taxon_name_tmp) ta$taxa$taxon_name <- NULL
   if (exists("total_rel_ab_tmp")) ta$taxa$total_rel_abundance <- NULL
   if (exists("max_rel_ab_tmp")) ta$taxa$max_rel_abundance <- NULL
+  ta$taxa$arrange_by_me <- NULL
 
   # return ta object
   ta
 
 }
 
-# Function to estimate spearman correlation between relative abundance and sample dna concentration,
-# for each taxon.
-# Inputs:
-#   - ta: tidyamplicons object
-#   - dna_conc: variable in the samples table that contains dna concetrations (unquoted)
-#   - sample condition: optional extra condition that samples must pass before calculations
-#   - min_pres: minimum number of samples a taxon has to be present in for its correlation to be calculated
+#' Apply the taxon QC method of Jervis-Bardy
+#'
+#' Function to estimate spearman correlation between relative abundance and
+#' sample dna concentration, for each taxon.
+#'
+#' See:
+#' J. Jervis-Bardy et al., “Deriving accurate microbiota profiles from
+#' human samples with low bacterial content through post-sequencing processing
+#' of Illumina MiSeq data,” Microbiome, vol. 3, no. 1, Art. no. 1, 2015, doi:
+#' 10.1186/s40168-015-0083-8.
+#'
+#' @param ta A tidyamplicons object.
+#' @param dna_conc A variable in the samples table that contains dna
+#'   concetrations (unquoted).
+#' @param sample_condition An optional extra condition that samples must pass
+#'   before calculations.
+#' @param min_pres The minimum number of samples a taxon has to be present in
+#'   for its correlation to be calculated.
+#'
+#' @export
 add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
   dna_conc <- enquo(dna_conc)
@@ -377,10 +414,16 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 
 }
 
-# DEPRECATED: use add_occurrences()
-# Adds taxon presence and absence counts in sample conditions to the taxa table,
-# as well as a fisher exact test for differential presence.
-# Condition is a variable that should be present in the samples table.
+#' Add absolute occurrences of taxa to the taxon table
+#'
+#' Adds taxon presence and absence counts in sample conditions to the taxa
+#' table, as well as a fisher exact test for differential presence.
+#'
+#' Condition is a variable that should be present in the samples table.
+#'
+#' DEPRECATED, use \code{\link{add_occurrences}}
+#'
+#' @export
 add_presence_counts <- function(ta, condition) {
 
   condition <- enquo(condition)
@@ -410,10 +453,17 @@ add_presence_counts <- function(ta, condition) {
 
 }
 
-# Adds taxon occurrences (overall or per condition) to the taxa table.
-# Condition should be a categorical variable present in the samples table.
-# Supply condition as a string.
-add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F) {
+#' Add taxon occurrences to the taxon table
+#'
+#' Adds taxon occurrences (overall or per condition) to the taxa table.
+#'
+#' Condition should be a categorical variable present in the samples table.
+#' Supply condition as a string.
+#'
+#' @export
+add_occurrences <- function(
+  ta, condition = NULL, relative = F, fischer_test = F
+  ) {
 
   if (is.null(condition)) {
 
@@ -506,6 +556,8 @@ add_occurrences <- function(ta, condition = NULL, relative = F, fischer_test = F
 #' @param test Differential abundance test to perform
 #'
 #' @return A tidyamplicons object
+#'
+#' @export
 add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
 
   mean_rel_abundances <- mean_rel_abundances(ta, condition = condition)

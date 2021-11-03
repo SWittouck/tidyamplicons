@@ -1,3 +1,9 @@
+#' Rarefy the samples to a given number of reads
+#'
+#' This function performs rarefying. Make sure that all samples contain at least
+#' the minimum number of reads; otherwise, an error might be thrown.
+#'
+#' @export
 rarefy <- function(ta, n, replace = F) {
 
   ta$abundances <-
@@ -18,8 +24,13 @@ rarefy <- function(ta, n, replace = F) {
 
 }
 
-# sample_id_new should be an expression that evaluates to a unique sample
-# identifier
+#' Change sample IDs to a given expression
+#'
+#' @param ta A tidyamplicons object
+#' @param sample_id_new An expression that evaluates to a unique sample
+#'   identifier
+#'
+#' @export
 change_id_samples <- function(ta, sample_id_new) {
 
   sample_id_new <- rlang::enexpr(sample_id_new)
@@ -47,8 +58,13 @@ change_id_samples <- function(ta, sample_id_new) {
 
 }
 
-# taxon_id_new should be an expression that evaluates to a unique taxon
-# identifier
+#' Change taxon IDs to a given expression
+#'
+#' @param ta A tidyamplicons object
+#' @param taxon_id_new An expression that evaluates to a unique taxon
+#'   identifier
+#'
+#' @export
 change_id_taxa <- function(ta, taxon_id_new) {
 
   taxon_id_new <- rlang::enexpr(taxon_id_new)
@@ -74,8 +90,9 @@ change_id_taxa <- function(ta, taxon_id_new) {
 
 }
 
-# Preprocessing: delete all sample variables that are different within
-# groups of samples that need to be merged. Keep the sample variable!
+#' Aggregate samples with identical values for all metadata
+#'
+#' @export
 aggregate_samples <- function(ta) {
 
   # sample table with only old and new sample names
@@ -107,11 +124,16 @@ aggregate_samples <- function(ta) {
 
 }
 
-# Two options to call this function:
-# - if the rank you are interested in is in the standard list, just supply it as
-# an argument
-# - if not, delete all taxon variables except taxon_id and the ranks you are
-# still interested in prior to calling this function
+#' Aggregate taxa on a given taxonomic rank
+#'
+#' There are two ways to call this function:
+#'
+#' * If the rank you are interested in is in the standard list, just supply it
+#' as an argument.
+#' * If not, delete all taxon variables except taxon_id and the ranks you are
+#' still interested in prior to calling this function.
+#'
+#' @export
 aggregate_taxa <- function(ta, rank = NULL) {
 
   if (! is.null(rank)) {
@@ -177,18 +199,27 @@ aggregate_taxa <- function(ta, rank = NULL) {
 
 }
 
+#' Trim all sequences
+#'
+#' This function assumes that the sequence variable in the taxon table is called
+#' "sequence".
+#'
+#' @export
 trim_asvs <- function(ta, start, end) {
 
   ta$taxa <- ta$taxa %>%
-    mutate(taxon_id = str_sub(taxon_id, start = !! start, end = !! end))
+    mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
   ta$abundances <- ta$abundances %>%
-    mutate(taxon_id = str_sub(taxon_id, start = !! start, end = !! end))
+    mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
   ta <- merge_redundant_taxa(ta)
 
   ta
 
 }
 
+#' Retain or remove a set of sample variables
+#'
+#' @export
 select_samples <- function(ta, ...) {
 
   ta$samples <- ta$samples %>%
@@ -202,6 +233,9 @@ select_samples <- function(ta, ...) {
 
 }
 
+#' Retain or remove a set of taxon variables
+#'
+#' @export
 select_taxa <- function(ta, ...) {
 
   ta$taxa <- ta$taxa %>%
@@ -215,12 +249,16 @@ select_taxa <- function(ta, ...) {
 
 }
 
+#' Retain or remove a set of abundance variables
+#'
+#' @export
 select_abundances <- function(ta, ...) {
 
   ta$abundances <- ta$abundances %>%
     select(...)
 
-  if (! all(c("sample_id", "taxon_id", "abundance") %in% names(ta$abundances))) {
+  no_del <- c("sample_id", "taxon_id", "abundance")
+  if (! all(no_del %in% names(ta$abundances))) {
     stop("you cannot delete the sample_id, taxon_id or abundance columns")
   }
 
@@ -228,6 +266,9 @@ select_abundances <- function(ta, ...) {
 
 }
 
+#' Create extra variables in the sample table
+#'
+#' @export
 mutate_samples <- function(ta, ...) {
 
   # to do: error if sample_id is mutated
@@ -239,6 +280,9 @@ mutate_samples <- function(ta, ...) {
 
 }
 
+#' Create extra variables in the taxon table
+#'
+#' @export
 mutate_taxa <- function(ta, ...) {
 
   # to do: error if taxon_id is mutated
@@ -250,6 +294,9 @@ mutate_taxa <- function(ta, ...) {
 
 }
 
+#' Create extra variables in the abundances table
+#'
+#' @export
 mutate_abundances <- function(ta, ...) {
 
   # to do: error if sample_id or taxon_id is mutated
@@ -261,6 +308,9 @@ mutate_abundances <- function(ta, ...) {
 
 }
 
+#' Filter the samples
+#'
+#' @export
 filter_samples <- function(ta, ...) {
 
   ta$samples <- ta$samples %>%
@@ -273,6 +323,9 @@ filter_samples <- function(ta, ...) {
 
 }
 
+#' Filter the taxa
+#'
+#' @export
 filter_taxa <- function(ta, ...) {
 
   ta$taxa <- ta$taxa %>%
@@ -285,6 +338,9 @@ filter_taxa <- function(ta, ...) {
 
 }
 
+#' Filter the abundances
+#'
+#' @export
 filter_abundances <- function(ta, ...) {
 
   ta$abundances <- ta$abundances %>%

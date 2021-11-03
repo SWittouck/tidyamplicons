@@ -37,6 +37,7 @@
 #' data <- data %>%
 #' add_sample_tibble(sample_tibble)
 #'
+#' @export
 add_sample_tibble <- function(ta, sample_tibble) {
 
   modify_at(ta, "samples", left_join, sample_tibble)
@@ -71,6 +72,7 @@ add_sample_tibble <- function(ta, sample_tibble) {
 #' data <- data %>%
 #'  add_lib_size()
 #'
+#' @export
 add_lib_size <- function(ta, step = "current") {
 
   # remove lib_size if already present
@@ -136,6 +138,7 @@ add_lib_size <- function(ta, step = "current") {
 #' data <- data %>%
 #'  add_diversity_measures()
 #'
+#' @export
 add_alphas <- function(ta) {
 
   # if rel abundances not present: add temporarily
@@ -163,11 +166,19 @@ add_alphas <- function(ta) {
 
 }
 
+#' Add some alpha diversity measures
+#'
+#' DEPRECATED, use \code{\link{add_alphas}}
+#'
+#' @export
 add_diversity_measures <- function(ta) {
 
   ta %>%
     add_alphas %>%
-    modify_at("samples", rename, div_observed = observed, div_inv_simpson = inverse_simpson)
+    modify_at(
+      "samples", rename, div_observed = observed,
+      div_inv_simpson = inverse_simpson
+    )
 
 }
 
@@ -203,6 +214,7 @@ add_diversity_measures <- function(ta) {
 #' data <- data %>%
 #'  add_sample_clustered()
 #'
+#' @export
 add_sample_clustered <- function(ta) {
 
   # make relative abundance matrix
@@ -261,6 +273,7 @@ add_sample_clustered <- function(ta) {
 #' data <- data %>%
 #'  add_pcoa()
 #'
+#' @export
 add_pcoa <- function(ta) {
 
   # make relative abundance matrix
@@ -271,11 +284,11 @@ add_pcoa <- function(ta) {
 
   # perform PCoA
   pcoa <- cmdscale(dist_matrix, k = 2, eig = T, list = T)
-  pcoa_variances <- pcoa$eig/sum(pcoa$eig)
+  pcoa_variances <- pcoa$eig / sum(pcoa$eig)
   pcoa_dimensions <- pcoa$points %>%
+    `colnames<-`(c("pcoa1", "pcoa2")) %>%
     as_tibble() %>%
-    mutate(sample_id = !! rownames(pcoa$points)) %>%
-    rename(pcoa1 = V1, pcoa2 = V2)
+    mutate(sample_id = !! rownames(pcoa$points))
 
   # add PCoA dimensions to sample table
   ta$samples <- ta$samples %>%
@@ -299,10 +312,12 @@ add_pcoa <- function(ta) {
 #' "spike_ratio" to the samples tibble of a tidyamplicons object. This function
 #' is useful if a DNA spike was added prior to sequencing and is based on the
 #' method described by
-#' \href{https://www.sciencedirect.com/science/article/pii/S003807171600050X}{Smets
-#' et al., 2016}.
+#' \href{https://doi.org/10.1016/j.soilbio.2016.02.003}{Smets et al., 2016}.
 #'
-#' @param ta Tidyamplicons object.
+#' Credits to Wenke Smets for the idea of spiking samples prior to 16S
+#' sequencing and the initial implementation of this function.
+#'
+#' @param ta A tidyamplicons object.
 #' @param spike_taxon The taxon_id of the spike.
 #'
 #' @examples
@@ -322,10 +337,8 @@ add_pcoa <- function(ta) {
 #' # Add total abundance
 #' data <- data %>%
 #'  add_spike_ratio(spike_taxon = "t1")
-#'
-# Credits to Wenke Smets for the idea of spiking samples prior to 16S sequencing
-# (Smets et al., 2016) and the initial implementation of this function
 #
+#' @export
 add_spike_ratio <- function(ta, spike_taxon) {
 
   # if lib_size not present: add temporarily
@@ -388,6 +401,7 @@ add_spike_ratio <- function(ta, spike_taxon) {
 # Adds a variable "cluster" to the samples table
 # To do: merge with add_sample_clustered somehow
 #
+#' @export
 add_cluster <- function(ta, n_clusters) {
 
   # make relative abundance matrix

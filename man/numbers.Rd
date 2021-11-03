@@ -2,7 +2,7 @@
 % Please edit documentation in R/getters.R
 \name{numbers}
 \alias{numbers}
-\title{Get numbers}
+\title{Return some descriptive numbers}
 \usage{
 numbers(ta)
 }
@@ -14,9 +14,9 @@ numbers(ta)
 tidyamplicons object.
 }
 \details{
-This function returns the number of samples, taxa and reads in a tidyamplicons
-object, stored in a named numeric vector. To print the numbers, use
-\code{\link{report_numbers}} instead.
+This function returns the number of samples, taxa and reads in a
+tidyamplicons object, stored in a named numeric vector. To print the numbers,
+use \code{\link{report_numbers}} instead.
 }
 \examples{
 # Initiate abundance matrix
@@ -28,10 +28,9 @@ rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
 
 # Convert to tidyamplicons object
-data <- create_tidyamplicons(x,
-                     taxa_are_columns = FALSE
-                     )
+data <- create_tidyamplicons(x, taxa_are_columns = FALSE)
+
 # Report numbers
-numbers <- data \%>\%
- get_numbers()
+numbers <- data \%>\% get_numbers()
+
 }

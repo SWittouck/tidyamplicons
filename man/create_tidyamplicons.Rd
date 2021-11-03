@@ -37,4 +37,5 @@ data <- create_tidyamplicons(x,
 \dontrun{
 tidyamplicons("a")
 }
+
 }

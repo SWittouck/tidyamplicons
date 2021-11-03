@@ -2,7 +2,7 @@
 % Please edit documentation in R/getters.R
 \name{betas}
 \alias{betas}
-\title{Get betas}
+\title{Get beta diversity table}
 \usage{
 betas(ta, unique = T, method = "bray", binary = F)
 }
@@ -37,10 +37,10 @@ rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
 
 # Convert to tidyamplicons object
-data <- create_tidyamplicons(x,
-                     taxa_are_columns = FALSE
-                     )
+data <-
+  create_tidyamplicons(x, taxa_are_columns = FALSE)
+
 # Report numbers
-numbers <- data \%>\%
- get_betas()
+numbers <- data \%>\% betas()
+
 }

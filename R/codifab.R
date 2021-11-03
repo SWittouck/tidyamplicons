@@ -13,6 +13,8 @@
 #' @param max_taxa The maximum number of taxa to use
 #'
 #' @return A tidyamplicons object with an extra table logratios
+#'
+#' @export
 add_logratios <- function(ta, max_taxa = 30) {
 
   if (nrow(ta$taxa) > max_taxa) {
@@ -74,6 +76,8 @@ add_logratios <- function(ta, max_taxa = 30) {
 #' @param max_taxa The maximum number of taxa to use
 #'
 #' @return A tidyamplicons object with an extra table taxon_pairs
+#'
+#' @export
 add_codifab <- function(ta, condition, conditions = NULL, max_taxa = 30) {
 
   ta_sub <- ta
@@ -139,6 +143,8 @@ add_codifab <- function(ta, condition, conditions = NULL, max_taxa = 30) {
 #'   taxon_pair table
 #'
 #' @return A ggplot object
+#'
+#' @export
 codifab_plot <- function(ta, diffabun_var) {
 
   if (! "taxon_name" %in% names(ta$taxa)) {
@@ -188,7 +194,9 @@ codifab_plot <- function(ta, diffabun_var) {
 
 }
 
-# add compositional principal components analysis
+#' Add compositional principal components to the sample table
+#'
+#' @export
 add_copca <- function(ta) {
 
   # if logratios not present: add temporarily

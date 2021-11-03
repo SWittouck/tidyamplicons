@@ -1,4 +1,6 @@
-
+#' Return a bar plot of the samples
+#'
+#' @export
 bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
   # convert promise to formula
@@ -39,9 +41,19 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
 }
 
+#' Return a bar plot of the samples
+#'
+#' DEPRECATED, use \code{\link{bar_plot}}
+#'
+#' @export
 get_bar_plot <- bar_plot
 
-# needs lib_sizes table
+#' Return a history plot of the samples
+#'
+#' DEPRECATED, this function is kept for historical reasons and will probably
+#' not work
+#'
+#' @export
 history_plot <- function(ta, col = NULL) {
 
   # convert promise to formula
@@ -62,10 +74,17 @@ history_plot <- function(ta, col = NULL) {
 
 }
 
+#' Return a history plot of the samples
+#'
+#' DEPRECATED, this function is kept for historical reasons and will probably
+#' not work
+#'
+#' @export
 get_history_plot <- history_plot
 
-# sample should be the name of a variable you want to use to identify samples in
-# the plot; please quote this variable name
+#' Return a visualization designed for a small number of samples
+#'
+#' @export
 sample_plot <- function(ta, sample = sample_id, n = 15, nrow = NULL) {
 
   # if rel_abundance not present: add and remove on exit

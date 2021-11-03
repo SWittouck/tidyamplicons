@@ -8,11 +8,17 @@
 #' functions that take a tidyamplicons object as first argument and also return
 #' a tidyamplicons object. Not all functionality is currently implemented in the
 #' form of verbs, but this will soon be remediated.
-#' 
-#' @section Author(s):
-#' Stijn Wittouck \email{wittouck_stijn@@hotmail.com} 
 #'
 #' @docType package
 #' @name tidyamplicons
+#'
+#' @section Author(s):
+#' Stijn Wittouck \email{wittouck_stijn@@hotmail.com}
+#'
+#' @import ggplot2
+#' @import tidyr
+#' @import dplyr
+#' @import stringr
+#' @import vegan
 NULL
 

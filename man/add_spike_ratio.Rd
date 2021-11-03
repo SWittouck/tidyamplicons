@@ -7,7 +7,7 @@
 add_spike_ratio(ta, spike_taxon)
 }
 \arguments{
-\item{ta}{Tidyamplicons object.}
+\item{ta}{A tidyamplicons object.}
 
 \item{spike_taxon}{The taxon_id of the spike.}
 }
@@ -21,8 +21,10 @@ abundance to the spike abundance and adds this as a new variable
 "spike_ratio" to the samples tibble of a tidyamplicons object. This function
 is useful if a DNA spike was added prior to sequencing and is based on the
 method described by
-\href{https://www.sciencedirect.com/science/article/pii/S003807171600050X}{Smets
-et al., 2016}.
+\href{https://doi.org/10.1016/j.soilbio.2016.02.003}{Smets et al., 2016}.
+
+Credits to Wenke Smets for the idea of spiking samples prior to 16S
+sequencing and the initial implementation of this function.
 }
 \examples{
 # Initiate abundance matrix
@@ -41,5 +43,4 @@ data <- create_tidyamplicons(x,
 # Add total abundance
 data <- data \%>\%
  add_spike_ratio(spike_taxon = "t1")
-
 }

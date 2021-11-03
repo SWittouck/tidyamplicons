@@ -2,7 +2,7 @@
 % Please edit documentation in R/adders_taxa.R
 \name{add_taxon_tibble}
 \alias{add_taxon_tibble}
-\title{Add taxa table to the tidyamplicons object}
+\title{Add taxon metadata to the tidyamplicons object}
 \usage{
 add_taxon_tibble(ta, taxon_tibble)
 }

@@ -27,6 +27,8 @@
 #' \dontrun{
 #' tidyamplicons("a")
 #' }
+#'
+#' @export
 create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 
   if (
@@ -73,6 +75,8 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 }
 
 #' Write community data in tidyamplicons format
+#'
+#' @export
 write_tidyamplicons <- function(ta, dout) {
   dir.create(dout)
   write_csv(ta$samples, paste0(dout, "/samples.csv"))
@@ -81,6 +85,8 @@ write_tidyamplicons <- function(ta, dout) {
 }
 
 #' Read community data written by tidyamplicons
+#'
+#' @export
 read_tidyamplicons <- function(din, samples = "samples.csv", taxa = "taxa.csv",
                                abundances = "abundances.csv") {
   samples <- read_csv(paste0(din, "/", samples), col_types = cols())
@@ -99,6 +105,8 @@ read_tidyamplicons <- function(din, samples = "samples.csv", taxa = "taxa.csv",
 #' 0.1.0 to a tidyamplicons object compatible with version 0.1.0.
 #'
 #' @param ta Old tidyamplicons object.
+#'
+#' @export
 update_tidyamplicons <- function(ta) {
 
   ta %>%
@@ -108,6 +116,9 @@ update_tidyamplicons <- function(ta) {
 
 }
 
+#' Reset the taxon and sample IDs
+#'
+#' @export
 reset_ids <- function(ta, keep_prev = F) {
 
   if (keep_prev) {
@@ -125,6 +136,9 @@ reset_ids <- function(ta, keep_prev = F) {
 
 }
 
+#' Rename the "sample" and "taxon" columns to "sample_id" and "taxon_id"
+#'
+#' @export
 update_id_names <- function(ta) {
 
   ta %>%
@@ -147,6 +161,8 @@ update_id_names <- function(ta) {
 #'   "sample" column in sample tibble of the tidyamplicons object.
 #' @param taxon The taxon names required for a phyloseq object. Default is
 #'   "taxon" column in taxon tibble of the tidyamplicons object.
+#'
+#' @export
 as_phyloseq <- function(ta, sample = sample, taxon = taxon) {
 
   if ("phyloseq" %in% class(ta)) return(ta)
@@ -204,6 +220,7 @@ as_phyloseq <- function(ta, sample = sample, taxon = taxon) {
 #'
 #' @param ps Phyloseq object.
 #'
+#' @export
 as_tidyamplicons <- function(ps) {
 
   if ("tidyamplicons" %in% class(ps)) return(ps)
@@ -249,6 +266,7 @@ as_tidyamplicons <- function(ps) {
 #' @param value Name of resulting colum containing the abundance data. Default
 #'   is "abundance".
 #'
+#' @export
 as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE,
                           value = "abundance") {
 
@@ -280,6 +298,7 @@ as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE,
 #' @param value Name of colum containing the abundance data. Default is
 #'   "abundance".
 #'
+#' @export
 as_abundances_matrix <- function(abundances, value = abundance) {
 
   if (
@@ -313,6 +332,8 @@ as_abundances_matrix <- function(abundances, value = abundance) {
 #'
 #' @param ta1 The first tidyamplicons object.
 #' @param ta2 The second tidyamplicons object.
+#'
+#' @export
 merge_tidyamplicons <- function(ta1, ta2, taxon_identifier = sequence) {
 
   taxon_identifier <- rlang::ensym(taxon_identifier)
@@ -359,6 +380,9 @@ merge_tidyamplicons <- function(ta1, ta2, taxon_identifier = sequence) {
 
 }
 
+#' Create a tidyamplicons object from three tidy tables
+#'
+#' @export
 make_tidyamplicons <- function(samples, taxa, abundances,
                                sample_name = sample, taxon_name = taxon) {
 
@@ -378,9 +402,11 @@ make_tidyamplicons <- function(samples, taxa, abundances,
 
 }
 
-# DEPRECATED
-# converts a phyloseq object to a tidyamplicons object
-# the plyloseq object should contain absolute abundances
+#' Convert phyloseq object to tidyamplicons object
+#'
+#' DEPRECATED, use \code{\link{as_tidyamplicons}}
+#'
+#' @export
 tidy_phyloseq <- function(ps) {
 
   # convert sample data
