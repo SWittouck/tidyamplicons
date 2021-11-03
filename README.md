@@ -10,7 +10,7 @@ Run the following (only install devtools if not yet installed):
 
 ```R
 # install.packages("devtools")
-devtools::install_github("SWittouck/tidyamplicons", ref = "v0.2.1")
+devtools::install_github("SWittouck/tidyamplicons", ref = "v0.2.2")
 ```
 
 ## Documentation
@@ -19,6 +19,6 @@ Documentation is available for most functions but not all, and it is still very 
 
 ```R
 devtools::install_github(
-  "SWittouck/tidyamplicons", ref = "v0.2.1", build_vignettes = TRUE
+  "SWittouck/tidyamplicons", ref = "v0.2.2", build_vignettes = TRUE
 )
 ```
