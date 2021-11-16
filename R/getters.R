@@ -317,11 +317,17 @@ abundances <- function(ta) ta$abundances
 
 #' Perform an adonis test
 #'
-#' This function executes the adonis function of the vegan package and returns
-#' the result.
+#' This function executes the \link[vegan]{adonis} function of the vegan package
+#' and returns the result.
 #'
-#' Predictors should be a character vector. Samples where one of the predictors
-#' is NA are removed.
+#' Samples where one or more predictors are NA are removed.
+#'
+#' @param ta A tidyamplicons object.
+#' @param predictors A character vector with predictors to include in the model.
+#' @param permutations The number of permutations (more permutations takes
+#'   longer but gives a more accurate p-value).
+#'
+#' @return An object of class "adonis" (see \link[vegan]{adonis}).
 #'
 #' @export
 perform_adonis <- function(ta, predictors, permutations = 999) {

@@ -6,11 +6,21 @@
 \usage{
 perform_adonis(ta, predictors, permutations = 999)
 }
+\arguments{
+\item{ta}{A tidyamplicons object.}
+
+\item{predictors}{A character vector with predictors to include in the model.}
+
+\item{permutations}{The number of permutations (more permutations takes
+longer but gives a more accurate p-value).}
+}
+\value{
+An object of class "adonis" (see \link[vegan]{adonis}).
+}
 \description{
-This function executes the adonis function of the vegan package and returns
-the result.
+This function executes the \link[vegan]{adonis} function of the vegan package
+and returns the result.
 }
 \details{
-Predictors should be a character vector. Samples where one of the predictors
-is NA are removed.
+Samples where one or more predictors are NA are removed.
 }
