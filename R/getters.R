@@ -344,7 +344,7 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
   metadata <- tibble(sample_id = rownames(abundances_matrix)) %>%
     left_join(ta$samples, by = "sample_id")
 
-  adonis(
+  adonis2(
     as.formula(paste("abundances_matrix", formula_RHS, sep = " ~ ")),
     metadata,
     permutations = permutations
