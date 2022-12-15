@@ -74,12 +74,11 @@ add_logratios <- function(ta, max_taxa = 30) {
 #' @param conditions A character vector with exactly two categories of the
 #'   condition variable
 #' @param max_taxa The maximum number of taxa to use
-#' @param paired If the data is paired or not
 #'
 #' @return A tidyamplicons object with an extra table taxon_pairs
 #'
 #' @export
-add_codifab <- function(ta, condition, conditions = NULL, max_taxa = 30, paired=FALSE) {
+add_codifab <- function(ta, condition, conditions = NULL, max_taxa = 30) {
 
   ta_sub <- ta
 
@@ -115,7 +114,7 @@ add_codifab <- function(ta, condition, conditions = NULL, max_taxa = 30, paired=
       wilcox = list(wilcox.test(
         x = logratio[condition == conditions[1]],
         y = logratio[condition == conditions[2]],
-        conf.int = T, exact = F, paired = paired
+        conf.int = T, exact = F
       )),
       a_vs_b = map_dbl(wilcox, ~ .[["estimate"]]),
       wilcox_p = map_dbl(wilcox, ~ .[["p.value"]])
