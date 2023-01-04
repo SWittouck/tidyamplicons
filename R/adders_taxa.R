@@ -275,13 +275,28 @@ add_taxon_name <- function(
 
 }
 
-#' Create taxon names suitable for visualization with color
+#' Create taxon names suitable for visualization with color. A rank can be supplied to aggregate colors higher than the current rank.
 #'
 #' @export
 add_taxon_name_color <- function(
-  ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL
+  ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL, rank = NULL
   ) {
 
+  # Recursive function to add taxon name color on different rank
+  add_colnames_rank <- function(ta, rank_col) {
+    colnames <- ta %>% 
+      aggregate_taxa(rank = rank_col) %>%
+      add_taxon_name_color(method=method, n=n)
+    
+    col_per_sample <- colnames$abundances %>% 
+      inner_join(colnames$taxa, by="taxon_id") %>%
+      dplyr::select(sample_id, taxon_name_color, taxon_id)
+  
+    ta$taxa <- ta$taxa %>% left_join(col_per_sample, by="taxon_id")
+    ta
+    
+  }
+  
   # if taxon_name not present: add temporarily
   taxon_name_tmp <- ! "taxon_name" %in% names(ta$taxa)
   if (taxon_name_tmp) ta <- add_taxon_name(ta)
@@ -338,6 +353,12 @@ add_taxon_name_color <- function(
     mutate(taxon_name_color = if_else(taxon_name %in% levels, taxon_name, "residual")) %>%
     mutate(taxon_name_color = factor(taxon_name_color, levels = levels))
 
+  # overwrite colors with higher rank if asked for 
+  if(! is.null(rank)) {
+    ta$taxa <- ta$taxa %>% dplyr::select(-one_of("taxon_name_color"))
+    ta <- add_colnames_rank(ta, rank)
+  }
+  
   # cleanup
   if (taxon_name_tmp) ta$taxa$taxon_name <- NULL
   if (exists("total_rel_ab_tmp")) ta$taxa$total_rel_abundance <- NULL
