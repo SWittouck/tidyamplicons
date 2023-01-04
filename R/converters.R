@@ -78,7 +78,7 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 #'
 #' @export
 write_tidyamplicons <- function(ta, dout) {
-  dir.create(dout)
+  if (!dir.exists(dout)) {dir.create(dout)}
   write_csv(ta$samples, paste0(dout, "/samples.csv"))
   write_csv(ta$taxa, paste0(dout, "/taxa.csv"))
   write_csv(ta$abundances, paste0(dout, "/abundances.csv"))
