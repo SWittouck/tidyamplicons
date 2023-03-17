@@ -1,10 +1,9 @@
-#' Return a bar plot of the samples
-#'
-#' @export
-bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
-
-  # convert promise to formula
-  x <- substitute(x)
+#' Prepare tidyamplicons object for visualization by barplot. 
+#' Clusters samples, adds color groups and relative abundances.
+#' @param ta a tidyamplicons object
+#' @param n an integer
+#' @NoRd
+prepare_for_bp <- function(ta, n = 12) {
 
   # add sample_clustered if not present
   if (! "sample_clustered" %in% names(ta$samples)) {
@@ -21,8 +20,19 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
     ta <- add_rel_abundance(ta)
   }
 
+  ta %>% get_abundances_extended()
+}
+
+#' Return a bar plot of the samples
+#'
+#' @export
+bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
+
+  # convert promise to formula
+  x <- substitute(x)
+
   # make plot and return
-  plot <- get_abundances_extended(ta) %>%
+  plot <- prepare_for_bp(ta, n) %>%
     ggplot(aes_(x = x, y = ~rel_abundance, fill = ~taxon_name_color)) +
     scale_fill_brewer(palette = "Paired", name = "Taxon") +
     xlab("sample") + ylab("relative abundance") +
@@ -40,6 +50,7 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   plot
 
 }
+
 
 #' Return a bar plot of the samples
 #'
