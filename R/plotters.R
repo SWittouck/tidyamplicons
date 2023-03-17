@@ -75,7 +75,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
           name = ~taxon_name_color,
           hovertemplate = paste(
             "<b>%{x}</b>",
-            "<br>%{y:.2f}%<br>"
+            "<br>%{y:.2%}<br>"
           ),
           type = "bar"
         ) %>%
