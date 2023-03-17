@@ -29,11 +29,11 @@ prepare_for_bp <- function(ta, n = 12) {
 bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
   # convert promise to formula
-  x <- substitute(x)
+  x <- enquo(x)
 
   # make plot and return
   plot <- prepare_for_bp(ta, n) %>%
-    ggplot(aes_(x = x, y = ~rel_abundance, fill = ~taxon_name_color)) +
+    ggplot(aes(!!x = x, y = rel_abundance, fill = taxon_name_color)) +
     scale_fill_brewer(palette = "Paired", name = "Taxon") +
     xlab("sample") + ylab("relative abundance") +
     theme(
