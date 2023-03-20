@@ -3,9 +3,9 @@
 .RData
 .Ruserdata
 
-tidyamplicons.Rproj
-thoughts.md
-inst/doc
+doc
 informal_tests.R
 notes.md
 test
+tidyamplicons.Rproj
+wiki
