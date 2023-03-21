@@ -34,7 +34,7 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
   # make plot and return
   plot <- prepare_for_bp(ta, n) %>%
-    ggplot(aes(!!x = x, y = rel_abundance, fill = taxon_name_color)) +
+    ggplot(aes(x = !!x, y = rel_abundance, fill = taxon_name_color)) +
     scale_fill_brewer(palette = "Paired", name = "Taxon") +
     xlab("sample") +
     ylab("relative abundance") +
@@ -68,7 +68,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
       # make plot and return
       prepare_for_bp(ta, n) %>%
         plot_ly(
-          x = ~ !!x,
+          x = ~!!x,
           y = ~rel_abundance,
           color = ~taxon_name_color,
           colors = palette_xgfs,
@@ -84,6 +84,52 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
   ))
   plot
 }
+
+#' Return an interactive pcoa plot of the samples
+#' @param ta a tidyamplicons object
+#' @param x a string, representing the column name used to color the sample groups on.
+#' @param palette a vector of colors, used as the palette for coloring sample groups.
+#'
+#' @export
+pcoa_plot_ly <- function(ta, x, samplenames = sample, palette = NULL, title = "PCOA plot") {
+  # convert promise to formula
+  x <- enquo(x)
+  samplenames <- enquo(samplenames)
+
+  # fallback to default palette
+  if (is.null(palette)) {
+    palette <- cols
+  }
+
+  # prepare pcoa if needed
+  if (!all(c("pcoa1", "pcoa2") %in% names(ta$samples))) {
+    ta <- add_pcoa(ta)
+  }
+
+  plot <- rlang::eval_tidy(rlang::quo_squash(
+    quo({
+      ta$samples %>%
+        plot_ly(
+          x = ~pcoa1,
+          y = ~pcoa2,
+          color = ~!!x,
+          colors = palette_paired,
+          text = ~ paste(!!samplenames),
+          hovertemplate = paste("<i>%{text}</i>"),
+          type = "scatter",
+          mode = "markers"
+        ) %>%
+        layout(
+          title = title,
+          yaxis = list(zeroline = F),
+          xaxis = list(zeroline = F)
+        )
+    })
+  ))
+
+  plot
+}
+
 
 #' Return a bar plot of the samples
 #'
