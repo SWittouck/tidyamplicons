@@ -81,7 +81,11 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
           ),
           type = "bar"
         ) %>%
-        layout(barmode = "stack")
+        layout(
+          barmode = "stack",
+          xaxis = list(title="Sample"),
+          yaxis = list(title="Relative Abundance")
+        )
     })
   ))
   plot
