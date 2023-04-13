@@ -20,5 +20,6 @@
 #' @import dplyr
 #' @import stringr
 #' @import vegan
+#' @importFrom plotly plot_ly layout
 NULL
 

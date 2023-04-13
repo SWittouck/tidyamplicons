@@ -2,7 +2,7 @@
 #' Clusters samples, adds color groups and relative abundances.
 #' @param ta a tidyamplicons object
 #' @param n an integer
-#' @NoRd
+#' @noRd
 prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
   # add sample_clustered if not present
   if (!"sample_clustered" %in% names(ta$samples)) {
@@ -69,7 +69,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
     quo({
       # make plot and return
       prepare_for_bp(ta, n) %>%
-        plot_ly(
+        plotly::plot_ly(
           x = ~fct_reorder(!!x, as.integer(sample_clustered)),
           y = ~rel_abundance,
           color = ~taxon_name_color,
@@ -81,7 +81,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
           ),
           type = "bar"
         ) %>%
-        layout(
+        plotly::layout(
           barmode = "stack",
           xaxis = list(title="Sample"),
           yaxis = list(title="Relative Abundance")
@@ -115,7 +115,7 @@ pcoa_plot_ly <- function(ta, x, samplenames = sample, palette = NULL, title = "P
   plot <- rlang::eval_tidy(rlang::quo_squash(
     quo({
       ta$samples %>%
-        plot_ly(
+        plotly::plot_ly(
           x = ~pcoa1,
           y = ~pcoa2,
           color = ~!!x,
@@ -125,7 +125,7 @@ pcoa_plot_ly <- function(ta, x, samplenames = sample, palette = NULL, title = "P
           type = "scatter",
           mode = "markers"
         ) %>%
-        layout(
+        plotly::layout(
           title = title,
           yaxis = list(zeroline = F),
           xaxis = list(zeroline = F)
