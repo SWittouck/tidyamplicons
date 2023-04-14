@@ -19,7 +19,7 @@ rarefy <- function(ta, n, replace = F) {
     ungroup()
 
   ta %>%
-    modify_at("abundances", filter, abundance > 0) %>%
+    purrr::modify_at("abundances", filter, abundance > 0) %>%
     process_abundance_selection()
 
 }

@@ -333,7 +333,7 @@ abundances <- function(ta) ta$abundances
 perform_adonis <- function(ta, predictors, permutations = 999) {
 
   abundances_matrix <- ta %>%
-    modify_at("samples", drop_na, one_of(predictors)) %>%
+    purrr::modify_at("samples", drop_na, one_of(predictors)) %>%
     process_sample_selection() %>%
     add_rel_abundance() %>%
     abundances() %>%

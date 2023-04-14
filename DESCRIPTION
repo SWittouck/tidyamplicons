@@ -7,11 +7,13 @@ Authors@R:
 Description: A toolkit for processing and visualizing amplicon abundance
     data, based on the tidyverse framework.
 License: GPL-3
+Depends: R (>= 2.10)
 Imports:
     dplyr,
     ggplot2,
     magrittr,
     purrr,
+    readr,
     rlang (>= 0.4.11),
     stringr,
     tibble,
@@ -23,9 +25,11 @@ Suggests:
     knitr,
     phyloseq,
     rmarkdown,
-    roxygen2
+    roxygen2,
+    testthat (>= 3.0.0)
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Config/testthat/edition: 3
