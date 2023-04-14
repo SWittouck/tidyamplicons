@@ -36,13 +36,12 @@ colnames(x) <- c("sample1", "sample2")
 
 # Convert to tidyamplicons object
 data <- create_tidyamplicons(x,
-                     taxa_are_columns = FALSE,
-                     taxon_names_are_sequences = FALSE)
+                     taxa_are_columns = FALSE)
 
 # Initiate taxon tibble
 taxon <- c("taxon1", "taxon2")
 genus <- c("Salmonella", "Lactobacillus")
-taxon_tibble <- tibble(taxa, genus)
+taxon_tibble <- tibble::tibble(taxon, genus)
 
 # Add taxon tibble to tidyamplicons object
 data <- data \%>\%

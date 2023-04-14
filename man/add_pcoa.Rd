@@ -24,11 +24,11 @@ function will also add relative abundances if not present using
 \examples{
 # Initiate abundance matrix
 x <- matrix(
- c(1500, 1300, 280, 356),
- ncol = 2
+ c(1500, 1300, 280, 356, 456, 678),
+ ncol = 3
 )
 rownames(x) <- c("taxon1", "taxon2")
-colnames(x) <- c("sample1", "sample2")
+colnames(x) <- c("sample1", "sample2", "sample3")
 
 # Convert to tidyamplicons object
 data <- create_tidyamplicons(x,

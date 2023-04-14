@@ -31,7 +31,7 @@
 #' # Initiate sample tibble
 #' sample <- c("sample1", "sample2")
 #' environment <- c("food fermentation", "human stool")
-#' sample_tibble <- tibble(sample, environment)
+#' sample_tibble <- tibble::tibble(sample, environment)
 #'
 #' # Add sample tibble to tidyamplicons object
 #' data <- data %>%
@@ -40,7 +40,7 @@
 #' @export
 add_sample_tibble <- function(ta, sample_tibble) {
 
-  modify_at(ta, "samples", left_join, sample_tibble)
+  purrr::modify_at(ta, "samples", left_join, sample_tibble)
 
 }
 
@@ -137,7 +137,6 @@ add_lib_size <- function(ta, step = "current") {
 #' # Add total abundance
 #' data <- data %>%
 #'  add_diversity_measures()
-#'
 #' @export
 add_alphas <- function(ta) {
 
@@ -175,7 +174,7 @@ add_diversity_measures <- function(ta) {
 
   ta %>%
     add_alphas %>%
-    modify_at(
+    purrr::modify_at(
       "samples", rename, div_observed = observed,
       div_inv_simpson = inverse_simpson
     )
@@ -258,11 +257,11 @@ add_sample_clustered <- function(ta) {
 #' @examples
 #' # Initiate abundance matrix
 #' x <- matrix(
-#'  c(1500, 1300, 280, 356),
-#'  ncol = 2
+#'  c(1500, 1300, 280, 356, 456, 678),
+#'  ncol = 3
 #' )
 #' rownames(x) <- c("taxon1", "taxon2")
-#' colnames(x) <- c("sample1", "sample2")
+#' colnames(x) <- c("sample1", "sample2", "sample3")
 #'
 #' # Convert to tidyamplicons object
 #' data <- create_tidyamplicons(x,
@@ -396,7 +395,7 @@ add_spike_ratio <- function(ta, spike_taxon) {
 #'
 #' # Add total abundance
 #' data <- data %>%
-#'  add_cluster(n_clusters = 5)
+#'  add_cluster(n_clusters = 2)
 #'
 # Adds a variable "cluster" to the samples table
 # To do: merge with add_sample_clustered somehow
