@@ -71,7 +71,7 @@ change_id_taxa <- function(ta, taxon_id_new) {
 
   ta <- mutate_taxa(ta, taxon_id_new = as.character(!! taxon_id_new))
 
-  if (any(duplicated(ta$taxataxon_id_new))) {
+  if (any(duplicated(ta$taxa$taxon_id_new))) {
     stop("the new taxon ids are not unique")
   }
 
