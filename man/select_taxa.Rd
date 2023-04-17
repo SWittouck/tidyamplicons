@@ -6,6 +6,9 @@
 \usage{
 select_taxa(ta, ...)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Retain or remove a set of taxon variables
 }

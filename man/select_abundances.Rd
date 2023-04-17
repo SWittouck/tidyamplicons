@@ -6,6 +6,9 @@
 \usage{
 select_abundances(ta, ...)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Retain or remove a set of abundance variables
 }
