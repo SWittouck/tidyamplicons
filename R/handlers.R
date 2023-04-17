@@ -91,16 +91,17 @@ change_id_taxa <- function(ta, taxon_id_new) {
 }
 
 #' Aggregate samples with identical values for all metadata
-#'
+#' @param ta a tidyamplicons object
 #' @export
 aggregate_samples <- function(ta) {
 
   # sample table with only old and new sample names
+  metadata <- setdiff(names(ta$samples), "sample_id")
   names <- ta$samples %>%
-    select(- sample_id) %>%
+    select(-sample_id) %>%
     distinct() %>%
-    mutate(sample_id_new = paste("m", 1:n(), sep = "")) %>%
-    right_join(ta$samples) %>%
+    mutate(sample_id_new = paste0("m", 1:n())) %>%
+    right_join(ta$samples, by=metadata, multiple="all") %>%
     select(sample_id, sample_id_new)
 
   # adapt sample table with new names
@@ -209,8 +210,10 @@ trim_asvs <- function(ta, start, end) {
 
   ta$taxa <- ta$taxa %>%
     mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
-  ta$abundances <- ta$abundances %>%
-    mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
+  if ("sequence" %in% names(ta$abundances)){
+    ta$abundances <- ta$abundances %>%
+      mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
+  }
   ta <- merge_redundant_taxa(ta)
 
   ta
