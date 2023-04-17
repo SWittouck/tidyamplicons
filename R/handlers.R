@@ -134,6 +134,8 @@ aggregate_samples <- function(ta) {
 #' * If not, delete all taxon variables except taxon_id and the ranks you are
 #' still interested in prior to calling this function.
 #'
+#' @param ta a tidyamplicons object
+#' @param rank an optional rank to aggregate on
 #' @export
 aggregate_taxa <- function(ta, rank = NULL) {
 
@@ -164,7 +166,7 @@ aggregate_taxa <- function(ta, rank = NULL) {
   ta$taxa <-
     ta$taxa %>%
     chop(taxon_id) %>%
-    mutate(taxon_id_new = paste("t", 1:n(), sep = ""))
+    mutate(taxon_id_new = paste0("t", 1:n()))
 
   id_conversion <-
     ta$taxa %>%
@@ -204,15 +206,20 @@ aggregate_taxa <- function(ta, rank = NULL) {
 #'
 #' This function assumes that the sequence variable in the taxon table is called
 #' "sequence".
+#' @param ta a tidyamplicons object
+#' @param start index of where to start trimming
+#' @param end index of where to stop trimming
 #'
 #' @export
 trim_asvs <- function(ta, start, end) {
 
   ta$taxa <- ta$taxa %>%
-    mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
+  mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
   if ("sequence" %in% names(ta$abundances)){
     ta$abundances <- ta$abundances %>%
-      mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
+      mutate(sequence = str_sub(
+        sequence, start = !! start, end = !! end
+      ))
   }
   ta <- merge_redundant_taxa(ta)
 

@@ -6,6 +6,9 @@
 \usage{
 aggregate_samples(ta)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Aggregate samples with identical values for all metadata
 }

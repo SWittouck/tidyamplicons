@@ -54,25 +54,25 @@ nsamples <- 217
 nsamples_agg <- 139
 
 test_that("No aggregation of sample table when metadata is unique for every row", {
-    sample_id_before <- urt$samples$sample_id
-    urt_agg <- urt %>% aggregate_samples()
-    sample_id_after <- urt_agg$samples$sample_id
+    sample_id_before <- ta.test$samples$sample_id
+    ta.agg <- ta.test %>% aggregate_samples()
+    sample_id_after <- ta.agg$samples$sample_id
     expect_length(sample_id_after, nsamples)
     expect_length(sample_id_before, nsamples)
 })
 
 test_that("Aggregation of sample table succeeds", {
-    sample_id_before <- urt$samples$sample_id
+    sample_id_before <- ta.test$samples$sample_id
     # Make one column not unique to test agg
-    urt_agg <- urt %>% 
+    ta.agg <- ta.test %>% 
         mutate_samples(location = "NF") %>% 
         aggregate_samples()
-    sample_id_after <- urt_agg$samples$sample_id
+    sample_id_after <- ta.agg$samples$sample_id
     expect_length(sample_id_before, nsamples)
     expect_length(sample_id_after, nsamples_agg)
     # test abundances table for irregularities
     expect_lte(
-        length(unique(urt_agg$abundances$sample_id)), 
+        length(unique(ta.agg$abundances$sample_id)), 
         nsamples_agg
     )
 })
@@ -80,35 +80,51 @@ test_that("Aggregation of sample table succeeds", {
 # AGG TAXA
 ntaxa <- 1957
 ntaxa_agg <- 1066
+ntaxa_agg_phylum <- 32
+
 test_that("No aggregation of taxa table when metadata is unique for every row", {
-    taxon_id_before <- urt$taxa$taxon_id
-    urt_agg <- urt %>% aggregate_taxa()
-    taxon_id_after <- urt_agg$taxa$taxon_id
+    taxon_id_before <- ta.test$taxa$taxon_id
+    ta.agg <- ta.test %>% aggregate_taxa()
+    taxon_id_after <- ta.agg$taxa$taxon_id
     expect_length(taxon_id_after, ntaxa)
     expect_length(taxon_id_before, ntaxa)
 })
 
-test_that("Aggregation of sample table succeeds", {
-    taxon_id_before <- urt$taxa$taxon_id
+test_that("Aggregation of taxa table succeeds when no rank is specified", {
+    taxon_id_before <- ta.test$taxa$taxon_id
     # Make one column not unique to test agg
-    urt_agg <- urt %>% 
+    ta.agg <- ta.test %>% 
         mutate_taxa(sequence = 0) %>% 
         aggregate_taxa()
-    taxon_id_after <- urt_agg$taxa$taxon_id
+    taxon_id_after <- ta.agg$taxa$taxon_id
     expect_length(taxon_id_before, ntaxa)
     expect_length(taxon_id_after, ntaxa_agg)
     # test abundances table for irregularities
     expect_lte(
-        length(unique(urt_agg$abundances$taxon_id)), 
+        length(unique(ta.agg$abundances$taxon_id)), 
         ntaxa_agg
+    )
+})
+
+test_that("Aggregation of taxa table succeeds when rank is specified", {
+    taxon_id_before <- ta.test$taxa$taxon_id
+    # Make one column not unique to test agg
+    ta.agg <- ta.test %>% aggregate_taxa(rank="phylum")
+    taxon_id_after <- ta.agg$taxa$taxon_id
+    expect_length(taxon_id_before, ntaxa)
+    expect_length(taxon_id_after, ntaxa_agg_phylum)
+    # test abundances table for irregularities
+    expect_lte(
+        length(unique(ta.agg$abundances$taxon_id)), 
+        ntaxa_agg_phylum
     )
 })
 
 # TRIM ASVS
 
 test_that("Trim ASVs works", {
-    urt_trim <- urt %>% trim_asvs(1, 5)
-    longest_seq <- max(str_length(urt_trim$taxa$sequence))
+    ta.trim <- ta.test %>% trim_asvs(1, 5)
+    longest_seq <- max(str_length(ta.trim$taxa$sequence))
     expect_lte(longest_seq, 5)
 })
 

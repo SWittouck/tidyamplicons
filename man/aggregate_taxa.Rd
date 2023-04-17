@@ -6,6 +6,11 @@
 \usage{
 aggregate_taxa(ta, rank = NULL)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+
+\item{rank}{an optional rank to aggregate on}
+}
 \description{
 There are two ways to call this function:
 }
