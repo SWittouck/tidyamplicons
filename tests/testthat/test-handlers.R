@@ -48,3 +48,56 @@ test_that("Change sample ID based on unique column",{
 test_that("Raise error on non-unique taxon_id",{
     expect_error(ta.test %>% change_id_taxa(genus))
 })
+
+# AGG SAMPLES
+
+# AGG TAXA
+
+# TRIM ASVS
+
+# SELECT SAMPLES
+
+test_that("Removing sample_id throws error", {
+  expect_error(ta.test %>% select_samples(-sample_id))
+})
+
+test_that("Removing a column from samples is succesful", {
+    expect_true("method" %in% names(ta.test$samples))
+    ta.test <- ta.test %>% select_samples(-method)
+    expect_true(!"method" %in% names(ta.test$samples))
+})
+
+# SELECT TAXA
+
+test_that("Removing taxon_id throws error", {
+  expect_error(ta.test %>% select_taxa(-taxon_id))
+})
+
+test_that("Removing a column from taxa is succesful", {
+    expect_true("phylum" %in% names(ta.test$taxa))
+    ta.test <- ta.test %>% select_taxa(-phylum)
+    expect_true(!"phylum" %in% names(ta.test$taxa))
+})
+
+# SELECT ABUNDANCES
+
+# Add removable column
+ta.test$abundances <-ta.test$abundances %>% mutate(remove_me = 0)
+
+test_that("Removing sample_id throws error", {
+  expect_error(ta.test %>% select_abundances(-sample_id))
+})
+
+test_that("Removing taxon_id throws error", {
+  expect_error(ta.test %>% select_abundances(-taxon_id))
+})
+
+test_that("Removing abundance column throws error", {
+  expect_error(ta.test %>% select_abundances(-abundance))
+})
+
+test_that("Removing a column from abundances is succesful", {
+    expect_true("remove_me" %in% names(ta.test$abundances))
+    ta.test <- ta.test %>% select_abundances(-remove_me)
+    expect_true(!"remove_me" %in% names(ta.test$abundances))
+})

@@ -138,3 +138,23 @@ merge_redundant_taxa <- function(ta) {
   ta
 
 }
+
+retain_taxon_id <- function(ta) {
+  if ((! "taxon_id" %in% names(ta$taxa)) ||
+  (! "taxon_id" %in% names(ta$abundances))) {
+    stop("You cannot delete the taxon_id column")
+  }
+}
+
+retain_sample_id <- function(ta) {
+  if ((! "sample_id" %in% names(ta$samples)) || 
+  (! "sample_id" %in% names(ta$abundances))) {
+    stop("You cannot delete the sample_id column")
+  }
+}
+
+retain_abundances <- function(ta) {
+  if (! "abundance" %in% names(ta$abundances)) {
+    stop("You cannot delete the abundance column")
+  }
+}

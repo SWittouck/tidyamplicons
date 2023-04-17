@@ -241,9 +241,7 @@ select_taxa <- function(ta, ...) {
   ta$taxa <- ta$taxa %>%
     select(...)
 
-  if (! "taxon_id" %in% names(ta$taxa)) {
-    stop("you cannot delete the taxon_id column")
-  }
+  retain_taxon_id(ta)
 
   ta
 
@@ -258,9 +256,9 @@ select_abundances <- function(ta, ...) {
     select(...)
 
   no_del <- c("sample_id", "taxon_id", "abundance")
-  if (! all(no_del %in% names(ta$abundances))) {
-    stop("you cannot delete the sample_id, taxon_id or abundance columns")
-  }
+  retain_sample_id(ta)
+  retain_taxon_id(ta)
+  retain_abundances(ta)
 
   ta
 
@@ -271,10 +269,9 @@ select_abundances <- function(ta, ...) {
 #' @export
 mutate_samples <- function(ta, ...) {
 
-  # to do: error if sample_id is mutated
-
   ta$samples <- ta$samples %>%
     mutate(...)
+  retain_sample_id(ta)
 
   ta
 
@@ -285,10 +282,9 @@ mutate_samples <- function(ta, ...) {
 #' @export
 mutate_taxa <- function(ta, ...) {
 
-  # to do: error if taxon_id is mutated
-
   ta$taxa <- ta$taxa %>%
     mutate(...)
+  retain_taxon_id(ta)
 
   ta
 
@@ -299,10 +295,11 @@ mutate_taxa <- function(ta, ...) {
 #' @export
 mutate_abundances <- function(ta, ...) {
 
-  # to do: error if sample_id or taxon_id is mutated
-
   ta$abundances <- ta$abundances %>%
     mutate(...)
+  retain_sample_id(ta)
+  retain_taxon_id(ta)
+  retain_abundances(ta)
 
   ta
 
