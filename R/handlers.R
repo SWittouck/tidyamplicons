@@ -228,7 +228,7 @@ trim_asvs <- function(ta, start, end) {
 }
 
 #' Retain or remove a set of sample variables
-#'
+#' @param ta a tidyamplicons object
 #' @export
 select_samples <- function(ta, ...) {
 
@@ -244,7 +244,7 @@ select_samples <- function(ta, ...) {
 }
 
 #' Retain or remove a set of taxon variables
-#'
+#' @param ta a tidyamplicons object
 #' @export
 select_taxa <- function(ta, ...) {
 
@@ -258,14 +258,13 @@ select_taxa <- function(ta, ...) {
 }
 
 #' Retain or remove a set of abundance variables
-#'
+#' @param ta a tidyamplicons object
 #' @export
 select_abundances <- function(ta, ...) {
 
   ta$abundances <- ta$abundances %>%
     select(...)
 
-  no_del <- c("sample_id", "taxon_id", "abundance")
   retain_sample_id(ta)
   retain_taxon_id(ta)
   retain_abundances(ta)
@@ -275,7 +274,7 @@ select_abundances <- function(ta, ...) {
 }
 
 #' Create extra variables in the sample table
-#'
+#' @param ta a tidyamplicons object
 #' @export
 mutate_samples <- function(ta, ...) {
 
@@ -288,7 +287,7 @@ mutate_samples <- function(ta, ...) {
 }
 
 #' Create extra variables in the taxon table
-#'
+#' @param ta a tidyamplicons object
 #' @export
 mutate_taxa <- function(ta, ...) {
 
@@ -301,7 +300,7 @@ mutate_taxa <- function(ta, ...) {
 }
 
 #' Create extra variables in the abundances table
-#'
+#' @param ta a tidyamplicons object
 #' @export
 mutate_abundances <- function(ta, ...) {
 
@@ -316,7 +315,7 @@ mutate_abundances <- function(ta, ...) {
 }
 
 #' Filter the samples
-#'
+#' @param ta a tidyamplicons object
 #' @export
 filter_samples <- function(ta, ...) {
 
@@ -325,13 +324,14 @@ filter_samples <- function(ta, ...) {
 
   ta <- ta %>%
     process_sample_selection()
+  any_samples_left(ta)
 
   ta
 
 }
 
 #' Filter the taxa
-#'
+#' @param ta a tidyamplicons object
 #' @export
 filter_taxa <- function(ta, ...) {
 
@@ -340,13 +340,14 @@ filter_taxa <- function(ta, ...) {
 
   ta <- ta %>%
     process_taxon_selection()
+  any_taxa_left(ta)
 
   ta
 
 }
 
 #' Filter the abundances
-#'
+#' @param ta a tidyamplicons object
 #' @export
 filter_abundances <- function(ta, ...) {
 
@@ -355,6 +356,7 @@ filter_abundances <- function(ta, ...) {
 
   ta <- ta %>%
     process_abundance_selection()
+  any_taxa_left(ta)
 
   ta
 
