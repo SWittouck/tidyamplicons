@@ -4,6 +4,7 @@ coverage:
   status:
     project:
       default:
+        range: 50...80
         target: auto
         threshold: 1%
         informational: true
