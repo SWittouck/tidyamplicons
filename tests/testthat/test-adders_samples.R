@@ -11,7 +11,9 @@ test_that("Can add sample tibble to ta object",{
     sample <- c("sample1","sample2")
     environment <- c("food fermentation", "human stool")
     smp_tibble <- tibble::tibble(sample, environment)
-    test_data <- test_data %>% add_sample_tibble(smp_tibble)
+    suppressMessages(
+        test_data <- test_data %>% add_sample_tibble(smp_tibble)
+    )
     expect_true("environment" %in% names(test_data$samples))
 })
 
