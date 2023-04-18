@@ -162,10 +162,10 @@ betas <- function(ta, unique = T, method = "bray", binary = F) {
   # add sample info to betas table
   betas <- ta$samples %>%
     `names<-`(names(.) %>% str_c("_2")) %>%
-    right_join(betas, by = "sample_id_2")
+    right_join(betas, by = "sample_id_2", multiple='all')
   betas <- ta$samples %>%
     `names<-`(names(.) %>% str_c("_1")) %>%
-    right_join(betas, by = "sample_id_1")
+    right_join(betas, by = "sample_id_1", multiple='all')
 
   # return betas table
   betas
@@ -209,6 +209,9 @@ taxon_counts_in_conditions <- function(ta, condition) {
 #' Condition should be a categorical variable present in the samples table.
 #' Supply condition as a string.
 #'
+#' @param ta a tidyamplicons object
+#' @param condition a string denoting a categorical variable in the sample table
+#' @param pres_abs wether to resort to presence/absense screening
 #' @export
 occurrences <- function(ta, condition = NULL, pres_abs = F) {
 
