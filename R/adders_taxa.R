@@ -121,7 +121,7 @@ add_taxon_tibble <- function(ta, taxon_tibble) {
 }
 
 #' Add the maximum relative abundance of taxa to the taxon table
-#'
+#' @param ta a tidyamplicons object
 #' @export
 add_max_rel_abundance <- function(ta) {
 
@@ -146,7 +146,7 @@ add_max_rel_abundance <- function(ta) {
 }
 
 #' Add the total relative abundance of taxa to the taxon table
-#'
+#' @param ta a tidyamplicons object
 #' @export
 add_total_rel_abundance <- function(ta) {
 
@@ -195,7 +195,10 @@ add_rel_occurrence <- function(ta) {
 }
 
 #' Create sensible names for the taxa and add to taxon table
-#'
+#' @param ta a tidyamplicons object
+#' @param method the method on which to arrange the taxon names. 
+#' Options: total_rel_abundance, max_rel_abundance 
+#' @param include_species wether to include the species name or not
 #' @export
 add_taxon_name <- function(
   ta, method = "total_rel_abundance", include_species = F
