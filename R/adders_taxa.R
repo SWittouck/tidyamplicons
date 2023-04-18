@@ -229,10 +229,10 @@ add_taxon_name <- function(
 
   }
 
-  rank_names <-
-    rank_names(ta) %>%
-    purrr::when(include_species ~ c(., "species"), ~ .) %>%
-    intersect(names(ta$taxa))
+  rank_names <- rank_names(ta) 
+  if (include_species) {
+    rank_names <- append(rank_names, "species", after=length(rank_names))
+  }
 
   if (length(rank_names) == 0) {
 
@@ -279,6 +279,11 @@ add_taxon_name <- function(
 
 #' Create taxon names suitable for visualization with color
 #'
+#' @param ta a tidyamplicons object
+#' @param method the method on which to arrange the taxon names. 
+#' @param n integer denoting the amount of most abundant taxa to display. Capacity at 12.
+#' @param samples optional vector of sample_id's of interest
+#' @param taxa optional vector of taxon_id's of interest
 #' @export
 add_taxon_name_color <- function(
   ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL
@@ -331,8 +336,8 @@ add_taxon_name_color <- function(
     arrange(desc(arrange_by_me)) %>%
     pull(taxon_name) %>%
     `[`(1:(n-1)) %>%
-    sort() %>%
-    purrr::prepend("residual")
+    sort() 
+  levels <- append(levels, "residual", after=0)
 
   # add taxon_name_color factor to taxa table
   ta$taxa <-
