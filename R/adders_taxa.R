@@ -244,7 +244,7 @@ add_taxon_name <- function(
       ta$taxa %>%
       mutate(
         best_classification =
-          pmap_chr(
+          purrr::pmap_chr(
             ta$taxa[, rank_names],
             function(...) {
               classification = as.character(list(...))
