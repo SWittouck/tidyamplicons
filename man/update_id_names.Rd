@@ -6,6 +6,9 @@
 \usage{
 update_id_names(ta)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Rename the "sample" and "taxon" columns to "sample_id" and "taxon_id"
 }

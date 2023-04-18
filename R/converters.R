@@ -76,6 +76,8 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 
 #' Write community data in tidyamplicons format
 #' @importFrom readr write_csv
+#' @param ta a tidyamplicons object
+#' @param dout the directory to store the three tidyamplicons tables in
 #' @export
 write_tidyamplicons <- function(ta, dout) {
   dir.create(dout)
@@ -86,6 +88,10 @@ write_tidyamplicons <- function(ta, dout) {
 
 #' Read community data written by tidyamplicons
 #' @importFrom readr read_csv
+#' @param din directory containing the a sample, taxa and abundances table in csv format
+#' @param samples the name of the samples table, defaults to samples.csv
+#' @param taxa the name of the taxa table, defaults to taxa.csv
+#' @param abundances the name of the abundances table, defaults to abundances.csv
 #' @export
 read_tidyamplicons <- function(din, samples = "samples.csv", taxa = "taxa.csv",
                                abundances = "abundances.csv") {
@@ -117,7 +123,7 @@ update_tidyamplicons <- function(ta) {
 }
 
 #' Reset the taxon and sample IDs
-#'
+#' @param ta a tidyamplicons object
 #' @export
 reset_ids <- function(ta, keep_prev = F) {
 
@@ -137,7 +143,7 @@ reset_ids <- function(ta, keep_prev = F) {
 }
 
 #' Rename the "sample" and "taxon" columns to "sample_id" and "taxon_id"
-#'
+#' @param ta a tidyamplicons object
 #' @export
 update_id_names <- function(ta) {
 

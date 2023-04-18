@@ -11,6 +11,15 @@ read_tidyamplicons(
   abundances = "abundances.csv"
 )
 }
+\arguments{
+\item{din}{directory containing the a sample, taxa and abundances table in csv format}
+
+\item{samples}{the name of the samples table, defaults to samples.csv}
+
+\item{taxa}{the name of the taxa table, defaults to taxa.csv}
+
+\item{abundances}{the name of the abundances table, defaults to abundances.csv}
+}
 \description{
 Read community data written by tidyamplicons
 }
