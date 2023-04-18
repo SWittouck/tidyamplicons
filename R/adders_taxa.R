@@ -455,8 +455,8 @@ add_presence_counts <- function(ta, condition) {
     select(- fisher)
 
   ta %>%
-    modify_at("taxa", left_join, taxa_counts, by = "taxon_id") %>%
-    modify_at("taxa", left_join, taxa_fisher, by = "taxon_id")
+    purrr::modify_at("taxa", left_join, taxa_counts, by = "taxon_id") %>%
+    purrr::modify_at("taxa", left_join, taxa_fisher, by = "taxon_id")
 
 }
 
@@ -541,7 +541,7 @@ add_occurrences <- function(
   }
 
   ta %>%
-    modify_at("taxa", left_join, taxa_occurrences, by = "taxon_id")
+    purrr::modify_at("taxa", left_join, taxa_occurrences, by = "taxon_id")
 
 }
 
@@ -631,6 +631,6 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
   if (exists("rel_abundance_tmp")) ta$abundances$rel_abundance <- NULL
 
   ta %>%
-    modify_at("taxa", left_join, taxa_mean_rel_abundances, by = "taxon_id")
+    purrr::modify_at("taxa", left_join, taxa_mean_rel_abundances, by = "taxon_id")
 
 }
