@@ -194,7 +194,7 @@ codifab_plot <- function(ta, diffabun_var) {
     geom_text(
       aes(label = if_else(sign, direction, ""), col = direction), size = 2
     ) +
-    scale_color_manual(values = c("+" = "black", "-" = "white"), guide = F) +
+    scale_color_manual(values = c("+" = "black", "-" = "white"), guide = 'none') +
     scale_fill_continuous(trans = "log10") +
     xlab("reference taxon") +
     theme_minimal() +

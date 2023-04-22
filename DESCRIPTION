@@ -21,6 +21,7 @@ Imports:
     vegan
 Suggests: 
     covr,
+    vdiffr,
     dada2,
     knitr,
     phyloseq,
