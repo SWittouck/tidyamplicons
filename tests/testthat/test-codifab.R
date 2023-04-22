@@ -1,5 +1,3 @@
-#library(proto) for testing ggplot stuff later
-
 ta_test <- read_tidyamplicons(test_path("data/urt"))
 ta_codifab <- ta_test %>% add_codifab(condition=location)
 
@@ -68,7 +66,6 @@ test_that("Throws error when plotting the codifab without valid comparison field
     )
 })
 
-test_that("Can plot without any errors", {
-    # expand this later with proto ggplot checks
-    expect_no_error(ta_codifab %>% codifab_plot(NF_vs_N))
+test_that("Can plot identical plot without any errors", {
+    vdiffr::expect_doppelganger("Codifab Plot", ta_codifab %>% codifab_plot(NF_vs_N))
 })
