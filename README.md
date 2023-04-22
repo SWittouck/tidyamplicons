@@ -1,5 +1,6 @@
-# tidyamplicons
-
+tidyamplicons <img src="man/figures/hex-tidyamplicons.png" align="right">
+======================
+[![R-CMD-check](https://github.com/TheOafidian/tidyamplicons/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/TheOafidian/tidyamplicons/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/github/TheOafidian/tidyamplicons/branch/feature/unit-testing/graph/badge.svg?token=WK0QN34DJB)](https://codecov.io/github/TheOafidian/tidyamplicons)
 
 ## Overview
