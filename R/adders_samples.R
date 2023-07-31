@@ -110,7 +110,7 @@ add_lib_size <- function(ta, step = "current") {
 
 #' Add alpha diversity measures
 #'
-#' \code{add_diversity_measures} adds two alpha diversity measures to the
+#' \code{add_alphas} adds two alpha diversity measures to the
 #' samples tibble of a tidytacos object.
 #'
 #' This function adds two alpha diversity measures (observed and inverse
@@ -136,7 +136,7 @@ add_lib_size <- function(ta, step = "current") {
 #'
 #' # Add total abundance
 #' data <- data %>%
-#'  add_diversity_measures()
+#'  add_alphas()
 #' @export
 add_alphas <- function(ta) {
 
