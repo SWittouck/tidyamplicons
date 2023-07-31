@@ -138,3 +138,42 @@ merge_redundant_taxa <- function(ta) {
   ta
 
 }
+
+retain_taxon_id <- function(ta) {
+  if ((! "taxon_id" %in% names(ta$taxa)) ||
+  (! "taxon_id" %in% names(ta$abundances)) || 
+  (is.null(ta$abundances$taxon_id)) ||
+  (is.null(ta$taxa$taxon_id))) {
+    stop("You cannot delete the taxon_id column")
+  }
+}
+
+retain_sample_id <- function(ta) {
+  if ((! "sample_id" %in% names(ta$samples)) || 
+  (! "sample_id" %in% names(ta$abundances)) ||
+  (is.null(ta$samples$sample_id)) ||
+  (is.null(ta$abundances$sample_id))) {
+    stop("You cannot delete the sample_id column")
+  }
+}
+
+retain_abundances <- function(ta) {
+  if (! "abundance" %in% names(ta$abundances) ||
+  (is.null(ta$abundances$abundance))) {
+    stop("You cannot delete the abundance column")
+  }
+}
+
+any_taxa_left <- function(ta,
+  error_message = "No taxa left after filtering") {
+    if (length(ta$taxa$taxon_id) == 0) {
+    stop(error_message)
+  }
+}
+
+any_samples_left <- function(ta,
+  error_message = "No samples left after filtering") {
+    if (length(ta$samples$sample_id) == 0) {
+    stop(error_message)
+  }
+}

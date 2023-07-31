@@ -38,6 +38,6 @@ data <- create_tidyamplicons(x,
 
 # Add total abundance
 data <- data \%>\%
- add_cluster(n_clusters = 5)
+ add_cluster(n_clusters = 2)
 
 }

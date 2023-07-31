@@ -6,6 +6,13 @@
 \usage{
 trim_asvs(ta, start, end)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+
+\item{start}{index of where to start trimming}
+
+\item{end}{index of where to stop trimming}
+}
 \description{
 This function assumes that the sequence variable in the taxon table is called
 "sequence".

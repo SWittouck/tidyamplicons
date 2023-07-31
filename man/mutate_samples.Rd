@@ -6,6 +6,9 @@
 \usage{
 mutate_samples(ta, ...)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Create extra variables in the sample table
 }

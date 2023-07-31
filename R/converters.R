@@ -75,7 +75,9 @@ create_tidyamplicons <- function(abundance_matrix, taxa_are_columns = TRUE) {
 }
 
 #' Write community data in tidyamplicons format
-#'
+#' @importFrom readr write_csv
+#' @param ta a tidyamplicons object
+#' @param dout the directory to store the three tidyamplicons tables in
 #' @export
 write_tidyamplicons <- function(ta, dout) {
   dir.create(dout)
@@ -85,13 +87,17 @@ write_tidyamplicons <- function(ta, dout) {
 }
 
 #' Read community data written by tidyamplicons
-#'
+#' @importFrom readr read_csv
+#' @param din directory containing the a sample, taxa and abundances table in csv format
+#' @param samples the name of the samples table, defaults to samples.csv
+#' @param taxa the name of the taxa table, defaults to taxa.csv
+#' @param abundances the name of the abundances table, defaults to abundances.csv
 #' @export
 read_tidyamplicons <- function(din, samples = "samples.csv", taxa = "taxa.csv",
                                abundances = "abundances.csv") {
-  samples <- read_csv(paste0(din, "/", samples), col_types = cols())
-  taxa <- read_csv(paste0(din, "/", taxa), col_types = cols())
-  abundances <- read_csv(paste0(din, "/", abundances), col_types = cols())
+  samples <- read_csv(paste0(din, "/", samples), col_types = readr::cols())
+  taxa <- read_csv(paste0(din, "/", taxa), col_types = readr::cols())
+  abundances <- read_csv(paste0(din, "/", abundances), col_types = readr::cols())
   make_tidyamplicons(
     samples, taxa, abundances, sample_name = sample_id, taxon_name = taxon_id
   )
@@ -117,7 +123,7 @@ update_tidyamplicons <- function(ta) {
 }
 
 #' Reset the taxon and sample IDs
-#'
+#' @param ta a tidyamplicons object
 #' @export
 reset_ids <- function(ta, keep_prev = F) {
 
@@ -137,14 +143,14 @@ reset_ids <- function(ta, keep_prev = F) {
 }
 
 #' Rename the "sample" and "taxon" columns to "sample_id" and "taxon_id"
-#'
+#' @param ta a tidyamplicons object
 #' @export
 update_id_names <- function(ta) {
 
   ta %>%
-    modify_at("samples", rename, sample_id = sample) %>%
-    modify_at("taxa", rename, taxon_id = taxon) %>%
-    modify_at("abundances", rename, sample_id = sample, taxon_id = taxon)
+    purrr::modify_at("samples", rename, sample_id = sample) %>%
+    purrr::modify_at("taxa", rename, taxon_id = taxon) %>%
+    purrr::modify_at("abundances", rename, sample_id = sample, taxon_id = taxon)
 
 }
 
@@ -390,13 +396,13 @@ make_tidyamplicons <- function(samples, taxa, abundances,
   taxon_name <- rlang::enexpr(taxon_name)
 
   list(samples = samples, taxa = taxa, abundances = abundances) %>%
-    modify_at("samples", mutate, sample_id = !! sample_name) %>%
-    modify_at("taxa", mutate, taxon_id = !! taxon_name) %>%
-    modify_at("abundances", rename, sample_id = !! sample_name) %>%
-    modify_at("abundances", rename, taxon_id = !! taxon_name) %>%
-    modify_at("abundances", filter, abundance > 0) %>%
-    modify_at("abundances", filter, sample_id %in% .$samples$sample_id) %>%
-    modify_at("abundances", filter, taxon_id %in% .$taxa$taxon_id) %>%
+    purrr::modify_at("samples", mutate, sample_id = !! sample_name) %>%
+    purrr::modify_at("taxa", mutate, taxon_id = !! taxon_name) %>%
+    purrr::modify_at("abundances", rename, sample_id = !! sample_name) %>%
+    purrr::modify_at("abundances", rename, taxon_id = !! taxon_name) %>%
+    purrr::modify_at("abundances", filter, abundance > 0) %>%
+    purrr::modify_at("abundances", filter, sample_id %in% .$samples$sample_id) %>%
+    purrr::modify_at("abundances", filter, taxon_id %in% .$taxa$taxon_id) %>%
     `class<-`("tidyamplicons") %>%
     reset_ids()
 

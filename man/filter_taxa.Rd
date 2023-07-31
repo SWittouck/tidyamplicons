@@ -6,6 +6,9 @@
 \usage{
 filter_taxa(ta, ...)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Filter the taxa
 }

@@ -6,6 +6,9 @@
 \usage{
 filter_samples(ta, ...)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Filter the samples
 }

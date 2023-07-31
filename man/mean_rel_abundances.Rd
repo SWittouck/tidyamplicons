@@ -6,6 +6,11 @@
 \usage{
 mean_rel_abundances(ta, condition = NULL)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+
+\item{condition}{a string representing a categorical variable to compute the relative abundances in every option of the variable}
+}
 \description{
 Returns tidy table with average relatively abundances of taxa, overall or per
 condition.

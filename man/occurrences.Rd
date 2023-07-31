@@ -6,6 +6,13 @@
 \usage{
 occurrences(ta, condition = NULL, pres_abs = F)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+
+\item{condition}{a string denoting a categorical variable in the sample table}
+
+\item{pres_abs}{wether to resort to presence/absense screening}
+}
 \description{
 Returns a tidy table of occurrences: taxon presence counts in samples,
 overall or per condition.

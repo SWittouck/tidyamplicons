@@ -27,7 +27,9 @@ add_logratios <- function(ta, max_taxa = 30) {
       mutate(keep = F) %>%
       {.$keep[1:max_taxa] <- T; .}
 
-    ta <- ta %>% filter_taxa(keep)
+    ta <- ta %>% filter_taxa(keep) %>% 
+    # cleaning up the keep column as it is not used further
+          select_taxa(-keep)
 
   }
 
@@ -41,7 +43,9 @@ add_logratios <- function(ta, max_taxa = 30) {
         select(sample_id, taxon_id, abundance),
       abundances_complete %>%
         select(sample_id, ref_taxon_id = taxon_id, ref_abundance = abundance),
-      by = "sample_id"
+      by = "sample_id",
+      multiple = "all", 
+      relationship="many-to-many"
     ) %>%
     mutate(
       taxon_ids = str_c(taxon_id, ref_taxon_id, sep = "_"),
@@ -82,7 +86,11 @@ add_codifab <- function(ta, condition, conditions = NULL, max_taxa = 30) {
 
   ta_sub <- ta
 
-  condition <- rlang::enexpr(condition)
+  condition <- rlang::enquo(condition)
+  if (! rlang::f_text(condition) %in% names(ta$samples)) {
+    stop("condition field does not exist in sample table")
+  }
+
   ta_sub$samples <- ta_sub$samples %>% mutate(condition = !! condition)
   if (is.null(conditions)) {
     conditions <- unique(ta_sub$samples$condition)
@@ -116,8 +124,8 @@ add_codifab <- function(ta, condition, conditions = NULL, max_taxa = 30) {
         y = logratio[condition == conditions[2]],
         conf.int = T, exact = F
       )),
-      a_vs_b = map_dbl(wilcox, ~ .[["estimate"]]),
-      wilcox_p = map_dbl(wilcox, ~ .[["p.value"]])
+      a_vs_b = purrr::map_dbl(wilcox, ~ .[["estimate"]]),
+      wilcox_p = purrr::map_dbl(wilcox, ~ .[["p.value"]])
     ) %>%
     ungroup() %>%
     mutate(a_vs_b = 10 ^ a_vs_b) %>%
@@ -151,7 +159,12 @@ codifab_plot <- function(ta, diffabun_var) {
     ta <- add_taxon_name(ta)
   }
 
-  diffabun_var <- rlang::enexpr(diffabun_var)
+  diffabun_var <- rlang::enquo(diffabun_var)
+  if (is.null(ta$taxon_pairs)) {
+    stop("Please first run add_codifab() to generate the taxon pair comparisons.")
+  } else if (! rlang::f_text(diffabun_var) %in% names(ta$taxon_pairs)) {
+    stop(paste0(rlang::f_text(diffabun_var)," is not an existing comparison in the taxon_pairs table."))
+  }
 
   taxon_pairs <-
     ta$taxon_pairs %>%
@@ -182,7 +195,7 @@ codifab_plot <- function(ta, diffabun_var) {
     geom_text(
       aes(label = if_else(sign, direction, ""), col = direction), size = 2
     ) +
-    scale_color_manual(values = c("+" = "black", "-" = "white"), guide = F) +
+    scale_color_manual(values = c("+" = "black", "-" = "white"), guide = 'none') +
     scale_fill_continuous(trans = "log10") +
     xlab("reference taxon") +
     theme_minimal() +

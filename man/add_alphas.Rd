@@ -36,5 +36,4 @@ data <- create_tidyamplicons(x,
 # Add total abundance
 data <- data \%>\%
  add_diversity_measures()
-
 }

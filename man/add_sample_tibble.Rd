@@ -41,7 +41,7 @@ data <- create_tidyamplicons(x,
 # Initiate sample tibble
 sample <- c("sample1", "sample2")
 environment <- c("food fermentation", "human stool")
-sample_tibble <- tibble(sample, environment)
+sample_tibble <- tibble::tibble(sample, environment)
 
 # Add sample tibble to tidyamplicons object
 data <- data \%>\%

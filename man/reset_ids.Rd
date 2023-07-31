@@ -6,6 +6,9 @@
 \usage{
 reset_ids(ta, keep_prev = F)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Reset the taxon and sample IDs
 }

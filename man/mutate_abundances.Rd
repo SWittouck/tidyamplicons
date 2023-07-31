@@ -6,6 +6,9 @@
 \usage{
 mutate_abundances(ta, ...)
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+}
 \description{
 Create extra variables in the abundances table
 }

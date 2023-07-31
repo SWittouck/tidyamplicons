@@ -12,6 +12,17 @@ add_taxon_name_color(
   taxa = NULL
 )
 }
+\arguments{
+\item{ta}{a tidyamplicons object}
+
+\item{method}{the method on which to arrange the taxon names.}
+
+\item{n}{integer denoting the amount of most abundant taxa to display. Capacity at 12.}
+
+\item{samples}{optional vector of sample_id's of interest}
+
+\item{taxa}{optional vector of taxon_id's of interest}
+}
 \description{
 Create taxon names suitable for visualization with color
 }

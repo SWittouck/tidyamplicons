@@ -20,5 +20,6 @@
 #' @import dplyr
 #' @import stringr
 #' @import vegan
+#' @importFrom tibble tibble
 NULL
 

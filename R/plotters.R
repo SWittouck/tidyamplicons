@@ -4,7 +4,7 @@
 bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
   # convert promise to formula
-  x <- substitute(x)
+  x <- enquo(x)
 
   # add sample_clustered if not present
   if (! "sample_clustered" %in% names(ta$samples)) {
@@ -23,13 +23,15 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 
   # make plot and return
   plot <- get_abundances_extended(ta) %>%
-    ggplot(aes_(x = x, y = ~rel_abundance, fill = ~taxon_name_color)) +
+    ggplot(aes(
+      x = !!x,
+      y = rel_abundance, fill = taxon_name_color)) +
     scale_fill_brewer(palette = "Paired", name = "Taxon") +
     xlab("sample") + ylab("relative abundance") +
     theme(
       axis.text.x = element_text(angle = 90),
       axis.ticks.x = element_blank(),
-      panel.background = element_rect(fill = 'white', colour = 'white')
+      panel.background = element_rect(fill = "white", colour ="white")
     )
 
   # add geom_bar if requested
