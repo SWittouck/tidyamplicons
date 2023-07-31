@@ -10,6 +10,6 @@ test_that("Barplot returns identical plot", {
 })
 
 test_that("Barplot returns identical plot when different arguments are used", {
-    bp  <- ta_test %>% bar_plot(n=5, x=participant, geom_bar=F)
+    bp  <- ta_test %>% bar_plot(n=5, x=participant)
     vdiffr::expect_doppelganger("Custom barplot", bp)
 })

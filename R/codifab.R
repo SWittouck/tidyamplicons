@@ -38,14 +38,13 @@ add_logratios <- function(ta, max_taxa = 30) {
     complete(sample_id, taxon_id, fill = list(abundance = 0))
 
   ta$logratios <-
-    full_join(
+    left_join(
       abundances_complete %>%
         select(sample_id, taxon_id, abundance),
       abundances_complete %>%
         select(sample_id, ref_taxon_id = taxon_id, ref_abundance = abundance),
       by = "sample_id",
-      multiple = "all", 
-      relationship="many-to-many"
+      multiple = "all"
     ) %>%
     mutate(
       taxon_ids = str_c(taxon_id, ref_taxon_id, sep = "_"),

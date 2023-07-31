@@ -95,9 +95,9 @@ write_tidyamplicons <- function(ta, dout) {
 #' @export
 read_tidyamplicons <- function(din, samples = "samples.csv", taxa = "taxa.csv",
                                abundances = "abundances.csv") {
-  samples <- read_csv(paste0(din, "/", samples), col_types = readr::cols())
-  taxa <- read_csv(paste0(din, "/", taxa), col_types = readr::cols())
-  abundances <- read_csv(paste0(din, "/", abundances), col_types = readr::cols())
+  samples <- readr::read_csv(paste0(din, "/", samples), col_types = readr::cols())
+  taxa <- readr::read_csv(paste0(din, "/", taxa), col_types = readr::cols())
+  abundances <- readr::read_csv(paste0(din, "/", abundances), col_types = readr::cols())
   make_tidyamplicons(
     samples, taxa, abundances, sample_name = sample_id, taxon_name = taxon_id
   )
