@@ -12,6 +12,7 @@ Imports:
     dplyr,
     ggplot2,
     magrittr,
+    plotly,
     purrr,
     readr,
     rlang (>= 0.4.11),

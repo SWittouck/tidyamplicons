@@ -2,14 +2,15 @@
 % Please edit documentation in R/adders_taxa.R
 \name{add_taxon_name_color}
 \alias{add_taxon_name_color}
-\title{Create taxon names suitable for visualization with color}
+\title{Create taxon names suitable for visualization with color. A rank can be supplied to aggregate colors higher than the current rank.}
 \usage{
 add_taxon_name_color(
   ta,
   method = "total_rel_abundance",
   n = 12,
   samples = NULL,
-  taxa = NULL
+  taxa = NULL,
+  rank = NULL
 )
 }
 \arguments{
@@ -24,5 +25,5 @@ add_taxon_name_color(
 \item{taxa}{optional vector of taxon_id's of interest}
 }
 \description{
-Create taxon names suitable for visualization with color
+Create taxon names suitable for visualization with color. A rank can be supplied to aggregate colors higher than the current rank.
 }
