@@ -35,7 +35,7 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   # make plot and return
   plot <- prepare_for_bp(ta, n) %>%
     ggplot(aes(
-      x = fct_reorder(!!x, as.integer(sample_clustered)), 
+      x = forcats::fct_reorder(!!x, as.integer(sample_clustered)), 
       y = rel_abundance, fill = taxon_name_color)) +
     scale_fill_brewer(palette = "Paired", name = "Taxon") +
     xlab("sample") +
@@ -70,7 +70,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
       # make plot and return
       prepare_for_bp(ta, n) %>%
         plotly::plot_ly(
-          x = ~fct_reorder(!!x, as.integer(sample_clustered)),
+          x = ~forcats::fct_reorder(!!x, as.integer(sample_clustered)),
           y = ~rel_abundance,
           color = ~taxon_name_color,
           colors = palette_xgfs,
