@@ -7,7 +7,7 @@
 add_total_rel_abundance(ta)
 }
 \arguments{
-\item{ta}{a tidyamplicons object}
+\item{ta}{a tidytacos object}
 }
 \description{
 Add the total relative abundance of taxa to the taxon table

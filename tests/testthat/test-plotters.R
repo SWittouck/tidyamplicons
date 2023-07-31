@@ -2,7 +2,7 @@
 # but for now a heuristic test
 # to see if the same plot is generate will suffice
 
-ta_test <- read_tidyamplicons(test_path("data/urt"))
+ta_test <- read_tidytacos(test_path("data/urt"))
 
 test_that("Barplot returns identical plot", {
     bp  <- ta_test %>% bar_plot()

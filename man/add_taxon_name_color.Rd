@@ -14,7 +14,7 @@ add_taxon_name_color(
 )
 }
 \arguments{
-\item{ta}{a tidyamplicons object}
+\item{ta}{a tidytacos object}
 
 \item{method}{the method on which to arrange the taxon names.}
 

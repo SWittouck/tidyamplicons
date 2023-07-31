@@ -7,7 +7,7 @@
 aggregate_samples(ta)
 }
 \arguments{
-\item{ta}{a tidyamplicons object}
+\item{ta}{a tidytacos object}
 }
 \description{
 Aggregate samples with identical values for all metadata

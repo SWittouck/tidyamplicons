@@ -7,7 +7,7 @@
 bar_plot_ly(ta, n = 12, x = sample_clustered)
 }
 \arguments{
-\item{ta}{a tidyamplicons object}
+\item{ta}{a tidytacos object}
 
 \item{n}{an integer, representing the amount of colors used to depict different taxa}
 

@@ -12,7 +12,7 @@ abundances_matrix(
 )
 }
 \arguments{
-\item{ta}{A tidyamplicons object.}
+\item{ta}{A tidytacos object.}
 
 \item{value}{The name of a variable in the abundances table that contains the
 abundances (unquoted). Could be relative abundances, if present.}

@@ -7,15 +7,15 @@
 add_alphas(ta)
 }
 \arguments{
-\item{ta}{Tidyamplicons object.}
+\item{ta}{tidytacos object.}
 }
 \description{
 \code{add_diversity_measures} adds two alpha diversity measures to the
-samples tibble of a tidyamplicons object.
+samples tibble of a tidytacos object.
 }
 \details{
 This function adds two alpha diversity measures (observed and inverse
-Simpson) to the samples tibble of a tidyamplicons object under the variable
+Simpson) to the samples tibble of a tidytacos object under the variable
 names observed and inverse_simpson, respectively. This function will also
 add relative abundances if not present using \code{\link{add_rel_abundance}}.
 }
@@ -28,8 +28,8 @@ x <- matrix(
 rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
 
-# Convert to tidyamplicons object
-data <- create_tidyamplicons(x,
+# Convert to tidytacos object
+data <- create_tidytacos(x,
                      taxa_are_columns = FALSE
                      )
 

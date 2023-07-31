@@ -14,7 +14,7 @@
 #' phylum, class, order, family, genus, species}. If no ranks are supplied, taxa
 #' will be (re)classified at all default ranks.
 #'
-#' @param ta A tidyamplicons object.
+#' @param ta A tidytacos object.
 #' @param refdb The path to a DADA2-compatible reference database.
 #' @param taxa An expression that specifies which taxa to (re)classify.
 #' @param ranks A vector that specifies which ranks to (re)classify.
@@ -24,7 +24,7 @@
 #' @param min_boot The minimum bootstrap value for taxonomy assignment.
 #' @param n_ranks The number of ranks present in the reference database.
 #'
-#' @return An updated tidyamplicons object.
+#' @return An updated tidytacos object.
 #'
 #' @export
 classify_taxa <- function(
@@ -74,18 +74,18 @@ classify_taxa <- function(
 
 }
 
-#' Add taxon metadata to the tidyamplicons object
+#' Add taxon metadata to the tidytacos object
 #'
-#' \code{add_taxon_tibble} adds a taxon tibble to the tidyamplicons object.
+#' \code{add_taxon_tibble} adds a taxon tibble to the tidytacos object.
 #'
 #' This function adds a taxon tibble containing taxon data (e.g. taxon ranks
-#' such as genus, family, ...) for each taxon to the tidyamplicons object. It is
-#' used after initiating a tidyamplicons object using a numerical abundance
-#' matrix and the function \code{\link{create_tidyamplicons}}. Also see
+#' such as genus, family, ...) for each taxon to the tidytacos object. It is
+#' used after initiating a tidytacos object using a numerical abundance
+#' matrix and the function \code{\link{create_tidytacos}}. Also see
 #' \code{\link{add_sample_tibble}} to update the sample data of the
-#' tidyamplicons object.
+#' tidytacos object.
 #'
-#' @param ta Tidyamplicons object.
+#' @param ta tidytacos object.
 #' @param taxon_tibble A tibble containing taxon data for each taxon. Taxa
 #'   should be rows, while taxon data should be columns. At least one column
 #'   name needs to be shared with the taxon tibble of ta. The default shared
@@ -100,8 +100,8 @@ classify_taxa <- function(
 #' rownames(x) <- c("taxon1", "taxon2")
 #' colnames(x) <- c("sample1", "sample2")
 #'
-#' # Convert to tidyamplicons object
-#' data <- create_tidyamplicons(x,
+#' # Convert to tidytacos object
+#' data <- create_tidytacos(x,
 #'                      taxa_are_columns = FALSE)
 #'
 #' # Initiate taxon tibble
@@ -109,7 +109,7 @@ classify_taxa <- function(
 #' genus <- c("Salmonella", "Lactobacillus")
 #' taxon_tibble <- tibble::tibble(taxon, genus)
 #'
-#' # Add taxon tibble to tidyamplicons object
+#' # Add taxon tibble to tidytacos object
 #' data <- data %>%
 #' add_taxon_tibble(taxon_tibble)
 #'
@@ -121,7 +121,7 @@ add_taxon_tibble <- function(ta, taxon_tibble) {
 }
 
 #' Add the maximum relative abundance of taxa to the taxon table
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 add_max_rel_abundance <- function(ta) {
 
@@ -146,7 +146,7 @@ add_max_rel_abundance <- function(ta) {
 }
 
 #' Add the total relative abundance of taxa to the taxon table
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 add_total_rel_abundance <- function(ta) {
 
@@ -195,7 +195,7 @@ add_rel_occurrence <- function(ta) {
 }
 
 #' Create sensible names for the taxa and add to taxon table
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @param method the method on which to arrange the taxon names. 
 #' Options: total_rel_abundance, max_rel_abundance 
 #' @param include_species wether to include the species name or not
@@ -279,7 +279,7 @@ add_taxon_name <- function(
 
 #' Create taxon names suitable for visualization with color. A rank can be supplied to aggregate colors higher than the current rank.
 #'
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @param method the method on which to arrange the taxon names. 
 #' @param n integer denoting the amount of most abundant taxa to display. Capacity at 12.
 #' @param samples optional vector of sample_id's of interest
@@ -388,7 +388,7 @@ add_taxon_name_color <- function(
 #' of Illumina MiSeq data,” Microbiome, vol. 3, no. 1, Art. no. 1, 2015, doi:
 #' 10.1186/s40168-015-0083-8.
 #'
-#' @param ta A tidyamplicons object.
+#' @param ta A tidytacos object.
 #' @param dna_conc A variable in the samples table that contains dna
 #'   concetrations (unquoted).
 #' @param sample_condition An optional extra condition that samples must pass
@@ -579,11 +579,11 @@ add_occurrences <- function(
 #' by setting the `test` argument. Options are NULL (default), "wilcox" or
 #' "t-test".
 #'
-#' @param ta A tidyamplicons object
+#' @param ta A tidytacos object
 #' @param condition A condition variable (character)
 #' @param test Differential abundance test to perform
 #'
-#' @return A tidyamplicons object
+#' @return A tidytacos object
 #'
 #' @export
 add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {

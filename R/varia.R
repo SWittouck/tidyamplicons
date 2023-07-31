@@ -1,4 +1,4 @@
-#' Return rank names associated with a tidyamplicons object
+#' Return rank names associated with a tidytacos object
 #'
 #' @export
 rank_names <- function(ta) {
@@ -11,7 +11,7 @@ rank_names <- function(ta) {
 
 }
 
-#' Set rank names for a tidyamplicons object
+#' Set rank names for a tidytacos object
 #'
 #' @export
 set_rank_names <- function(ta, rank_names) {

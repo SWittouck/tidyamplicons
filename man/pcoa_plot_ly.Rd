@@ -7,7 +7,7 @@
 pcoa_plot_ly(ta, x, samplenames = sample, palette = NULL, title = "PCOA plot")
 }
 \arguments{
-\item{ta}{a tidyamplicons object}
+\item{ta}{a tidytacos object}
 
 \item{x}{a string, representing the column name used to color the sample groups on.}
 

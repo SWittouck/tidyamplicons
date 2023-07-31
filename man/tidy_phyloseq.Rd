@@ -2,10 +2,10 @@
 % Please edit documentation in R/converters.R
 \name{tidy_phyloseq}
 \alias{tidy_phyloseq}
-\title{Convert phyloseq object to tidyamplicons object}
+\title{Convert phyloseq object to tidytacos object}
 \usage{
 tidy_phyloseq(ps)
 }
 \description{
-DEPRECATED, use \code{\link{as_tidyamplicons}}
+DEPRECATED, use \code{\link{as_tidytacos}}
 }

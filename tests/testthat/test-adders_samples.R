@@ -4,7 +4,7 @@ x <- matrix(
 )
 rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
-test_data <- create_tidyamplicons(x, 
+test_data <- create_tidytacos(x, 
     taxa_are_columns=FALSE)
 
 test_that("Can add sample tibble to ta object",{

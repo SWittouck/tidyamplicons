@@ -1,4 +1,4 @@
-ta_test <- read_tidyamplicons(test_path("data/urt"))
+ta_test <- read_tidytacos(test_path("data/urt"))
 
 # RAREFY
 test_that("Raise error on rarification higher 

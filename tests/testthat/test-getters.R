@@ -1,4 +1,4 @@
-ta_test <- read_tidyamplicons(test_path("data/urt"))
+ta_test <- read_tidytacos(test_path("data/urt"))
 len_taxa <- length(ta_test$taxa$taxon_id)
 len_samples <- 214 #some empty samples in the df
 

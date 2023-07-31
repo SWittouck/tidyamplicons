@@ -7,7 +7,7 @@
 change_id_samples(ta, sample_id_new)
 }
 \arguments{
-\item{ta}{A tidyamplicons object}
+\item{ta}{A tidytacos object}
 
 \item{sample_id_new}{An expression that evaluates to a unique sample
 identifier}

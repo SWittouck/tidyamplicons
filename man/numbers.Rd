@@ -7,15 +7,15 @@
 numbers(ta)
 }
 \arguments{
-\item{ta}{Tidyamplicons object.}
+\item{ta}{tidytacos object.}
 }
 \description{
 \code{get_numbers} returns the number of samples, taxa and reads in a
-tidyamplicons object.
+tidytacos object.
 }
 \details{
 This function returns the number of samples, taxa and reads in a
-tidyamplicons object, stored in a named numeric vector. To print the numbers,
+tidytacos object, stored in a named numeric vector. To print the numbers,
 use \code{\link{report_numbers}} instead.
 }
 \examples{
@@ -27,8 +27,8 @@ x <- matrix(
 rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
 
-# Convert to tidyamplicons object
-data <- create_tidyamplicons(x, taxa_are_columns = FALSE)
+# Convert to tidytacos object
+data <- create_tidytacos(x, taxa_are_columns = FALSE)
 
 # Report numbers
 numbers <- data \%>\% get_numbers()

@@ -1,4 +1,4 @@
-ta_test <- read_tidyamplicons(test_path("data/urt"))
+ta_test <- read_tidytacos(test_path("data/urt"))
 ta_codifab <- ta_test %>% add_codifab(condition=location)
 
 test_that("Can add logratios.", {

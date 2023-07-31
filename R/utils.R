@@ -1,6 +1,6 @@
-#' Create a tidyamplicons object for testing/example purporses
+#' Create a tidytacos object for testing/example purporses
 #' @export
-#' @return a small tidyamplicons object
+#' @return a small tidytacos object
 create_test_ta <- function(){
   # Initiate abundance matrix
   x <- matrix(
@@ -10,17 +10,17 @@ create_test_ta <- function(){
   rownames(x) <- c("taxon1", "taxon2")
   colnames(x) <- c("sample1", "sample2", "sample3")
 
-  # Convert to tidyamplicons object
-  data <- create_tidyamplicons(x,
+  # Convert to tidytacos object
+  data <- create_tidytacos(x,
             taxa_are_columns = FALSE
           )
   data
 }
 
-#' Removes empty samples from the tidyamplicons object
-#' @param ta a tidyamplicons object
+#' Removes empty samples from the tidytacos object
+#' @param ta a tidytacos object
 #' @export
-#' @return the tidyamplicons object minus the empty samples
+#' @return the tidytacos object minus the empty samples
 remove_empty_samples <- function(ta){
   present_samples <- ta %>% abundances() %>% 
     dplyr::group_by(sample_id) %>% 

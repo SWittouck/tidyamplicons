@@ -1,13 +1,13 @@
 #' Report numbers
 #'
 #' \code{report_numbers} returns the number of samples, taxa and reads in a
-#' tidyamplicons object.
+#' tidytacos object.
 #'
-#' This function prints the number of samples, taxa and reads in a tidyamplicons
+#' This function prints the number of samples, taxa and reads in a tidytacos
 #' object. To retrieve the numbers stored in named numeric vector, use
 #' \code{\link{get_numbers}} instead.
 #'
-#' @param ta Tidyamplicons object.
+#' @param ta tidytacos object.
 #'
 #' @examples
 #' # Initiate abundance matrix
@@ -18,8 +18,8 @@
 #' rownames(x) <- c("taxon1", "taxon2")
 #' colnames(x) <- c("sample1", "sample2")
 #'
-#' # Convert to tidyamplicons object
-#' data <- create_tidyamplicons(x,
+#' # Convert to tidytacos object
+#' data <- create_tidytacos(x,
 #'                      taxa_are_columns = FALSE
 #'                      )
 #' # Report numbers
@@ -38,13 +38,13 @@ report_numbers <- function(ta) {
 #' Return some descriptive numbers
 #'
 #' \code{get_numbers} returns the number of samples, taxa and reads in a
-#' tidyamplicons object.
+#' tidytacos object.
 #'
 #' This function returns the number of samples, taxa and reads in a
-#' tidyamplicons object, stored in a named numeric vector. To print the numbers,
+#' tidytacos object, stored in a named numeric vector. To print the numbers,
 #' use \code{\link{report_numbers}} instead.
 #'
-#' @param ta Tidyamplicons object.
+#' @param ta tidytacos object.
 #'
 #' @examples
 #' # Initiate abundance matrix
@@ -55,8 +55,8 @@ report_numbers <- function(ta) {
 #' rownames(x) <- c("taxon1", "taxon2")
 #' colnames(x) <- c("sample1", "sample2")
 #'
-#' # Convert to tidyamplicons object
-#' data <- create_tidyamplicons(x, taxa_are_columns = FALSE)
+#' # Convert to tidytacos object
+#' data <- create_tidytacos(x, taxa_are_columns = FALSE)
 #'
 #' # Report numbers
 #' numbers <- data %>% get_numbers()
@@ -105,7 +105,7 @@ get_rel_abundance_matrix <- function(ta) {
 #' estimate for each combination of samples.
 #'
 #'
-#' @param ta Tidyamplicons object.
+#' @param ta tidytacos object.
 #' @param unique A logical scalar. Avoid redundancy by removing all self sample
 #'   comparisons and keep only one of two pairwise comparisons? Default is TRUE.
 #' @param method The dissimilarity index. See \code{\link[vegan]{vegdist}} for
@@ -122,9 +122,9 @@ get_rel_abundance_matrix <- function(ta) {
 #' rownames(x) <- c("taxon1", "taxon2")
 #' colnames(x) <- c("sample1", "sample2")
 #'
-#' # Convert to tidyamplicons object
+#' # Convert to tidytacos object
 #' data <-
-#'   create_tidyamplicons(x, taxa_are_columns = FALSE)
+#'   create_tidytacos(x, taxa_are_columns = FALSE)
 #'
 #' # Report numbers
 #' numbers <- data %>% betas()
@@ -209,7 +209,7 @@ taxon_counts_in_conditions <- function(ta, condition) {
 #' Condition should be a categorical variable present in the samples table.
 #' Supply condition as a string.
 #'
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @param condition a string denoting a categorical variable in the sample table
 #' @param pres_abs wether to resort to presence/absense screening
 #' @export
@@ -258,7 +258,7 @@ occurrences <- function(ta, condition = NULL, pres_abs = F) {
 #' Condition should be a categorical variable present in the samples table.
 #' Supply condition as a string.
 #'
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @param condition a string representing a categorical variable to compute the relative abundances in every option of the variable
 #' @export
 mean_rel_abundances <- function(ta, condition = NULL) {
@@ -327,7 +327,7 @@ abundances <- function(ta) ta$abundances
 #'
 #' Samples where one or more predictors are NA are removed.
 #'
-#' @param ta A tidyamplicons object.
+#' @param ta A tidytacos object.
 #' @param predictors A character vector with predictors to include in the model.
 #' @param permutations The number of permutations (more permutations takes
 #'   longer but gives a more accurate p-value).
@@ -362,7 +362,7 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
 #' This function returns the abundances table in the form of a matrix where the
 #' rows are samples and the column are taxa.
 #'
-#' @param ta A tidyamplicons object.
+#' @param ta A tidytacos object.
 #' @param value The name of a variable in the abundances table that contains the
 #'   abundances (unquoted). Could be relative abundances, if present.
 #' @param sample_name The name of the variable in the sample table to use as row
@@ -376,8 +376,8 @@ abundances_matrix <-
   function(ta, value = abundance, sample_name = sample, taxon_name = taxon) {
 
   if (
-    ! "tidyamplicons" %in% class(ta)
-  ) stop("first argument should be a tidyamplicons object")
+    ! "tidytacos" %in% class(ta)
+  ) stop("first argument should be a tidytacos object")
 
   value <- rlang::enquo(value)
   sample_name <- rlang::enquo(sample_name)

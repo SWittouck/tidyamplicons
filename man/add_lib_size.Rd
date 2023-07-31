@@ -7,15 +7,15 @@
 add_lib_size(ta, step = "current")
 }
 \arguments{
-\item{ta}{Tidyamplicons object.}
+\item{ta}{tidytacos object.}
 }
 \description{
 \code{add_lib_size} adds the total abundance per sample to the samples tibble
-of a tidyamplicons object.
+of a tidytacos object.
 }
 \details{
 This function adds the total abundance per sample to the samples tibble of a
-tidyamplicons object under the variable name total_abundance.
+tidytacos object under the variable name total_abundance.
 }
 \examples{
 # Initiate abundance matrix
@@ -26,8 +26,8 @@ x <- matrix(
 rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
 
-# Convert to tidyamplicons object
-data <- create_tidyamplicons(x,
+# Convert to tidytacos object
+data <- create_tidytacos(x,
                      taxa_are_columns = FALSE
                      )
 

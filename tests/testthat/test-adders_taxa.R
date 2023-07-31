@@ -1,4 +1,4 @@
-ta_test = read_tidyamplicons(test_path("data/urt"))
+ta_test = read_tidytacos(test_path("data/urt"))
 
 x <- matrix(
   c(1500, 1300, 280, 356),
@@ -6,7 +6,7 @@ x <- matrix(
 )
 rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
-test_data <- create_tidyamplicons(x, 
+test_data <- create_tidytacos(x, 
     taxa_are_columns=FALSE)
 
 test_that("Can reclassify using dada and small test database", {

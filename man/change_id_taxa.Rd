@@ -7,7 +7,7 @@
 change_id_taxa(ta, taxon_id_new)
 }
 \arguments{
-\item{ta}{A tidyamplicons object}
+\item{ta}{A tidytacos object}
 
 \item{taxon_id_new}{An expression that evaluates to a unique taxon
 identifier}

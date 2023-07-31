@@ -1,4 +1,4 @@
-ta.test <- read_tidyamplicons(test_path("data/urt"))
+ta.test <- read_tidytacos(test_path("data/urt"))
 
 test_that("Gives default rank names when not provided", {
   expect_equal(ta.test %>% rank_names(), 

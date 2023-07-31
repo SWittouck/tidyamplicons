@@ -7,17 +7,17 @@
 add_sample_clustered(ta)
 }
 \arguments{
-\item{ta}{Tidyamplicons object.}
+\item{ta}{tidytacos object.}
 }
 \description{
 \code{add_sample_clustered} adds a new variable defining a sample order based
-on similarity after clustering to the samples tibble of a tidyamplicons
+on similarity after clustering to the samples tibble of a tidytacos
 object.
 }
 \details{
 This function calculates the Bray-Curtis distance between samples followed by
 hierarchical average linkage clustering of samples. It will then add a new
-factor variable "samples_clustered" to the samples tibble of a tidyamplicons
+factor variable "samples_clustered" to the samples tibble of a tidytacos
 object. This function is extremely useful if one wants to plot similar
 samples together.
 }
@@ -30,8 +30,8 @@ x <- matrix(
 rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
 
-# Convert to tidyamplicons object
-data <- create_tidyamplicons(x,
+# Convert to tidytacos object
+data <- create_tidytacos(x,
                      taxa_are_columns = FALSE
                      )
 

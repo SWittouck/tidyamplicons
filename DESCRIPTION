@@ -1,5 +1,5 @@
 Type: Package
-Package: tidyamplicons
+Package: tidytacos
 Title: Functions to Manipulate and Visualize Amplicon Abundance Data
 Version: 0.2.2
 Authors@R: 

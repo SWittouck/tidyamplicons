@@ -26,7 +26,7 @@ rarefy <- function(ta, n, replace = F) {
 
 #' Change sample IDs to a given expression
 #'
-#' @param ta A tidyamplicons object
+#' @param ta A tidytacos object
 #' @param sample_id_new An expression that evaluates to a unique sample
 #'   identifier
 #'
@@ -60,7 +60,7 @@ change_id_samples <- function(ta, sample_id_new) {
 
 #' Change taxon IDs to a given expression
 #'
-#' @param ta A tidyamplicons object
+#' @param ta A tidytacos object
 #' @param taxon_id_new An expression that evaluates to a unique taxon
 #'   identifier
 #'
@@ -91,7 +91,7 @@ change_id_taxa <- function(ta, taxon_id_new) {
 }
 
 #' Aggregate samples with identical values for all metadata
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 aggregate_samples <- function(ta) {
 
@@ -134,7 +134,7 @@ aggregate_samples <- function(ta) {
 #' * If not, delete all taxon variables except taxon_id and the ranks you are
 #' still interested in prior to calling this function.
 #'
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @param rank an optional rank to aggregate on
 #' @export
 aggregate_taxa <- function(ta, rank = NULL) {
@@ -206,7 +206,7 @@ aggregate_taxa <- function(ta, rank = NULL) {
 #'
 #' This function assumes that the sequence variable in the taxon table is called
 #' "sequence".
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @param start index of where to start trimming
 #' @param end index of where to stop trimming
 #'
@@ -228,7 +228,7 @@ trim_asvs <- function(ta, start, end) {
 }
 
 #' Retain or remove a set of sample variables
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 select_samples <- function(ta, ...) {
 
@@ -244,7 +244,7 @@ select_samples <- function(ta, ...) {
 }
 
 #' Retain or remove a set of taxon variables
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 select_taxa <- function(ta, ...) {
 
@@ -258,7 +258,7 @@ select_taxa <- function(ta, ...) {
 }
 
 #' Retain or remove a set of abundance variables
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 select_abundances <- function(ta, ...) {
 
@@ -274,7 +274,7 @@ select_abundances <- function(ta, ...) {
 }
 
 #' Create extra variables in the sample table
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 mutate_samples <- function(ta, ...) {
 
@@ -287,7 +287,7 @@ mutate_samples <- function(ta, ...) {
 }
 
 #' Create extra variables in the taxon table
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 mutate_taxa <- function(ta, ...) {
 
@@ -300,7 +300,7 @@ mutate_taxa <- function(ta, ...) {
 }
 
 #' Create extra variables in the abundances table
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 mutate_abundances <- function(ta, ...) {
 
@@ -315,7 +315,7 @@ mutate_abundances <- function(ta, ...) {
 }
 
 #' Filter the samples
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 filter_samples <- function(ta, ...) {
 
@@ -331,7 +331,7 @@ filter_samples <- function(ta, ...) {
 }
 
 #' Filter the taxa
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 filter_taxa <- function(ta, ...) {
 
@@ -347,7 +347,7 @@ filter_taxa <- function(ta, ...) {
 }
 
 #' Filter the abundances
-#' @param ta a tidyamplicons object
+#' @param ta a tidytacos object
 #' @export
 filter_abundances <- function(ta, ...) {
 
