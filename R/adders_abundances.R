@@ -5,7 +5,7 @@
 #'
 #' This function adds the relative abundance per sample to the abundance table
 #' of a tidyamplicons object under the variable name "rel_abundance".
-#' 
+#'
 #' @param ta Tidyamplicons object.
 #'
 #' @examples
@@ -24,7 +24,8 @@
 #' # Add relative abundance
 #' data <- data %>%
 #'  add_rel_abundance()
-#' 
+#'
+#' @export
 add_rel_abundance <- function(ta) {
 
   # add relative abundance to abundance table

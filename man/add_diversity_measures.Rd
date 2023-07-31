@@ -2,39 +2,10 @@
 % Please edit documentation in R/adders_samples.R
 \name{add_diversity_measures}
 \alias{add_diversity_measures}
-\title{Add alpha diversity measures}
+\title{Add some alpha diversity measures}
 \usage{
 add_diversity_measures(ta)
 }
-\arguments{
-\item{ta}{Tidyamplicons object.}
-}
 \description{
-\code{add_diversity_measures} adds two alpha diversity measures to the
-samples tibble of a tidyamplicons object.
-}
-\details{
-This function adds two alpha diversity measures (observed and inverse
-Simpson) to the samples tibble of a tidyamplicons object under the variable
-names div_observed and div_inv_simpson, respectively. This function will also
-add relative abundances if not present using \code{\link{add_rel_abundance}}.
-}
-\examples{
-# Initiate abundance matrix
-x <- matrix(
- c(1500, 1300, 280, 356),
- ncol = 2
-)
-rownames(x) <- c("taxon1", "taxon2")
-colnames(x) <- c("sample1", "sample2")
-
-# Convert to tidyamplicons object
-data <- create_tidyamplicons(x,
-                     taxa_are_columns = FALSE
-                     )
-
-# Add total abundance
-data <- data \%>\%
- add_diversity_measures()
-
+DEPRECATED, use \code{\link{add_alphas}}
 }

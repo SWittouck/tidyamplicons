@@ -10,7 +10,7 @@ update_tidyamplicons(ta)
 \item{ta}{Old tidyamplicons object.}
 }
 \description{
-\code{update_id_names} updates an old tidyamplicons object to a new one.
+\code{update_tidyamplicons} updates an old tidyamplicons object to a new one.
 }
 \details{
 This function will update a tidyamplicons object created prior to version

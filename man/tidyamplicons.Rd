@@ -3,7 +3,6 @@
 \docType{package}
 \name{tidyamplicons}
 \alias{tidyamplicons}
-\alias{tidyamplicons-package}
 \title{tidyamplicons: Functions to manipulate and visualize amplicon count data.}
 \description{
 Tidyamplicons is an R package for the analysis of amplicon count data:

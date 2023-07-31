@@ -2,45 +2,10 @@
 % Please edit documentation in R/getters.R
 \name{get_betas}
 \alias{get_betas}
-\title{Get betas}
+\title{Get beta diversity table}
 \usage{
 get_betas(ta, unique = T, method = "bray", binary = F)
 }
-\arguments{
-\item{ta}{Tidyamplicons object.}
-
-\item{unique}{A logical scalar. Avoid redundancy by removing all self sample
-comparisons and keep only one of two pairwise comparisons? Default is TRUE.}
-
-\item{method}{The dissimilarity index. See \code{\link[vegan]{vegdist}} for
-all options. Default is "bray".}
-
-\item{binary}{A logical scalar. Perform presence/absence standardization
-before analysis. See \code{\link[vegan]{vegdist}}. Default is FALSE.}
-}
 \description{
-\code{get_betas} returns a tidy tibble with the beta diversity for each
-combination of samples.
-}
-\details{
-This function calculates the beta diversity using the
-\code{\link[vegan]{vegdist}} function of Vegan. It will report one diversity
-estimate for each combination of samples.
-}
-\examples{
-# Initiate abundance matrix
-x <- matrix(
- c(1500, 1300, 280, 356),
- ncol = 2
-)
-rownames(x) <- c("taxon1", "taxon2")
-colnames(x) <- c("sample1", "sample2")
-
-# Convert to tidyamplicons object
-data <- create_tidyamplicons(x,
-                     taxa_are_columns = FALSE
-                     )
-# Report numbers
-numbers <- data \%>\%
- get_betas()
+DEPRECATED, use \code{\link{betas}}
 }
