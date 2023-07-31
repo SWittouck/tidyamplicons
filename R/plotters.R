@@ -136,48 +136,6 @@ pcoa_plot_ly <- function(ta, x, samplenames = sample, palette = NULL, title = "P
   plot
 }
 
-
-#' Return a bar plot of the samples
-#'
-#' DEPRECATED, use \code{\link{bar_plot}}
-#'
-#' @export
-get_bar_plot <- bar_plot
-
-#' Return a history plot of the samples
-#'
-#' DEPRECATED, this function is kept for historical reasons and will probably
-#' not work
-#'
-#' @export
-history_plot <- function(ta, col = NULL) {
-  # convert promise to formula
-  col <- substitute(col)
-
-  # remove lib_size if present
-  ta$samples$lib_size <- NULL
-
-  # make plot and return
-  ta$lib_sizes %>%
-    left_join(ta$samples, by = "sample_id") %>%
-    ggplot(aes_(x = ~step, y = ~lib_size, group = ~sample_id, col = col)) +
-    geom_line(size = 0.5) +
-    scale_y_log10() +
-    scale_color_brewer(palette = "Paired") +
-    theme(
-      axis.text.x = element_text(angle = 90, vjust = 1),
-      panel.background = element_rect(fill = "white", colour = "black")
-    )
-}
-
-#' Return a history plot of the samples
-#'
-#' DEPRECATED, this function is kept for historical reasons and will probably
-#' not work
-#'
-#' @export
-get_history_plot <- history_plot
-
 #' Return a visualization designed for a small number of samples
 #'
 #' @export

@@ -165,22 +165,6 @@ add_alphas <- function(ta) {
 
 }
 
-#' Add some alpha diversity measures
-#'
-#' DEPRECATED, use \code{\link{add_alphas}}
-#'
-#' @export
-add_diversity_measures <- function(ta) {
-
-  ta %>%
-    add_alphas %>%
-    purrr::modify_at(
-      "samples", rename, div_observed = observed,
-      div_inv_simpson = inverse_simpson
-    )
-
-}
-
 #' Add clustered sample order
 #'
 #' \code{add_sample_clustered} adds a new variable defining a sample order based

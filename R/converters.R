@@ -408,38 +408,3 @@ make_tidytacos <- function(samples, taxa, abundances,
 
 }
 
-#' Convert phyloseq object to tidytacos object
-#'
-#' DEPRECATED, use \code{\link{as_tidytacos}}
-#'
-#' @export
-tidy_phyloseq <- function(ps) {
-
-  # convert sample data
-  samples <-
-    phyloseq::sample_data(ps)@.Data %>%
-    `names<-`(phyloseq::sample_data(ps)@names) %>%
-    do.call(what = tibble) %>%
-    mutate(sample_id = phyloseq::sample_data(ps)@row.names)
-
-  # convert taxon table
-  taxa <- phyloseq::tax_table(ps)@.Data %>%
-    as_tibble() %>%
-    mutate(taxon_id = phyloseq::tax_table(ps) %>% row.names()) %>%
-    set_names(names(.) %>% str_to_lower())
-
-  # make sure that taxa are columns in taxon table
-  if (phyloseq::taxa_are_rows(ps)) phyloseq::otu_table(ps) <- phyloseq::t(phyloseq::otu_table(ps))
-
-  # convert taxon table
-  abundances <- phyloseq::otu_table(ps)@.Data %>%
-    as_abundances(taxa_are_columns = T)
-
-  # make and return tidytacos object
-  make_tidytacos(
-    samples = samples,
-    taxa = taxa,
-    abundances = abundances
-  )
-
-}

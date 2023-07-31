@@ -72,29 +72,6 @@ numbers <- function(ta) {
 
 }
 
-#' Return some descriptive numbers
-#'
-#' DEPRECATED, use \code{\link{numbers}}
-#'
-#' @export
-get_numbers <- numbers
-
-#' Return a relative abundance matrix
-#'
-#' DEPRECATED, use \code{\link{abundances_matrix}}
-#'
-#' @export
-get_rel_abundance_matrix <- function(ta) {
-
-  # add relative abundances if not present
-  if (! "rel_abundance" %in% names(ta$abundances)) {
-    ta <- add_rel_abundance(ta)
-  }
-
-  as_abundances_matrix(ta$abundances, value = rel_abundance)
-
-}
-
 #' Get beta diversity table
 #'
 #' \code{betas} returns a tidy tibble with the beta diversity for each
@@ -169,35 +146,6 @@ betas <- function(ta, unique = T, method = "bray", binary = F) {
 
   # return betas table
   betas
-
-}
-
-#' Get beta diversity table
-#'
-#' DEPRECATED, use \code{\link{betas}}
-#'
-#' @export
-get_betas <- betas
-
-#' Get occurrences of taxa in general or in conditions
-#'
-#' DEPRECATED, use \code{\link{occurrences}}
-#'
-#' @export
-taxon_counts_in_conditions <- function(ta, condition) {
-
-  condition <- enquo(condition)
-  condition_name <- quo_name(condition)
-
-  ta$abundances %>%
-    filter(abundance > 0) %>%
-    left_join(ta$samples, by = "sample_id") %>%
-    select(taxon_id, sample_id, condition = !! condition) %>%
-    mutate(presence = "present") %>%
-    complete(nesting(condition, sample_id), taxon_id, fill = list(presence = "absent")) %>%
-    count(taxon_id, condition, presence) %>%
-    complete(taxon_id, condition, presence, fill = list(n = 0)) %>%
-    rename(!! condition_name := condition)
 
 }
 
@@ -354,6 +302,22 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
     metadata,
     permutations = permutations
   )
+
+}
+
+#' Return a relative abundance matrix
+#'
+#' DEPRECATED, use \code{\link{abundances_matrix}}
+#'
+#' @export
+get_rel_abundance_matrix <- function(ta) {
+
+  # add relative abundances if not present
+  if (! "rel_abundance" %in% names(ta$abundances)) {
+    ta <- add_rel_abundance(ta)
+  }
+
+  as_abundances_matrix(ta$abundances, value = rel_abundance)
 
 }
 

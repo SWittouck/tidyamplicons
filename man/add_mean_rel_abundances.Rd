@@ -7,14 +7,14 @@
 add_mean_rel_abundances(ta, condition = NULL, test = NULL)
 }
 \arguments{
-\item{ta}{A tidytacos object}
+\item{ta}{A tidyamplicons object}
 
 \item{condition}{A condition variable (character)}
 
 \item{test}{Differential abundance test to perform}
 }
 \value{
-A tidytacos object
+A tidyamplicons object
 }
 \description{
 This function adds mean relative abundance values for each taxon to the taxa

@@ -17,7 +17,7 @@ test_that("Relative abundance matrix can be created", {
 })
 
 test_that("Beta diversity table can be generated", {
-    beta_table <- ta_test %>% get_betas()
+    beta_table <- ta_test %>% betas()
     expect_lte(max(beta_table$beta), 1)
     expect_equal(dim(beta_table), c(22791, 17))
 })

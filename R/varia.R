@@ -1,27 +1,3 @@
-#' Return rank names associated with a tidytacos object
-#'
-#' @export
-rank_names <- function(ta) {
-
-  if (! is.null(ta$rank_names)) {
-    ta$rank_names
-  } else {
-    c("kingdom", "phylum", "class", "order", "family", "genus")
-  }
-
-}
-
-#' Set rank names for a tidytacos object
-#'
-#' @export
-set_rank_names <- function(ta, rank_names) {
-
-  ta$rank_names <- rank_names
-
-  ta
-
-}
-
 #' Apply a sample filtering to the taxon and abundance tables
 #'
 #' DEPRECATED, see \code{\link{filter_samples}}
@@ -84,34 +60,26 @@ process_abundance_selection <- function(ta) {
 
 }
 
-#' Update library sizes in the lib_size table
-#'
-#' DEPRECATED, lib_size tables are no longer supported
+#' Return rank names associated with a tidytacos object
 #'
 #' @export
-update_lib_sizes <- function(ta, step) {
+rank_names <- function(ta) {
 
-  # current lib_size in tidy table
-  lib_sizes_new <- ta$abundances %>%
-    group_by(sample_id) %>%
-    summarize(lib_size = sum(abundance)) %>%
-    mutate(step = step)
-
-  # make lib_sizes table if it doesn't exist
-  if (is.null(ta$lib_sizes)) {
-    ta$lib_sizes <- lib_sizes_new %>%
-      mutate(step = factor(step))
-    # update lib_sizes table if it already existed
+  if (! is.null(ta$rank_names)) {
+    ta$rank_names
   } else {
-    levels <- levels(ta$lib_sizes$step)
-    levels <- c(levels, step)
-    ta$lib_sizes <- ta$lib_sizes %>%
-      mutate(step = as.character(step)) %>%
-      bind_rows(lib_sizes_new) %>%
-      mutate(step = factor(step, levels = !! levels))
+    c("kingdom", "phylum", "class", "order", "family", "genus")
   }
 
-  # return ta object
+}
+
+#' Set rank names for a tidytacos object
+#'
+#' @export
+set_rank_names <- function(ta, rank_names) {
+
+  ta$rank_names <- rank_names
+
   ta
 
 }
