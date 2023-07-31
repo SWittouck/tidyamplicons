@@ -1,7 +1,7 @@
 tidytacos <img src="man/figures/hex-tidytacos.png" align="right" width="200">
 ======================
-[![R-CMD-check](https://github.com/SWittouck/tidytacos/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SWittouck/tidytacos/actions/workflows/R-CMD-check.yaml)
-[![codecov](https://codecov.io/github/SWittouck/tidytacos/branch/feature/unit-testing/graph/badge.svg?token=WK0QN34DJB)](https://codecov.io/github/SWittouck/tidytacos)
+[![R-CMD-check](https://github.com/LebeerLab/tidytacos/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LebeerLab/tidytacos/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/github/LebeerLab/tidytacos/branch/feature/unit-testing/graph/badge.svg?token=WK0QN34DJB)](https://codecov.io/github/LebeerLab/tidytacos)
 
 ## Overview
 
