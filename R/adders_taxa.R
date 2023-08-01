@@ -81,7 +81,7 @@ classify_taxa <- function(
 #' This function adds a taxon tibble containing taxon data (e.g. taxon ranks
 #' such as genus, family, ...) for each taxon to the tidyamplicons object. It is
 #' used after initiating a tidyamplicons object using a numerical abundance
-#' matrix and the function \code{\link{create_tidyamplicons}}. Also see
+#' matrix and the function \code{\link{tidytacos}}. Also see
 #' \code{\link{add_sample_tibble}} to update the sample data of the
 #' tidyamplicons object.
 #'
@@ -101,7 +101,7 @@ classify_taxa <- function(
 #' colnames(x) <- c("sample1", "sample2")
 #'
 #' # Convert to tidyamplicons object
-#' data <- create_tidyamplicons(x,
+#' data <- create_tidytacos(x,
 #'                      taxa_are_columns = FALSE)
 #'
 #' # Initiate taxon tibble

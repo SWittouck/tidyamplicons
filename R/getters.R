@@ -5,7 +5,7 @@
 #'
 #' This function prints the number of samples, taxa and reads in a tidytacos
 #' object. To retrieve the numbers stored in named numeric vector, use
-#' \code{\link{get_numbers}} instead.
+#' \code{\link{numbers}} instead.
 #'
 #' @param ta tidytacos object.
 #'
@@ -37,7 +37,7 @@ report_numbers <- function(ta) {
 
 #' Return some descriptive numbers
 #'
-#' \code{get_numbers} returns the number of samples, taxa and reads in a
+#' \code{numbers} returns the number of samples, taxa and reads in a
 #' tidytacos object.
 #'
 #' This function returns the number of samples, taxa and reads in a
@@ -59,7 +59,7 @@ report_numbers <- function(ta) {
 #' data <- create_tidytacos(x, taxa_are_columns = FALSE)
 #'
 #' # Report numbers
-#' numbers <- data %>% get_numbers()
+#' numbers <- data %>% numbers()
 #'
 #' @export
 numbers <- function(ta) {

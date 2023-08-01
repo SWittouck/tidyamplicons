@@ -10,7 +10,7 @@ add_alphas(ta)
 \item{ta}{tidytacos object.}
 }
 \description{
-\code{add_diversity_measures} adds two alpha diversity measures to the
+\code{add_alphas} adds two alpha diversity measures to the
 samples tibble of a tidytacos object.
 }
 \details{
@@ -35,5 +35,5 @@ data <- create_tidytacos(x,
 
 # Add total abundance
 data <- data \%>\%
- add_diversity_measures()
+ add_alphas()
 }
