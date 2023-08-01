@@ -3,7 +3,7 @@
 #' DEPRECATED, see \code{\link{filter_samples}}
 #'
 #' Should only be used internally.
-#'
+#' @noRd
 #' @export
 process_sample_selection <- function(ta) {
 
@@ -76,6 +76,7 @@ rank_names <- function(ta) {
 #' Set rank names for a tidytacos object
 #' @param ta a tidytacos object
 #' @param rank_names a vector containing the names of the ranks used to describe the taxa
+#' @return An updated tidytacos object.
 #' @export
 set_rank_names <- function(ta, rank_names) {
 
@@ -86,6 +87,7 @@ set_rank_names <- function(ta, rank_names) {
 }
 
 # for internal use, I think
+#' @noRd
 merge_redundant_taxa <- function(ta) {
 
   # merge taxa in taxon table

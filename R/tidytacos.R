@@ -22,5 +22,9 @@
 #' @import vegan
 #' @importFrom tibble tibble
 #' @importFrom plotly plot_ly layout
+globalVariables(c(
+    "sample_id", "samples",
+    "taxon_id", "taxa", "taxon", "taxon_name_color",  
+    "abundance", "rel_abundance", "presence"
+))
 NULL
-

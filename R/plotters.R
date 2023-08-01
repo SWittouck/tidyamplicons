@@ -31,6 +31,21 @@ prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
 bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   # convert promise to formula
   x <- enquo(x)
+  
+  error_message = paste0("Label \'", quo_name(x),"\' not found in the samples table.")
+  warning_message = "Sample labels not unique, samples are aggregated."
+  if (quo_name(x) != "sample_clustered" &&
+    !is.element(quo_name(x), names(ta$samples)) 
+  ) {
+    stop(error_message)
+  }
+
+  if (quo_name(x) != "sample_clustered" &&
+    length(unique(ta$samples %>% pull(!!x))) < nrow(ta$samples)
+  ) {
+    warning(warning_message)
+  }
+
 
   # make plot and return
   plot <- prepare_for_bp(ta, n) %>%

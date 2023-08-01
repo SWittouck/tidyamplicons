@@ -144,7 +144,7 @@ add_codifab <- function(ta, condition, conditions = NULL, max_taxa = 30) {
 #' Significance of tests is determined by capping the false discovery rate at
 #' 10%, using the method of Benjamini and Yekutieli, which is developed for
 #' non-independent tests. See [p.adjust].
-#'
+#' @importFrom stats p.adjust median
 #' @param ta A tidytacos object
 #' @param diffabun_var The variable with differential abundances in the
 #'   taxon_pair table
@@ -207,7 +207,8 @@ codifab_plot <- function(ta, diffabun_var) {
 }
 
 #' Add compositional principal components to the sample table
-#'
+#' @importFrom stats prcomp
+#' @param ta a tidytacos object.
 #' @export
 add_copca <- function(ta) {
 

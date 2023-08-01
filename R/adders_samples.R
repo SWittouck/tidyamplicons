@@ -177,6 +177,7 @@ add_alphas <- function(ta) {
 #' object. This function is extremely useful if one wants to plot similar
 #' samples together.
 #'
+#' @importFrom stats hclust
 #' @param ta tidytacos object.
 #'
 #' @examples
@@ -235,7 +236,7 @@ add_sample_clustered <- function(ta) {
 #' the samples tibble of a tidytacos object named "pcoa1" and "pcoa2". This
 #' function will also add relative abundances if not present using
 #' \code{\link{add_rel_abundance}}.
-#'
+#' @importFrom stats cmdscale
 #' @param ta tidytacos object.
 #'
 #' @examples
@@ -384,6 +385,7 @@ add_spike_ratio <- function(ta, spike_taxon) {
 # Adds a variable "cluster" to the samples table
 # To do: merge with add_sample_clustered somehow
 #
+#' @importFrom stats cutree
 #' @export
 add_cluster <- function(ta, n_clusters) {
 

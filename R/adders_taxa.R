@@ -172,6 +172,7 @@ add_total_rel_abundance <- function(ta) {
 
 
 #' Create sensible names for the taxa and add to taxon table
+#' @importFrom stats na.omit
 #' @param ta a tidytacos object
 #' @param method the method on which to arrange the taxon names. 
 #' Options: total_rel_abundance, max_rel_abundance 
@@ -261,6 +262,7 @@ add_taxon_name <- function(
 #' @param n integer denoting the amount of most abundant taxa to display. Capacity at 12.
 #' @param samples optional vector of sample_id's of interest
 #' @param taxa optional vector of taxon_id's of interest
+#' @param rank optional rank to aggregate taxa on
 #' @export
 add_taxon_name_color <- function(
   ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL, rank = NULL
@@ -365,6 +367,7 @@ add_taxon_name_color <- function(
 #' of Illumina MiSeq data,” Microbiome, vol. 3, no. 1, Art. no. 1, 2015, doi:
 #' 10.1186/s40168-015-0083-8.
 #'
+#' @importFrom stats cor.test
 #' @param ta A tidytacos object.
 #' @param dna_conc A variable in the samples table that contains dna
 #'   concetrations (unquoted).
@@ -425,7 +428,11 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 #'
 #' Condition should be a categorical variable present in the samples table.
 #' Supply condition as a string.
-#'
+#' @importFrom stats fisher.test
+#' @param ta A tidytacos object
+#' @param condition A categorical variable (string)
+#' @param relative wether to use relative occurences 
+#' @param fischer_test wether to perform a fischer test and add the p-values of the test to the taxa table
 #' @export
 add_occurrences <- function(
   ta, condition = NULL, relative = F, fischer_test = F
@@ -517,6 +524,7 @@ add_occurrences <- function(
 #' by setting the `test` argument. Options are NULL (default), "wilcox" or
 #' "t-test".
 #'
+#' @importFrom stats t.test wilcox.test
 #' @param ta A tidytacos object
 #' @param condition A condition variable (character)
 #' @param test Differential abundance test to perform

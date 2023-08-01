@@ -9,7 +9,11 @@ test_that("Barplot returns identical plot", {
     vdiffr::expect_doppelganger("Default barplot", bp)
 })
 
-test_that("Barplot returns identical plot when different arguments are used", {
-    bp  <- ta_test %>% bar_plot(n=5, x=participant)
+test_that("Barplot raises warning when aggregating samples", {
+    expect_warning(bp <- ta_test %>% bar_plot(n=5, x=participant))
     vdiffr::expect_doppelganger("Custom barplot", bp)
+})
+
+test_that("Barplot raises error when providing non-existant label", {
+    expect_error(ta_test %>% bar_plot(x=imagined))
 })

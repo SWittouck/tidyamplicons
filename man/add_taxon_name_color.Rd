@@ -23,6 +23,8 @@ add_taxon_name_color(
 \item{samples}{optional vector of sample_id's of interest}
 
 \item{taxa}{optional vector of taxon_id's of interest}
+
+\item{rank}{optional rank to aggregate taxa on}
 }
 \description{
 Create taxon names suitable for visualization with color. A rank can be supplied to aggregate colors higher than the current rank.
