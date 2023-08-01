@@ -32,4 +32,4 @@ devtools::install_github("SWittouck/tidyamplicons")
 
 ## Documentation
 
-A documentation page (help page) is available for all functions. You can view it by running e.g. `?filter_samples`. For most functions it is still very basic; this will be improved in the future. Some useful tutorials can be found on the [wiki](https://github.com/SWittouck/tidyamplicons/wiki). 
+[A documentation page (help page)](https://lebeerlab.github.io/tidytacos/reference/index.html) is available for all functions in the browser or in R. You can view it in R by running e.g. `?filter_samples`. For most functions it is still very basic; this will be improved in the future. Some useful tutorials can be found on the [wiki](https://github.com/LebeerLab/tidytacos/wiki). 
