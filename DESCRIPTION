@@ -1,11 +1,13 @@
 Type: Package
 Package: tidytacos
-Title: Functions to Manipulate and Visualize Amplicon Abundance Data
+Title: Manipulate Taxonomic Composition Data of Microbial Communities
 Version: 0.2.2
 Authors@R: 
     person("Stijn", "Wittouck", , "stijn.wittouck@uantwerpen.be", role = c("aut", "cre"))
-Description: A toolkit for processing and visualizing amplicon abundance
-    data, based on the tidyverse framework.
+    person("Tim", "Van Rillaer", , "tim.vanrillaer@uantwerpen.be", role = c("aut"))
+    person("Wenke", "Smets", , "wenke.smets@uantwerpen.be", role = c("aut"))
+Description: A toolkit for processing and visualizing taxonomic composition data
+    of microbial communities, based on the tidyverse framework.
 License: GPL-3
 Depends: R (>= 3.6.0)
 Imports:
