@@ -16,7 +16,7 @@ tidytacos object.
 \details{
 This function prints the number of samples, taxa and reads in a tidytacos
 object. To retrieve the numbers stored in named numeric vector, use
-\code{\link{get_numbers}} instead.
+\code{\link{numbers}} instead.
 }
 \examples{
 # Initiate abundance matrix

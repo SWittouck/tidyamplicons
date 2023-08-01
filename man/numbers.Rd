@@ -10,7 +10,7 @@ numbers(ta)
 \item{ta}{tidytacos object.}
 }
 \description{
-\code{get_numbers} returns the number of samples, taxa and reads in a
+\code{numbers} returns the number of samples, taxa and reads in a
 tidytacos object.
 }
 \details{
@@ -31,6 +31,6 @@ colnames(x) <- c("sample1", "sample2")
 data <- create_tidytacos(x, taxa_are_columns = FALSE)
 
 # Report numbers
-numbers <- data \%>\% get_numbers()
+numbers <- data \%>\% numbers()
 
 }
