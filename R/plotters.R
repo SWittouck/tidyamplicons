@@ -188,6 +188,20 @@ sample_plot <- function(ta, sample = sample_id, n = 15, nrow = NULL) {
     ylab("relative abundance")
 }
 
+#' Return a venndiagram of overlapping taxon_ids between conditions
+#'
+#' @param ta A tidytacos object.
+#' @param condition The name of a variable in the samples table that contains a
+#'   categorical value.
+#' @importFrom ggVennDiagram ggVennDiagram
+#' @export
+tacoplot_venn <- function(ta, condition, ...){
+
+  ltpc <- list_taxa_per_condition(ta, condition)
+  ggVennDiagram(ltpc, ...)
+
+}
+
 palette_paired <- c(
   "#e8e8e8", # light grey
   "#a6cee3", # light blue
