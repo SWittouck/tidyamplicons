@@ -7,7 +7,7 @@
 add_taxon_name(ta, method = "total_rel_abundance", include_species = F)
 }
 \arguments{
-\item{ta}{a tidyamplicons object}
+\item{ta}{a tidytacos object}
 
 \item{method}{the method on which to arrange the taxon names. 
 Options: total_rel_abundance, max_rel_abundance}

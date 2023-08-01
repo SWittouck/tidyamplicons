@@ -7,7 +7,7 @@
 add_max_rel_abundance(ta)
 }
 \arguments{
-\item{ta}{a tidyamplicons object}
+\item{ta}{a tidytacos object}
 }
 \description{
 Add the maximum relative abundance of taxa to the taxon table

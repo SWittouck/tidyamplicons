@@ -74,7 +74,8 @@ rank_names <- function(ta) {
 }
 
 #' Set rank names for a tidytacos object
-#'
+#' @param ta a tidytacos object
+#' @param rank_names a vector containing the names of the ranks used to describe the taxa
 #' @export
 set_rank_names <- function(ta, rank_names) {
 

@@ -6,6 +6,11 @@
 \usage{
 set_rank_names(ta, rank_names)
 }
+\arguments{
+\item{ta}{a tidytacos object}
+
+\item{rank_names}{a vector containing the names of the ranks used to describe the taxa}
+}
 \description{
 Set rank names for a tidytacos object
 }
