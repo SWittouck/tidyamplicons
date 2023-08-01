@@ -20,7 +20,7 @@ prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
   }
   # optional extension (not used by sample bp)
   if (extended) {
-    ta <- ta %>% get_abundances_extended()
+    ta <- ta %>% everything()
   }
   ta
 }
