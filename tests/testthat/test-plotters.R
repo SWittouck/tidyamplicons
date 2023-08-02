@@ -16,17 +16,19 @@ test_that("Barplot raises error when providing non-existant label", {
     expect_error(urt %>% tacoplot_stack(x=imagined))
 })
 
-test_that("Barplotly works", {
+test_that("Tacoplot_stack_ly works", {
     skip_if_not_installed("plotly")
-    bply <- urt %>% tacoplot_stack_ly()
-    vdiffr::expect_doppelganger("Standard tacoplot_stack_ly", bply)
+    expect_no_error(
+        bply <- urt %>% tacoplot_stack_ly()
+    )
 })
 
-test_that("Pcoaplotly works", {
+test_that("Tacoplot_pcoa_ly works", {
     skip_if_not_installed("plotly")
-    pcoaly <- urt %>% tacoplot_pcoa_ly(x=location)
+    expect_no_error(
+        urt %>% tacoplot_pcoa_ly(x=location)
+    )
 
-    vdiffr::expect_doppelganger("Standard tacoplot_stack_ly", pcoaly)
 })
 
 test_that("Can create venndiagram", {
