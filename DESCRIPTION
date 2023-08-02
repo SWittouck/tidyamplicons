@@ -16,7 +16,6 @@ Imports:
     forcats,
     ggplot2,
     magrittr,
-    plotly,
     purrr,
     readr,
     rlang (>= 0.4.11),
@@ -30,6 +29,7 @@ Suggests:
     dada2,
     knitr,
     phyloseq,
+    plotly,
     rmarkdown,
     roxygen2,
     testthat (>= 3.0.0)

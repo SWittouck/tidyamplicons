@@ -76,6 +76,7 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 #'
 #' @export
 bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
+  force_optional_dependency("plotly")
   # convert promise to formula
   x <- enquo(x)
 
@@ -113,6 +114,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
 #'
 #' @export
 pcoa_plot_ly <- function(ta, x, samplenames = sample, palette = NULL, title = "PCOA plot") {
+  force_optional_dependency("plotly")
   # convert promise to formula
   x <- enquo(x)
   samplenames <- enquo(samplenames)
