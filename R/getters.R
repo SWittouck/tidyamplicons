@@ -355,38 +355,38 @@ abundances_matrix <-
 
 }
 
-#' Return a list of taxon_ids per condition
+#' Return a list of taxon IDs per condition
 #'
-#' This function returns a named list of unique taxon_ids per distinct value of a 
-#' categorical column of the samples table.
+#' This function returns a named list of unique taxon_ids per distinct value of
+#' a categorical column of the samples table.
 #'
 #' @param ta A tidytacos object.
-#' @param condition The name of a variable in the samples table that contains a
+#' @param condition The name of a variable in the sample table that contains a
 #'   categorical value.
 #' @return A list of taxon_id vectors.
 #'
 #' @export
-list_taxa_per_condition <- function(ta, condition) {
+taxonlist_per_condition <- function(ta, condition) {
+
   condition <- rlang::enquo(condition)
   condition_str <- rlang::quo_name(condition)
 
-  error_message <- paste("Condition", condition_str, "not found in sample table.")
-  if (!condition_str %in% names(ta$samples)) {
+  if (! condition_str %in% names(ta$samples)) {
+    error_message <-
+      paste("Condition", condition_str, "not found in sample table.")
     stop(error_message)
   }
+
   distinct_conditions <- unique(ta$samples %>% pull(!!condition))
-  
+
   select_taxa_for_condition <- function(var) {
     ta %>% filter_samples(!!condition == var)
   }
   ta_per_condition <- lapply(distinct_conditions, select_taxa_for_condition)
   names(ta_per_condition) <- distinct_conditions
-  
-  tt_all <- lapply(ta_per_condition, everything)
 
-  pull_taxon_ids <- function(tt_everything) {
-    tt_everything %>% dplyr::pull(taxon_id)
-  }
-  lapply(tt_all, pull_taxon_ids)
+  tt_all <- lapply(ta_per_condition, abundances)
+
+  lapply(tt_all, function(x) x$taxon_id)
 
 }

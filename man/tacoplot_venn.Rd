@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotters.R
 \name{tacoplot_venn}
 \alias{tacoplot_venn}
-\title{Return a venndiagram of overlapping taxon_ids between conditions}
+\title{Return a venn diagram of overlapping taxon_ids between conditions}
 \usage{
 tacoplot_venn(ta, condition, ...)
 }
@@ -13,5 +13,5 @@ tacoplot_venn(ta, condition, ...)
 categorical value.}
 }
 \description{
-Return a venndiagram of overlapping taxon_ids between conditions
+Return a venn diagram of overlapping taxon_ids between conditions
 }

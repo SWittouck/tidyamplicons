@@ -31,11 +31,11 @@ prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
 bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   # convert promise to formula
   x <- enquo(x)
-  
+
   error_message = paste0("Label \'", quo_name(x),"\' not found in the samples table.")
   warning_message = "Sample labels not unique, samples are aggregated."
   if (quo_name(x) != "sample_clustered" &&
-    !is.element(quo_name(x), names(ta$samples)) 
+    !is.element(quo_name(x), names(ta$samples))
   ) {
     stop(error_message)
   }
@@ -50,7 +50,7 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   # make plot and return
   plot <- prepare_for_bp(ta, n) %>%
     ggplot(aes(
-      x = forcats::fct_reorder(!!x, as.integer(sample_clustered)), 
+      x = forcats::fct_reorder(!!x, as.integer(sample_clustered)),
       y = rel_abundance, fill = taxon_name_color)) +
     scale_fill_brewer(palette = "Paired", name = "Taxon") +
     xlab("sample") +
@@ -107,6 +107,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
 }
 
 #' Return an interactive pcoa plot of the samples
+#'
 #' @param ta a tidytacos object
 #' @param x a string, representing the column name used to color the sample groups on.
 #' @param palette a vector of colors, used as the palette for coloring sample groups.
@@ -188,17 +189,19 @@ sample_plot <- function(ta, sample = sample_id, n = 15, nrow = NULL) {
     ylab("relative abundance")
 }
 
-#' Return a venndiagram of overlapping taxon_ids between conditions
+#' Return a venn diagram of overlapping taxon_ids between conditions
 #'
 #' @param ta A tidytacos object.
 #' @param condition The name of a variable in the samples table that contains a
 #'   categorical value.
+#'
 #' @export
-tacoplot_venn <- function(ta, condition, ...){
+tacoplot_venn <- function(ta, condition, ...) {
+
   force_optional_dependency("ggVennDiagram")
-  
+
   condition <- enquo(condition)
-  ltpc <- list_taxa_per_condition(ta, !!condition)
+  ltpc <- taxonlist_per_condition(ta, !!condition)
   ggVennDiagram::ggVennDiagram(ltpc, ...)
 
 }
