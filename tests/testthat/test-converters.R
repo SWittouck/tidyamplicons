@@ -5,13 +5,6 @@ test_that("Can read tidytacos object.", {
   expect_equal(attr(ta, "class"), "tidytacos")
 })
 
-test_that("Can update old tidytacos object to new format.", {
-  load(test_path("data/urt.rda"))
-  expect_false("sample_id" %in% colnames(urt$samples))
-  ta <- update_tidytacos(urt)
-  expect_true("sample_id" %in% colnames(ta$samples))
-})
-
 test_that("Can save a tidytacos object.", {
   expect_no_warning(write_tidytacos(ta_test, "test"))
   on.exit(unlink("test", recursive=TRUE), add=TRUE, after=FALSE)
@@ -34,10 +27,10 @@ test_that("Can convert abundances to abundances matrix", {
 
 test_that("Can merge two tidytacos", {
   ta_merged <- merge_tidytacos(ta_test, ta_test)
-  
+
   final_sample_id <- "s434"
   expect_equal(
-    ta_merged$samples$sample_id[length(ta_merged$samples$sample_id)], 
+    ta_merged$samples$sample_id[length(ta_merged$samples$sample_id)],
     final_sample_id
   )
 })

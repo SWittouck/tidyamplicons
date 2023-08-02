@@ -1,48 +1,7 @@
-#' Report numbers
-#'
-#' \code{report_numbers} returns the number of samples, taxa and reads in a
-#' tidytacos object.
-#'
-#' This function prints the number of samples, taxa and reads in a tidytacos
-#' object. To retrieve the numbers stored in named numeric vector, use
-#' \code{\link{numbers}} instead.
-#'
-#' @param ta tidytacos object.
-#'
-#' @examples
-#' # Initiate abundance matrix
-#' x <- matrix(
-#'  c(1500, 1300, 280, 356),
-#'  ncol = 2
-#' )
-#' rownames(x) <- c("taxon1", "taxon2")
-#' colnames(x) <- c("sample1", "sample2")
-#'
-#' # Convert to tidytacos object
-#' data <- create_tidytacos(x,
-#'                      taxa_are_columns = FALSE
-#'                      )
-#' # Report numbers
-#' data %>%
-#'  report_numbers()
-#'
-#' @export
-report_numbers <- function(ta) {
-
-  sprintf("samples: %i", nrow(ta$samples)) %>% message()
-  sprintf("taxa: %i", nrow(ta$taxa)) %>% message()
-  sprintf("reads: %i", sum(ta$abundances$abundance)) %>% message()
-
-}
-
 #' Return some descriptive numbers
 #'
-#' \code{numbers} returns the number of samples, taxa and reads in a
+#' \code{tacosum} returns the number of samples, taxa and reads in a
 #' tidytacos object.
-#'
-#' This function returns the number of samples, taxa and reads in a
-#' tidytacos object, stored in a named numeric vector. To print the numbers,
-#' use \code{\link{report_numbers}} instead.
 #'
 #' @param ta tidytacos object.
 #'
@@ -59,10 +18,10 @@ report_numbers <- function(ta) {
 #' data <- create_tidytacos(x, taxa_are_columns = FALSE)
 #'
 #' # Report numbers
-#' numbers <- data %>% numbers()
+#' numbers <- data %>% tacosum()
 #'
 #' @export
-numbers <- function(ta) {
+tacosum <- function(ta) {
 
   c(
     n_samples = nrow(ta$samples),
@@ -110,7 +69,7 @@ numbers <- function(ta) {
 betas <- function(ta, unique = T, method = "bray", binary = F) {
 
   # make "dist" object with beta values
-  rel_abundance_matrix <- get_rel_abundance_matrix(ta)
+  rel_abundance_matrix <- rel_abundance_matrix(ta)
   betas_dist <- vegdist(rel_abundance_matrix, method = method, binary = binary)
 
   # save number of betas in betas_dist in shortcut variable
@@ -309,30 +268,12 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
 
 }
 
-# Return a relative abundance matrix
-#
-# DEPRECATED, use \code{\link{abundances_matrix}}
-#
-#' @export
-get_rel_abundance_matrix <- function(ta) {
-
-  # add relative abundances if not present
-  if (! "rel_abundance" %in% names(ta$abundances)) {
-    ta <- add_rel_abundance(ta)
-  }
-
-  as_abundances_matrix(ta$abundances, value = rel_abundance)
-
-}
-
-#' Return an abundances matrix
+#' Return an abundance matrix
 #'
-#' This function returns the abundances table in the form of a matrix where the
-#' rows are samples and the column are taxa.
+#' This function returns a matrix with taxon counts; the rows are samples and
+#' the column are taxa.
 #'
 #' @param ta A tidytacos object.
-#' @param value The name of a variable in the abundances table that contains the
-#'   abundances (unquoted). Could be relative abundances, if present.
 #' @param sample_name The name of the variable in the sample table to use as row
 #'   names (unquoted).
 #' @param taxon_name The name of the variable in the taxon table to use as
@@ -340,22 +281,65 @@ get_rel_abundance_matrix <- function(ta) {
 #' @return A matrix with abundance values.
 #'
 #' @export
-abundances_matrix <-
-  function(ta, value = abundance, sample_name = sample, taxon_name = taxon) {
+abundance_matrix <- function(ta, sample_name = sample, taxon_name = taxon, var = abundance) {
 
   if (
     ! "tidytacos" %in% class(ta)
   ) stop("first argument should be a tidytacos object")
 
-  value <- rlang::enquo(value)
   sample_name <- rlang::enquo(sample_name)
   taxon_name <- rlang::enquo(taxon_name)
+  var <- rlang::enquo(var)
+
+  # create sample name if it doesn't exist
+  if (! rlang::quo_name(sample_name) %in% names(ta$samples)) {
+    ta$samples$sample_name <- ta$samples$sample_id
+  }
+
+  # create taxon name if it doesn't exist
+  if (! rlang::quo_name(taxon_name) %in% names(ta$taxa)) {
+    ta$taxa$taxon_name <- ta$taxa$taxon_id
+  }
 
   ta %>%
     change_id_samples(sample_id_new = {{sample_name}}) %>%
     change_id_taxa(taxon_id_new = {{taxon_name}}) %>%
     abundances() %>%
-    as_abundances_matrix(value = {{value}})
+    as_abundances_matrix(value = {{var}})
+
+}
+
+#' Return a relative abundance matrix
+#'
+#' This function returns a relative abundance matrix; the rows are samples and
+#' the column are taxa.
+#'
+#' @param ta A tidytacos object.
+#' @param sample_name The name of the variable in the sample table to use as row
+#'   names (unquoted).
+#' @param taxon_name The name of the variable in the taxon table to use as
+#'   column names (unquoted).
+#' @return A matrix with abundance values.
+#'
+#' @export
+rel_abundance_matrix <- function(ta, sample_name = sample, taxon_name = taxon) {
+
+  if (
+    ! "tidytacos" %in% class(ta)
+  ) stop("first argument should be a tidytacos object")
+
+  sample_name <- rlang::enquo(sample_name)
+  taxon_name <- rlang::enquo(taxon_name)
+
+  # add relative abundances if not present
+  if (!"rel_abundance" %in% names(ta$abundances)) {
+    ta <- add_rel_abundance(ta)
+  }
+
+  ta %>%
+    abundance_matrix(
+      sample_name = sample_name, taxon_name = taxon_name, var = rel_abundance
+    )
 
 }
 

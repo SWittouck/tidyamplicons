@@ -4,6 +4,7 @@
 #' @param n an integer
 #' @noRd
 prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
+
   # add sample_clustered if not present
   if (!"sample_clustered" %in% names(ta$samples)) {
     ta <- add_sample_clustered(ta)
@@ -18,6 +19,7 @@ prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
   if (!"rel_abundance" %in% names(ta$abundances)) {
     ta <- add_rel_abundance(ta)
   }
+
   # optional extension (not used by sample bp)
   if (extended) {
     ta <- ta %>% everything()
@@ -29,6 +31,7 @@ prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
 #'
 #' @export
 bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
+
   # convert promise to formula
   x <- enquo(x)
 
@@ -45,7 +48,6 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   ) {
     warning(warning_message)
   }
-
 
   # make plot and return
   plot <- prepare_for_bp(ta, n) %>%

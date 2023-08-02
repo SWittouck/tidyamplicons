@@ -120,94 +120,35 @@ add_taxon_tibble <- function(ta, taxon_tibble) {
 
 }
 
-#' Add the maximum relative abundance of taxa to the taxon table
-#' @param ta a tidytacos object
-#' @export
-add_max_rel_abundance <- function(ta) {
-
-  # if rel_abundance not present: add temporarily
-  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
-  if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
-
-  # make table with taxon and maximum relative abundance
-  max_rel_abundances <- ta$abundances %>%
-    group_by(taxon_id) %>%
-    summarize(max_rel_abundance = max(rel_abundance))
-
-  # add max relative abundance to taxon table
-  ta$taxa <- left_join(ta$taxa, max_rel_abundances, by = "taxon_id")
-
-  # cleanup
-  if (rel_abundance_tmp) ta$abundances$rel_abundance <- NULL
-
-  # return ta object
-  ta
-
-}
-
-#' Add the total relative abundance of taxa to the taxon table
-#' @param ta a tidytacos object
-#' @export
-add_total_rel_abundance <- function(ta) {
-
-  # if rel_abundance not present: add temporarily
-  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
-  if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
-
-  # make table with taxon and total relative abundance
-  total_rel_abundances <- ta$abundances %>%
-    group_by(taxon_id) %>%
-    summarize(total_rel_abundance = sum(rel_abundance)/nrow(ta$samples))
-
-  # add total relative abundance to taxon table
-  ta$taxa <- left_join(ta$taxa, total_rel_abundances, by = "taxon_id")
-
-  # cleanup
-  if (rel_abundance_tmp) ta$abundances$rel_abundance <- NULL
-
-  # return ta object
-  ta
-
-}
-
-
 #' Create sensible names for the taxa and add to taxon table
+#'
+#' @param ta A tidytacos object.
+#' @param method The method by which to arrange the taxon names. Currently only
+#'   mean_rel_abundance.
+#' @param include_species Whether to include the species name or not.
+#'
 #' @importFrom stats na.omit
-#' @param ta a tidytacos object
-#' @param method the method on which to arrange the taxon names. 
-#' Options: total_rel_abundance, max_rel_abundance 
-#' @param include_species wether to include the species name or not
 #' @export
 add_taxon_name <- function(
-  ta, method = "total_rel_abundance", include_species = F
+  ta, method = "mean_rel_abundance", include_species = F
   ) {
 
-  if (method == "total_rel_abundance") {
+  if (method == "mean_rel_abundance") {
 
-    # if total_rel_abundance not present: add temporarily
-    total_rel_ab_tmp <- ! "total_rel_abundance" %in% names(ta$taxa)
-    if (total_rel_ab_tmp) ta <- add_total_rel_abundance(ta)
+    # if mean_rel_abundance not present: add temporarily
+    mean_rel_ab_tmp <- ! "mean_rel_abundance" %in% names(ta$taxa)
+    if (mean_rel_ab_tmp) ta <- add_mean_rel_abundances(ta)
 
-    ta <- mutate_taxa(ta, arrange_by_me = total_rel_abundance)
-
-  } else if (method == "max_rel_abundance") {
-
-    # if max_rel_abundance not present: add temporarily
-    max_rel_ab_tmp <- ! "max_rel_abundance" %in% names(ta$taxa)
-    if (max_rel_ab_tmp) ta <- add_max_rel_abundance(ta)
-
-    ta <- mutate_taxa(ta, arrange_by_me = max_rel_abundance)
+    ta <- mutate_taxa(ta, arrange_by_me = mean_rel_abundance)
 
   } else {
 
     # throw error if method unknown
-    if (! method %in% c("total_rel_abundance", "max_rel_abundance")) {
-      stop("method unknown")
-    }
+    stop("method unknown")
 
   }
 
-  rank_names <- rank_names(ta) 
+  rank_names <- rank_names(ta)
   if (include_species) {
     rank_names <- append(rank_names, "species", after=length(rank_names))
   }
@@ -246,8 +187,7 @@ add_taxon_name <- function(
     select(- best_classification, - n_taxa, - taxon_number)
 
   # cleanup
-  if (exists("total_rel_ab_tmp")) ta$taxa$total_rel_abundance <- NULL
-  if (exists("max_rel_ab_tmp")) ta$taxa$max_rel_abundance <- NULL
+  if (exists("mean_rel_ab_tmp")) ta$taxa$mean_rel_abundance <- NULL
   ta$taxa$arrange_by_me <- NULL
 
   # return ta object
@@ -255,60 +195,56 @@ add_taxon_name <- function(
 
 }
 
-#' Create taxon names suitable for visualization with color. A rank can be supplied to aggregate colors higher than the current rank.
+#' Create taxon names suitable for visualization with color.
 #'
-#' @param ta a tidytacos object
-#' @param method the method on which to arrange the taxon names. 
-#' @param n integer denoting the amount of most abundant taxa to display. Capacity at 12.
-#' @param samples optional vector of sample_id's of interest
-#' @param taxa optional vector of taxon_id's of interest
-#' @param rank optional rank to aggregate taxa on
+#' A rank can be supplied to aggregate colors higher than the current rank.
+#'
+#' @param ta A tidytacos object.
+#' @param method The method by which to arrange the taxon names. Currently only
+#'   mean_rel_abundance.
+#' @param n An integer denoting the amount of most abundant taxa to display.
+#'   Capacity at 12.
+#' @param samples An optional vector of sample_id's of interest.
+#' @param taxa An optional vector of taxon_id's of interest.
+#' @param rank An optional rank to aggregate taxa on.
+#'
 #' @export
 add_taxon_name_color <- function(
-  ta, method = "total_rel_abundance", n = 12, samples = NULL, taxa = NULL, rank = NULL
+  ta, method = "mean_rel_abundance", n = 12, samples = NULL, taxa = NULL,
+  rank = NULL
   ) {
 
   # Recursive function to add taxon name color on different rank
   add_colnames_rank <- function(ta, rank_col) {
-    colnames <- ta %>% 
+    colnames <- ta %>%
       aggregate_taxa(rank = rank_col) %>%
       add_taxon_name_color(method=method, n=n)
-    
-    col_per_sample <- colnames$abundances %>% 
+
+    col_per_sample <- colnames$abundances %>%
       inner_join(colnames$taxa, by="taxon_id") %>%
       dplyr::select(sample_id, taxon_name_color, taxon_id)
-  
+
     ta$taxa <- ta$taxa %>% left_join(col_per_sample, by="taxon_id")
     ta
-    
+
   }
-  
+
   # if taxon_name not present: add temporarily
   taxon_name_tmp <- ! "taxon_name" %in% names(ta$taxa)
   if (taxon_name_tmp) ta <- add_taxon_name(ta)
 
-  if (method == "total_rel_abundance") {
+  if (method == "mean_rel_abundance") {
 
-    # if total_rel_abundance not present: add temporarily
-    total_rel_ab_tmp <- ! "total_rel_abundance" %in% names(ta$taxa)
-    if (total_rel_ab_tmp) ta <- add_total_rel_abundance(ta)
+    # if mean_rel_abundance not present: add temporarily
+    mean_rel_ab_tmp <- ! "mean_rel_abundance" %in% names(ta$taxa)
+    if (mean_rel_ab_tmp) ta <- add_mean_rel_abundances(ta)
 
-    ta <- mutate_taxa(ta, arrange_by_me = total_rel_abundance)
-
-  } else if (method == "max_rel_abundance") {
-
-    # if max_rel_abundance not present: add temporarily
-    max_rel_ab_tmp <- ! "max_rel_abundance" %in% names(ta$taxa)
-    if (max_rel_ab_tmp) ta <- add_max_rel_abundance(ta)
-
-    ta <- mutate_taxa(ta, arrange_by_me = max_rel_abundance)
+    ta <- mutate_taxa(ta, arrange_by_me = mean_rel_abundance)
 
   } else {
 
     # throw error if method unknown
-    if (! method %in% c("total_rel_abundance", "max_rel_abundance")) {
-      stop("method unknown")
-    }
+    stop("method unknown")
 
   }
 
@@ -330,7 +266,7 @@ add_taxon_name_color <- function(
     arrange(desc(arrange_by_me)) %>%
     pull(taxon_name) %>%
     `[`(1:(n-1)) %>%
-    sort() 
+    sort()
   levels <- append(levels, "residual", after=0)
 
   # add taxon_name_color factor to taxa table
@@ -339,16 +275,15 @@ add_taxon_name_color <- function(
     mutate(taxon_name_color = if_else(taxon_name %in% levels, taxon_name, "residual")) %>%
     mutate(taxon_name_color = factor(taxon_name_color, levels = levels))
 
-  # overwrite colors with higher rank if asked for 
+  # overwrite colors with higher rank if asked for
   if(! is.null(rank)) {
     ta$taxa <- ta$taxa %>% dplyr::select(-one_of("taxon_name_color"))
     ta <- add_colnames_rank(ta, rank)
   }
-  
+
   # cleanup
   if (taxon_name_tmp) ta$taxa$taxon_name <- NULL
-  if (exists("total_rel_ab_tmp")) ta$taxa$total_rel_abundance <- NULL
-  if (exists("max_rel_ab_tmp")) ta$taxa$max_rel_abundance <- NULL
+  if (exists("mean_rel_ab_tmp")) ta$taxa$mean_rel_abundance <- NULL
   ta$taxa$arrange_by_me <- NULL
 
   # return ta object
@@ -431,7 +366,7 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
 #' @importFrom stats fisher.test
 #' @param ta A tidytacos object
 #' @param condition A categorical variable (string)
-#' @param relative wether to use relative occurences 
+#' @param relative wether to use relative occurences
 #' @param fischer_test wether to perform a fischer test and add the p-values of the test to the taxa table
 #' @export
 add_occurrences <- function(

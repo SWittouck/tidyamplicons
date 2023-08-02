@@ -3,15 +3,11 @@ len_taxa <- length(ta_test$taxa$taxon_id)
 len_samples <- 214 #some empty samples in the df
 
 test_that("Correct numbers reported", {
-    expect_snapshot(ta_test %>% report_numbers())
-})
-
-test_that("Correct numbers reported", {
-    expect_snapshot(ta_test %>% numbers())
+    expect_snapshot(ta_test %>% tacosum())
 })
 
 test_that("Relative abundance matrix can be created", {
-    relabun_mat <- ta_test %>% get_rel_abundance_matrix()
+    relabun_mat <- ta_test %>% rel_abundance_matrix()
     expect_lte(max(relabun_mat), 1)
     expect_equal(dim(relabun_mat), c(len_samples, len_taxa))
 })
@@ -73,6 +69,6 @@ test_that("Perform adonis shows stable output", {
 })
 
 test_that("Can create a list of unique taxa per condition", {
-    taxa_list <- ta_test %>% list_taxa_per_condition(location)
+    taxa_list <- ta_test %>% taxonlist_per_condition(location)
     expect_snapshot(taxa_list)
 })

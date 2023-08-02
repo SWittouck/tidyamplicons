@@ -6,7 +6,7 @@ x <- matrix(
 )
 rownames(x) <- c("taxon1", "taxon2")
 colnames(x) <- c("sample1", "sample2")
-test_data <- create_tidytacos(x, 
+test_data <- create_tidytacos(x,
     taxa_are_columns=FALSE)
 
 test_that("Can reclassify using dada and small test database", {
@@ -26,28 +26,10 @@ test_that("Can add taxon tibble", {
     expect_equal(test_data$taxa$genus, genus)
 })
 
-test_that("Can add max relative abundance", {
-    mra <- ta_test %>% add_max_rel_abundance()
-    expect_equal(max(mra$taxa$max_rel_abundance), 1)
-    # Could use more tests...
-})
-
-test_that("Can add total relative abundance", {
-    tra <- ta_test %>% add_total_rel_abundance()
-    expect_lte(sum(tra$taxa$total_rel_abundance), 1)
-})
-
-test_that("Can add taxon names with total_rel_abundance method", {
+test_that("Can add taxon names", {
     expect_no_error(ta_test %>% add_taxon_name())
     expect_no_error(ta_test %>% add_taxon_name(include_species=TRUE))
-    # TODO: find some more clever validation here 
-})
-
-
-test_that("Can add taxon names with max_rel_abundance method", {
-    expect_no_error(ta_test %>% add_taxon_name(method="max_rel_abundance"))
-    expect_no_error(ta_test %>% add_taxon_name(method="max_rel_abundance", include_species=TRUE))
-    # TODO: find some more clever validation here 
+    # TODO: find some more clever validation here
 })
 
 test_that("Add taxon name raises error when uring none existant method", {

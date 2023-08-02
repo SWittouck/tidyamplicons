@@ -103,25 +103,6 @@ read_tidytacos <- function(din, samples = "samples.csv", taxa = "taxa.csv",
   )
 }
 
-#' Update old tidytacos object to new one.
-#'
-#' \code{update_tidytacos} updates an old tidytacos object to a new one.
-#'
-#' This function will update a tidytacos object created prior to version
-#' 0.1.0 to a tidytacos object compatible with version 0.1.0.
-#'
-#' @param ta Old tidytacos object.
-#'
-#' @export
-update_tidytacos <- function(ta) {
-
-  ta %>%
-    update_id_names() %>%
-    mutate_taxa(sequence = taxon_id) %>%
-    reset_ids()
-
-}
-
 #' Reset the taxon and sample IDs
 #' @param ta a tidytacos object
 #' @export

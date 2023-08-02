@@ -202,7 +202,7 @@ add_alphas <- function(ta) {
 add_sample_clustered <- function(ta) {
 
   # make relative abundance matrix
-  rel_abundance_matrix <- get_rel_abundance_matrix(ta)
+  rel_abundance_matrix <- rel_abundance_matrix(ta)
 
   # make Bray-Curtis distance matrix
   dist_matrix <- vegdist(rel_abundance_matrix, method = "bray")
@@ -261,7 +261,7 @@ add_sample_clustered <- function(ta) {
 add_pcoa <- function(ta) {
 
   # make relative abundance matrix
-  rel_abundance_matrix <- get_rel_abundance_matrix(ta)
+  rel_abundance_matrix <- rel_abundance_matrix(ta)
 
   # make Bray-Curtis distance matrix
   dist_matrix = vegdist(rel_abundance_matrix, method = "bray")

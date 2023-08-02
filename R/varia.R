@@ -1,9 +1,7 @@
 # Apply a sample filtering to the taxon and abundance tables
 #
-# DEPRECATED, see \code{\link{filter_samples}}
-#
 # Should only be used internally.
-# 
+#
 #' @export
 process_sample_selection <- function(ta) {
 
@@ -24,8 +22,6 @@ process_sample_selection <- function(ta) {
 
 # Apply a taxon filtering to the abundance table
 #
-# DEPRECATED, see \code{\link{filter_taxa}}
-#
 # Should only be used internally.
 #
 #' @export
@@ -42,8 +38,6 @@ process_taxon_selection <- function(ta) {
 }
 
 # Apply an abundance filtering to the taxon table
-#
-# DEPRECATED, see \code{\link{filter_abundances}}
 #
 # Should only be used internally.
 #
@@ -112,7 +106,7 @@ merge_redundant_taxa <- function(ta) {
 
 retain_taxon_id <- function(ta) {
   if ((! "taxon_id" %in% names(ta$taxa)) ||
-  (! "taxon_id" %in% names(ta$abundances)) || 
+  (! "taxon_id" %in% names(ta$abundances)) ||
   (is.null(ta$abundances$taxon_id)) ||
   (is.null(ta$taxa$taxon_id))) {
     stop("You cannot delete the taxon_id column")
@@ -120,7 +114,7 @@ retain_taxon_id <- function(ta) {
 }
 
 retain_sample_id <- function(ta) {
-  if ((! "sample_id" %in% names(ta$samples)) || 
+  if ((! "sample_id" %in% names(ta$samples)) ||
   (! "sample_id" %in% names(ta$abundances)) ||
   (is.null(ta$samples$sample_id)) ||
   (is.null(ta$abundances$sample_id))) {
