@@ -29,3 +29,14 @@ remove_empty_samples <- function(ta){
   ta <- ta %>% filter_samples(!sample_id %in% empty_samples)
   ta
 }
+
+#' Checks if optional dependency is loaded and stops code if not.
+#' @export
+#' @noRd
+force_optional_dependency <- function(optional_pkg){
+  if (!requireNamespace(optional_pkg, quietly = TRUE)) {
+      warning(paste("The",optional_pkg,"package must be installed to use this function."))
+      stop(0)
+  }
+  NULL
+}
