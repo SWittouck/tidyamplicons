@@ -1,7 +1,7 @@
 # Correct numbers reported
 
     Code
-      ta_test %>% report_numbers()
+      urt %>% report_numbers()
     Message
       samples: 217
       taxa: 1957
@@ -10,7 +10,7 @@
 ---
 
     Code
-      ta_test %>% numbers()
+      urt %>% numbers()
     Output
       n_samples    n_taxa   n_reads 
             217      1957   3873478 
