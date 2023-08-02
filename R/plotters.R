@@ -193,12 +193,13 @@ sample_plot <- function(ta, sample = sample_id, n = 15, nrow = NULL) {
 #' @param ta A tidytacos object.
 #' @param condition The name of a variable in the samples table that contains a
 #'   categorical value.
-#' @importFrom ggVennDiagram ggVennDiagram
 #' @export
 tacoplot_venn <- function(ta, condition, ...){
-
-  ltpc <- list_taxa_per_condition(ta, condition)
-  ggVennDiagram(ltpc, ...)
+  force_optional_dependency("ggVennDiagram")
+  
+  condition <- enquo(condition)
+  ltpc <- list_taxa_per_condition(ta, !!condition)
+  ggVennDiagram::ggVennDiagram(ltpc, ...)
 
 }
 

@@ -374,13 +374,13 @@ list_taxa_per_condition <- function(ta, condition) {
   if (!condition_str %in% names(ta$samples)) {
     stop(error_message)
   }
-  distinct_conditions <- unique(ta$samples %>% pull(!!x))
+  distinct_conditions <- unique(ta$samples %>% pull(!!condition))
   
   select_taxa_for_condition <- function(var) {
     ta %>% filter_samples(!!condition == var)
   }
-  ta_per_condition <- lapply(conditions, select_taxa_for_condition)
-  names(ta_per_condition) <- conditions
+  ta_per_condition <- lapply(distinct_conditions, select_taxa_for_condition)
+  names(ta_per_condition) <- distinct_conditions
   
   tt_all <- lapply(ta_per_condition, everything)
 

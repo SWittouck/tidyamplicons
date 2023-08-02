@@ -17,3 +17,9 @@ test_that("Barplot raises warning when aggregating samples", {
 test_that("Barplot raises error when providing non-existant label", {
     expect_error(ta_test %>% bar_plot(x=imagined))
 })
+
+test_that("Can create venndiagram", {
+    skip_if_not_installed("ggVenDiagram")
+    venn <- ta_test %>% tacoplot_venn(location)
+    vdiffr::expect_doppelganger("Venndiagram", venn)
+})

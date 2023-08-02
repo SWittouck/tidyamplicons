@@ -28,6 +28,7 @@ Suggests:
     covr,
     vdiffr,
     dada2,
+    ggVennDiagram,
     knitr,
     phyloseq,
     rmarkdown,
