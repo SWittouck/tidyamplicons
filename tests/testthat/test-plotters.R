@@ -27,6 +27,12 @@ test_that("Barplotly works", {
 test_that("Pcoaplotly works", {
     skip_if_not_installed("plotly")
     pcoaly <- ta_test %>% pcoa_plot_ly(x=location)
-    
+
     vdiffr::expect_doppelganger("Standard bar_plot_ly", pcoaly)
+})
+
+test_that("Can create venndiagram", {
+    skip_if_not_installed("ggVenDiagram")
+    venn <- ta_test %>% tacoplot_venn(location)
+    vdiffr::expect_doppelganger("Venndiagram", venn)
 })
