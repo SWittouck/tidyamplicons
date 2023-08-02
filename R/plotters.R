@@ -30,8 +30,7 @@ prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
 #' Return a bar plot of the samples
 #'
 #' @export
-bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
-
+tacoplot_stack <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   # convert promise to formula
   x <- enquo(x)
 
@@ -77,7 +76,7 @@ bar_plot <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 #' @param x a string, representing the column name used to label and cluster the samples on.
 #'
 #' @export
-bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
+tacoplot_stack_ly <- function(ta, n = 12, x = sample_clustered) {
   force_optional_dependency("plotly")
   # convert promise to formula
   x <- enquo(x)
@@ -115,7 +114,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
 #' @param palette a vector of colors, used as the palette for coloring sample groups.
 #'
 #' @export
-pcoa_plot_ly <- function(ta, x, samplenames = sample_id, palette = NULL, title = "PCOA plot") {
+tacoplot_pcoa_ly <- function(ta, x, samplenames = sample_id, palette = NULL, title = "PCOA plot") {
   force_optional_dependency("plotly")
   # convert promise to formula
   x <- enquo(x)
@@ -158,7 +157,7 @@ pcoa_plot_ly <- function(ta, x, samplenames = sample_id, palette = NULL, title =
 #' Return a visualization designed for a small number of samples
 #'
 #' @export
-sample_plot <- function(ta, sample = sample_id, n = 15, nrow = NULL) {
+tacoplot_zoom <- function(ta, sample = sample_id, n = 15, nrow = NULL) {
   ta <- prepare_for_bp(ta, n, extended = FALSE)
 
   sample <- rlang::enexpr(sample)

@@ -3,30 +3,30 @@
 # to see if the same plot is generate will suffice
 
 test_that("Barplot returns identical plot", {
-    bp  <- urt %>% bar_plot()
+    bp  <- urt %>% tacoplot_stack()
     vdiffr::expect_doppelganger("Default barplot", bp)
 })
 
 test_that("Barplot raises warning when aggregating samples", {
-    expect_warning(bp <- urt %>% bar_plot(n=5, x=participant))
+    expect_warning(bp <- urt %>% tacoplot_stack(n=5, x=participant))
     vdiffr::expect_doppelganger("Custom barplot", bp)
 })
 
 test_that("Barplot raises error when providing non-existant label", {
-    expect_error(urt %>% bar_plot(x=imagined))
+    expect_error(urt %>% tacoplot_stack(x=imagined))
 })
 
 test_that("Barplotly works", {
     skip_if_not_installed("plotly")
-    bply <- urt %>% bar_plot_ly()
-    vdiffr::expect_doppelganger("Standard bar_plot_ly", bply)
+    bply <- urt %>% tacoplot_stack_ly()
+    vdiffr::expect_doppelganger("Standard tacoplot_stack_ly", bply)
 })
 
 test_that("Pcoaplotly works", {
     skip_if_not_installed("plotly")
-    pcoaly <- urt %>% pcoa_plot_ly(x=location)
+    pcoaly <- urt %>% tacoplot_pcoa_ly(x=location)
 
-    vdiffr::expect_doppelganger("Standard bar_plot_ly", pcoaly)
+    vdiffr::expect_doppelganger("Standard tacoplot_stack_ly", pcoaly)
 })
 
 test_that("Can create venndiagram", {
