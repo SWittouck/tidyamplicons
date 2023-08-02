@@ -1,8 +1,10 @@
-#' Prepare tidytacos object for visualization by barplot.
-#' Clusters samples, adds color groups and relative abundances.
-#' @param ta a tidytacos object
-#' @param n an integer
-#' @noRd
+# Prepare tidytacos object for visualization by barplot.
+#
+# Clusters samples, adds color groups and relative abundances.
+#
+# @param ta a tidytacos object
+# @param n an integer
+#
 prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
 
   # add sample_clustered if not present
@@ -71,9 +73,12 @@ tacoplot_stack <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
 }
 
 #' Return an interactive bar plot of the samples
-#' @param ta a tidytacos object
-#' @param n an integer, representing the amount of colors used to depict different taxa
-#' @param x a string, representing the column name used to label and cluster the samples on.
+#'
+#' @param ta A tidytacos object.
+#' @param n An integer, representing the amount of colors used to depict
+#'   different taxa.
+#' @param x A string, representing the column name used to label and cluster the
+#'   samples on.
 #'
 #' @export
 tacoplot_stack_ly <- function(ta, n = 12, x = sample_clustered) {
@@ -109,9 +114,12 @@ tacoplot_stack_ly <- function(ta, n = 12, x = sample_clustered) {
 }
 
 #' Return an interactive pcoa plot of the samples
-#' @param ta a tidytacos object
-#' @param x a string, representing the column name used to color the sample groups on.
-#' @param palette a vector of colors, used as the palette for coloring sample groups.
+#'
+#' @param ta A tidytacos object.
+#' @param x A string, representing the column name used to color the sample
+#'   groups on.
+#' @param palette A vector of colors, used as the palette for coloring sample
+#'   groups.
 #'
 #' @export
 tacoplot_pcoa_ly <- function(ta, x, samplenames = sample_id, palette = NULL, title = "PCOA plot") {

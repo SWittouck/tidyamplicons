@@ -1,17 +1,17 @@
 # RAREFY
-test_that("Raise error on rarification higher 
+test_that("Raise error on rarification higher
 than lowest abundance when replace=FALSE.", {
 expect_error(urt %>% rarefy(100))
 })
 
 test_that("Max abundance equals n", {
-    ab <- urt %>% rarefy(10) %>% 
+    ab <- urt %>% rarefy(10) %>%
     abundances %>% dplyr::pull(abundance)
     expect_equal(max(ab), 10)
 })
 
 test_that("Max abundance equals n with replace=TRUE", {
-    ab <- urt %>% rarefy(100, replace=TRUE) %>% 
+    ab <- urt %>% rarefy(100, replace=TRUE) %>%
     abundances %>% dplyr::pull(abundance)
     expect_equal(max(ab), 100)
 })
@@ -23,7 +23,7 @@ test_that("Change sample ID based on unique column",{
     uq_part <- uq_part %>% remove_empty_samples()
     uq_part_id <- uq_part %>% change_id_samples(participant)
     expect_true(identical(
-        sort(unique(uq_part$samples$participant)), 
+        sort(unique(uq_part$samples$participant)),
         sort(unique(uq_part_id$abundances$sample_id))
     ))
 })
@@ -35,10 +35,10 @@ test_that("Raise error on non-unique sample_id",{
 # CHANGE_ID_TAXA
 
 test_that("Change sample ID based on unique column",{
-    
+
     urt_id <- urt %>% change_id_taxa(sequence)
     expect_true(identical(
-        sort(unique(urt_id$abundances$taxon_id)), 
+        sort(unique(urt_id$abundances$taxon_id)),
         sort(unique(urt$taxa$sequence))
     ))
 })
@@ -51,7 +51,7 @@ test_that("Raise error on non-unique taxon_id",{
 nsamples <- 217
 nsamples_agg <- 139
 
-test_that("No aggregation of sample table when 
+test_that("No aggregation of sample table when
     metadata is unique for every row", {
     sample_id_before <- urt$samples$sample_id
     ta_agg <- urt %>% aggregate_samples()
@@ -63,16 +63,15 @@ test_that("No aggregation of sample table when
 test_that("Aggregation of sample table succeeds", {
     sample_id_before <- urt$samples$sample_id
     # Make one column not unique to test agg
-    ta_agg <- urt %>% 
-        mutate_samples(location = "NF") %>% 
-        select_samples(-sample) %>%
+    ta_agg <- urt %>%
+        mutate_samples(location = "NF") %>%
         aggregate_samples()
     sample_id_after <- ta_agg$samples$sample_id
     expect_length(sample_id_before, nsamples)
     expect_length(sample_id_after, nsamples_agg)
     # test abundances table for irregularities
     expect_lte(
-        length(unique(ta_agg$abundances$sample_id)), 
+        length(unique(ta_agg$abundances$sample_id)),
         nsamples_agg
     )
 })
@@ -82,7 +81,7 @@ ntaxa <- 1957
 ntaxa_agg <- 1066
 ntaxa_agg_phylum <- 32
 
-test_that("No aggregation of taxa table when metadata 
+test_that("No aggregation of taxa table when metadata
     is unique for every row", {
     taxon_id_before <- urt$taxa$taxon_id
     ta_agg <- urt %>% aggregate_taxa()
@@ -94,15 +93,15 @@ test_that("No aggregation of taxa table when metadata
 test_that("Aggregation of taxa table succeeds when no rank is specified", {
     taxon_id_before <- urt$taxa$taxon_id
     # Make one column not unique to test agg
-    ta_agg <- urt %>% 
-        mutate_taxa(sequence = 0) %>% 
+    ta_agg <- urt %>%
+        mutate_taxa(sequence = 0) %>%
         aggregate_taxa()
     taxon_id_after <- ta_agg$taxa$taxon_id
     expect_length(taxon_id_before, ntaxa)
     expect_length(taxon_id_after, ntaxa_agg)
     # test abundances table for irregularities
     expect_lte(
-        length(unique(ta_agg$abundances$taxon_id)), 
+        length(unique(ta_agg$abundances$taxon_id)),
         ntaxa_agg
     )
 })
@@ -116,7 +115,7 @@ test_that("Aggregation of taxa table succeeds when rank is specified", {
     expect_length(taxon_id_after, ntaxa_agg_phylum)
     # test abundances table for irregularities
     expect_lte(
-        length(unique(ta_agg$abundances$taxon_id)), 
+        length(unique(ta_agg$abundances$taxon_id)),
         ntaxa_agg_phylum
     )
 })

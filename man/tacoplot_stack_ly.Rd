@@ -7,11 +7,13 @@
 tacoplot_stack_ly(ta, n = 12, x = sample_clustered)
 }
 \arguments{
-\item{ta}{a tidytacos object}
+\item{ta}{A tidytacos object.}
 
-\item{n}{an integer, representing the amount of colors used to depict different taxa}
+\item{n}{An integer, representing the amount of colors used to depict
+different taxa.}
 
-\item{x}{a string, representing the column name used to label and cluster the samples on.}
+\item{x}{A string, representing the column name used to label and cluster the
+samples on.}
 }
 \description{
 Return an interactive bar plot of the samples

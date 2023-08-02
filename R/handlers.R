@@ -24,13 +24,12 @@ rarefy <- function(ta, n, replace = F) {
 
 }
 
-#' Change sample IDs to a given expression
-#'
-#' @param ta A tidytacos object
-#' @param sample_id_new An expression that evaluates to a unique sample
-#'   identifier
-#'
-#' @export
+# Change sample IDs to a given expression
+#
+# @param ta A tidytacos object.
+# @param sample_id_new An expression that evaluates to a unique sample
+#   identifier.
+#
 change_id_samples <- function(ta, sample_id_new) {
 
   sample_id_new <- rlang::enexpr(sample_id_new)
@@ -58,13 +57,12 @@ change_id_samples <- function(ta, sample_id_new) {
 
 }
 
-#' Change taxon IDs to a given expression
-#'
-#' @param ta A tidytacos object
-#' @param taxon_id_new An expression that evaluates to a unique taxon
-#'   identifier
-#'
-#' @export
+# Change taxon IDs to a given expression
+#
+# @param ta A tidytacos object.
+# @param taxon_id_new An expression that evaluates to a unique taxon
+#   identifier.
+#
 change_id_taxa <- function(ta, taxon_id_new) {
 
   taxon_id_new <- rlang::enexpr(taxon_id_new)
@@ -91,7 +89,9 @@ change_id_taxa <- function(ta, taxon_id_new) {
 }
 
 #' Aggregate samples with identical values for all metadata
-#' @param ta a tidytacos object
+#'
+#' @param ta A tidytacos object.
+#'
 #' @export
 aggregate_samples <- function(ta) {
 

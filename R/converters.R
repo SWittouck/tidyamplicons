@@ -123,18 +123,6 @@ reset_ids <- function(ta, keep_prev = F) {
 
 }
 
-#' Rename the "sample" and "taxon" columns to "sample_id" and "taxon_id"
-#' @param ta a tidytacos object
-#' @export
-update_id_names <- function(ta) {
-
-  ta %>%
-    purrr::modify_at("samples", rename, sample_id = sample) %>%
-    purrr::modify_at("taxa", rename, taxon_id = taxon) %>%
-    purrr::modify_at("abundances", rename, sample_id = sample, taxon_id = taxon)
-
-}
-
 #' Convert tidytacos object to phyloseq object
 #'
 #' \code{as_phyloseq} returns a phyloseq object given a tidytacos object.
