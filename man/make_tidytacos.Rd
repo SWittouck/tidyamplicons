@@ -12,6 +12,17 @@ make_tidytacos(
   taxon_name = taxon
 )
 }
+\arguments{
+\item{samples}{A tidy table containing sample information}
+
+\item{taxa}{A tidy table containing taxon information}
+
+\item{abundances}{A tidy table, where each row represents the counts of a taxon in a sample}
+
+\item{sample_name}{The column in the sample table that contains a unique identifier for each sample}
+
+\item{taxon_name}{The column in the taxon table that contains a unique identifier for each taxon}
+}
 \description{
 Create a tidytacos object from three tidy tables
 }

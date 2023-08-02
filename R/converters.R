@@ -388,6 +388,11 @@ merge_tidytacos <- function(ta1, ta2, taxon_identifier = sequence) {
 
 #' Create a tidytacos object from three tidy tables
 #'
+#' @param samples A tidy table containing sample information
+#' @param taxa A tidy table containing taxon information
+#' @param abundances A tidy table, where each row represents the counts of a taxon in a sample
+#' @param sample_name The column in the sample table that contains a unique identifier for each sample
+#' @param taxon_name The column in the taxon table that contains a unique identifier for each taxon
 #' @export
 make_tidytacos <- function(samples, taxa, abundances,
                                sample_name = sample, taxon_name = taxon) {

@@ -1,9 +1,9 @@
-#' Apply a sample filtering to the taxon and abundance tables
-#'
-#' DEPRECATED, see \code{\link{filter_samples}}
-#'
-#' Should only be used internally.
-#' @noRd
+# Apply a sample filtering to the taxon and abundance tables
+#
+# DEPRECATED, see \code{\link{filter_samples}}
+#
+# Should only be used internally.
+# 
 #' @export
 process_sample_selection <- function(ta) {
 
@@ -22,12 +22,12 @@ process_sample_selection <- function(ta) {
 
 }
 
-#' Apply a taxon filtering to the abundance table
-#'
-#' DEPRECATED, see \code{\link{filter_taxa}}
-#'
-#' Should only be used internally.
-#'
+# Apply a taxon filtering to the abundance table
+#
+# DEPRECATED, see \code{\link{filter_taxa}}
+#
+# Should only be used internally.
+#
 #' @export
 process_taxon_selection <- function(ta) {
 
@@ -41,12 +41,12 @@ process_taxon_selection <- function(ta) {
 
 }
 
-#' Apply an abundance filtering to the taxon table
-#'
-#' DEPRECATED, see \code{\link{filter_abundances}}
-#'
-#' Should only be used internally.
-#'
+# Apply an abundance filtering to the taxon table
+#
+# DEPRECATED, see \code{\link{filter_abundances}}
+#
+# Should only be used internally.
+#
 #' @export
 process_abundance_selection <- function(ta) {
 

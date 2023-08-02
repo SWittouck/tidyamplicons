@@ -4,7 +4,13 @@
 \alias{pcoa_plot_ly}
 \title{Return an interactive pcoa plot of the samples}
 \usage{
-pcoa_plot_ly(ta, x, samplenames = sample, palette = NULL, title = "PCOA plot")
+pcoa_plot_ly(
+  ta,
+  x,
+  samplenames = sample_id,
+  palette = NULL,
+  title = "PCOA plot"
+)
 }
 \arguments{
 \item{ta}{a tidytacos object}

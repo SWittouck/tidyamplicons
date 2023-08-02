@@ -243,6 +243,7 @@ mean_rel_abundances <- function(ta, condition = NULL) {
 
 #' Get all data in one single table
 #'
+#' @param ta A tidytacos object.
 #' @export
 everything <- function(ta) {
 
@@ -255,16 +256,19 @@ everything <- function(ta) {
 
 #' Extract the sample table
 #'
+#' @param ta A tidytacos object.
 #' @export
 samples <- function(ta) ta$samples
 
 #' Extract the taxon table
 #'
+#' @param ta A tidytacos object.
 #' @export
 taxa <- function(ta) ta$taxa
 
 #' Extract the abundance table
 #'
+#' @param ta A tidytacos object.
 #' @export
 abundances <- function(ta) ta$abundances
 
@@ -305,10 +309,10 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
 
 }
 
-#' Return a relative abundance matrix
-#'
-#' DEPRECATED, use \code{\link{abundances_matrix}}
-#'
+# Return a relative abundance matrix
+#
+# DEPRECATED, use \code{\link{abundances_matrix}}
+#
 #' @export
 get_rel_abundance_matrix <- function(ta) {
 
