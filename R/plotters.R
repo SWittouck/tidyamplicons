@@ -113,7 +113,7 @@ bar_plot_ly <- function(ta, n = 12, x = sample_clustered) {
 #' @param palette a vector of colors, used as the palette for coloring sample groups.
 #'
 #' @export
-pcoa_plot_ly <- function(ta, x, samplenames = sample, palette = NULL, title = "PCOA plot") {
+pcoa_plot_ly <- function(ta, x, samplenames = sample_id, palette = NULL, title = "PCOA plot") {
   force_optional_dependency("plotly")
   # convert promise to formula
   x <- enquo(x)
@@ -121,7 +121,7 @@ pcoa_plot_ly <- function(ta, x, samplenames = sample, palette = NULL, title = "P
 
   # fallback to default palette
   if (is.null(palette)) {
-    palette <- cols
+    palette <- palette_paired
   }
 
   # prepare pcoa if needed
@@ -137,7 +137,7 @@ pcoa_plot_ly <- function(ta, x, samplenames = sample, palette = NULL, title = "P
           y = ~pcoa2,
           color = ~!!x,
           colors = palette_paired,
-          text = ~ paste(!!samplenames),
+          text = ~!!samplenames,
           hovertemplate = paste("<i>%{text}</i>"),
           type = "scatter",
           mode = "markers"

@@ -17,3 +17,16 @@ test_that("Barplot raises warning when aggregating samples", {
 test_that("Barplot raises error when providing non-existant label", {
     expect_error(ta_test %>% bar_plot(x=imagined))
 })
+
+test_that("Barplotly works", {
+    skip_if_not_installed("plotly")
+    bply <- ta_test %>% bar_plot_ly()
+    vdiffr::expect_doppelganger("Standard bar_plot_ly", bply)
+})
+
+test_that("Pcoaplotly works", {
+    skip_if_not_installed("plotly")
+    pcoaly <- ta_test %>% pcoa_plot_ly(x=location)
+    
+    vdiffr::expect_doppelganger("Standard bar_plot_ly", pcoaly)
+})
