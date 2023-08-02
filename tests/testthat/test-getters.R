@@ -71,3 +71,8 @@ test_that("Perform adonis shows stable output", {
     adn <- ta_test %>% perform_adonis(c("location", "method"))
     expect_snapshot(adn)
 })
+
+test_that("Can create a list of unique taxa per condition", {
+    taxa_list <- ta_test %>% list_taxa_per_condition(location)
+    expect_snapshot(taxa_list)
+})

@@ -22,21 +22,18 @@ create_test_ta <- function(){
 #' @export
 #' @return the tidytacos object minus the empty samples
 remove_empty_samples <- function(ta){
-  present_samples <- ta %>% abundances() %>% 
-    dplyr::group_by(sample_id) %>% 
+  present_samples <- ta %>% abundances() %>%
+    dplyr::group_by(sample_id) %>%
     dplyr::count() %>% pull(sample_id)
-  empty_samples <- ta$samples$sample_id[!(ta$samples$sample_id %in% present_samples)] 
+  empty_samples <- ta$samples$sample_id[!(ta$samples$sample_id %in% present_samples)]
   ta <- ta %>% filter_samples(!sample_id %in% empty_samples)
   ta
 }
 
-#' Checks if optional dependency is loaded and stops code if not.
-#' @export
-#' @noRd
+# Checks if optional dependency is loaded and stops code if not.
 force_optional_dependency <- function(optional_pkg){
   if (!requireNamespace(optional_pkg, quietly = TRUE)) {
-      warning(paste("The",optional_pkg,"package must be installed to use this function."))
-      stop(0)
+      stop(paste("The", optional_pkg, "package must be installed to use this function."))
   }
   NULL
 }
