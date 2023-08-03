@@ -390,7 +390,7 @@ add_spike_ratio <- function(ta, spike_taxon) {
 add_cluster <- function(ta, n_clusters) {
 
   # make relative abundance matrix
-  rel_abundance_matrix <- get_rel_abundance_matrix(ta)
+  rel_abundance_matrix <- rel_abundance_matrix(ta)
 
   # make Bray-Curtis distance matrix
   dist_matrix <- vegdist(rel_abundance_matrix, method = "bray")
