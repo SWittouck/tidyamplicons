@@ -65,6 +65,8 @@ test_that("Aggregation of sample table succeeds", {
     # Make one column not unique to test agg
     ta_agg <- urt %>%
         mutate_samples(location = "NF") %>%
+        # sample name is unique, so remove for this test
+        select_samples(-sample) %>%
         aggregate_samples()
     sample_id_after <- ta_agg$samples$sample_id
     expect_length(sample_id_before, nsamples)

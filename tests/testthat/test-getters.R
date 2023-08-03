@@ -1,5 +1,6 @@
 len_taxa <- length(urt$taxa$taxon_id)
 len_samples <- 214 #some empty samples in the df
+cols_samples <- 9
 
 test_that("Correct numbers reported", {
     expect_snapshot(urt %>% tacosum())
@@ -14,7 +15,7 @@ test_that("Relative abundance matrix can be created", {
 test_that("Beta diversity table can be generated", {
     beta_table <- urt %>% betas()
     expect_lte(max(beta_table$beta), 1)
-    expect_equal(dim(beta_table), c(22791, 17))
+    expect_equal(dim(beta_table), c(22791, 1+cols_samples*2))
 })
 
 test_that("Occurences are calculated",{
@@ -58,7 +59,7 @@ test_that("Extract abundances tibble", {
 
 test_that("Extract all three tables in one large tibble",{
     wide_ta <- urt %>% everything()
-    expect_equal(dim(wide_ta), c(7693, 18))
+    expect_equal(dim(wide_ta), c(7693, 10+cols_samples))
 })
 
 test_that("Perform adonis shows stable output", {
