@@ -8,17 +8,17 @@ read_tidytacos(
   din,
   samples = "samples.csv",
   taxa = "taxa.csv",
-  abundances = "abundances.csv"
+  counts = "counts.csv"
 )
 }
 \arguments{
-\item{din}{directory containing the a sample, taxa and abundances table in csv format}
+\item{din}{directory containing the a sample, taxa and counts table in csv format}
 
 \item{samples}{the name of the samples table, defaults to samples.csv}
 
 \item{taxa}{the name of the taxa table, defaults to taxa.csv}
 
-\item{abundances}{the name of the abundances table, defaults to abundances.csv}
+\item{counts}{the name of the counts table, defaults to counts.csv}
 }
 \description{
 Read community data written by tidytacos

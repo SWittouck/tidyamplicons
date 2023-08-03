@@ -29,7 +29,7 @@ create_test_ta <- function() {
 #'
 #' @export
 remove_empty_samples <- function(ta){
-  present_samples <- ta %>% abundances() %>%
+  present_samples <- ta %>% counts() %>%
     dplyr::group_by(sample_id) %>%
     dplyr::count() %>% pull(sample_id)
   empty_samples <- ta$samples$sample_id[!(ta$samples$sample_id %in% present_samples)]

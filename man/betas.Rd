@@ -28,7 +28,7 @@ This function calculates the beta diversity using the
 estimate for each combination of samples.
 }
 \examples{
-# Initiate abundance matrix
+# Initiate counts matrix
 x <- matrix(
  c(1500, 1300, 280, 356),
  ncol = 2

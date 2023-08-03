@@ -18,7 +18,7 @@ This function adds the relative abundance per sample to the abundance table
 of a tidytacos object under the variable name "rel_abundance".
 }
 \examples{
-# Initiate abundance matrix
+# Initiate count matrix
 x <- matrix(
  c(1500, 1300, 280, 356),
  ncol = 2

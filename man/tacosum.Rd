@@ -14,7 +14,7 @@ tacosum(ta)
 tidytacos object.
 }
 \examples{
-# Initiate abundance matrix
+# Initiate counts matrix
 x <- matrix(
  c(1500, 1300, 280, 356),
  ncol = 2

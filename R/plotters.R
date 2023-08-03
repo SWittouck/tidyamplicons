@@ -18,7 +18,7 @@ prepare_for_bp <- function(ta, n = 12, extended = TRUE) {
   }
 
   # add relative abundances if not present
-  if (!"rel_abundance" %in% names(ta$abundances)) {
+  if (!"rel_abundance" %in% names(ta$counts)) {
     ta <- add_rel_abundance(ta)
   }
 

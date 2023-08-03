@@ -6,7 +6,7 @@
 #' @param ta tidytacos object.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate counts matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2
@@ -26,7 +26,7 @@ tacosum <- function(ta) {
   c(
     n_samples = nrow(ta$samples),
     n_taxa = nrow(ta$taxa),
-    n_reads = sum(ta$abundances$abundance)
+    n_reads = sum(ta$counts$readcount)
   )
 
 }
@@ -50,7 +50,7 @@ tacosum <- function(ta) {
 #'   before analysis. See \code{\link[vegan]{vegdist}}. Default is FALSE.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate counts matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2
@@ -123,8 +123,8 @@ betas <- function(ta, unique = T, method = "bray", binary = F) {
 occurrences <- function(ta, condition = NULL, pres_abs = F) {
 
   abundances_extended <-
-    ta$abundances %>%
-    filter(abundance > 0) %>%
+    ta$counts %>%
+    filter(readcount > 0) %>%
     left_join(ta$samples, by = "sample_id")
 
   if (is.null(condition)) {
@@ -171,13 +171,13 @@ occurrences <- function(ta, condition = NULL, pres_abs = F) {
 mean_rel_abundances <- function(ta, condition = NULL) {
 
   # if rel_abundance not present: add and remove on exit
-  if (! "rel_abundance" %in% names(ta$abundances)) {
+  if (! "rel_abundance" %in% names(ta$counts)) {
     ta <- add_rel_abundance(ta)
   }
 
   if (is.null(condition)) {
 
-    ta$abundances %>%
+    ta$counts %>%
       select(sample_id, taxon_id, rel_abundance) %>%
       complete(sample_id, taxon_id, fill = list(rel_abundance = 0)) %>%
       group_by(taxon_id) %>%
@@ -188,7 +188,7 @@ mean_rel_abundances <- function(ta, condition = NULL) {
 
     condition <- sym(condition)
 
-    ta$abundances %>%
+    ta$counts %>%
       left_join(ta$samples, by = "sample_id") %>%
       select(!! condition, sample_id, taxon_id, rel_abundance) %>%
       complete(nesting(!! condition, sample_id), taxon_id, fill = list(rel_abundance = 0)) %>%
@@ -207,7 +207,7 @@ mean_rel_abundances <- function(ta, condition = NULL) {
 everything <- function(ta) {
 
   # make and return large table
-  ta$abundances %>%
+  ta$counts %>%
     left_join(ta$samples, by = "sample_id") %>%
     left_join(ta$taxa, by = "taxon_id")
 
@@ -225,11 +225,11 @@ samples <- function(ta) ta$samples
 #' @export
 taxa <- function(ta) ta$taxa
 
-#' Extract the abundance table
+#' Extract the count table
 #'
 #' @param ta A tidytacos object.
 #' @export
-abundances <- function(ta) ta$abundances
+counts <- function(ta) ta$counts
 
 #' Perform an adonis test
 #'
@@ -248,27 +248,27 @@ abundances <- function(ta) ta$abundances
 #' @export
 perform_adonis <- function(ta, predictors, permutations = 999) {
 
-  abundances_matrix <- ta %>%
+  counts_matrix <- ta %>%
     purrr::modify_at("samples", drop_na, one_of(predictors)) %>%
     process_sample_selection() %>%
     add_rel_abundance() %>%
-    abundances() %>%
-    as_abundances_matrix(value = "rel_abundance")
+    counts() %>%
+    as_counts_matrix(value = "rel_abundance")
 
   formula_RHS <- paste0(predictors, collapse = " + ")
 
-  metadata <- tibble(sample_id = rownames(abundances_matrix)) %>%
+  metadata <- tibble(sample_id = rownames(counts_matrix)) %>%
     left_join(ta$samples, by = "sample_id")
 
   adonis2(
-    as.formula(paste("abundances_matrix", formula_RHS, sep = " ~ ")),
+    as.formula(paste("counts_matrix", formula_RHS, sep = " ~ ")),
     metadata,
     permutations = permutations
   )
 
 }
 
-#' Return an abundance matrix
+#' Return a counts matrix
 #'
 #' This function returns a matrix with taxon counts; the rows are samples and
 #' the column are taxa.
@@ -278,10 +278,10 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
 #'   names (unquoted).
 #' @param taxon_name The name of the variable in the taxon table to use as
 #'   column names (unquoted).
-#' @return A matrix with abundance values.
+#' @return A matrix with count values.
 #'
 #' @export
-abundance_matrix <- function(ta, sample_name = sample, taxon_name = taxon, var = abundance) {
+counts_matrix <- function(ta, sample_name = sample, taxon_name = taxon, var = readcount) {
 
   if (
     ! "tidytacos" %in% class(ta)
@@ -304,8 +304,8 @@ abundance_matrix <- function(ta, sample_name = sample, taxon_name = taxon, var =
   ta %>%
     change_id_samples(sample_id_new = {{sample_name}}) %>%
     change_id_taxa(taxon_id_new = {{taxon_name}}) %>%
-    abundances() %>%
-    as_abundances_matrix(value = {{var}})
+    counts() %>%
+    as_counts_matrix(value = {{var}})
 
 }
 
@@ -332,12 +332,12 @@ rel_abundance_matrix <- function(ta, sample_name = sample, taxon_name = taxon) {
   taxon_name <- rlang::enquo(taxon_name)
 
   # add relative abundances if not present
-  if (!"rel_abundance" %in% names(ta$abundances)) {
+  if (!"rel_abundance" %in% names(ta$counts)) {
     ta <- add_rel_abundance(ta)
   }
 
   ta %>%
-    abundance_matrix(
+    counts_matrix(
       sample_name = sample_name, taxon_name = taxon_name, var = rel_abundance
     )
 
@@ -373,7 +373,7 @@ taxonlist_per_condition <- function(ta, condition) {
   ta_per_condition <- lapply(distinct_conditions, select_taxa_for_condition)
   names(ta_per_condition) <- distinct_conditions
 
-  tt_all <- lapply(ta_per_condition, abundances)
+  tt_all <- lapply(ta_per_condition, counts)
 
   lapply(tt_all, function(x) x$taxon_id)
 

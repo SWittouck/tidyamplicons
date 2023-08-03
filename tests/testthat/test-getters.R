@@ -54,7 +54,7 @@ test_that("Extract taxon tibble", {
 })
 
 test_that("Extract abundances tibble", {
-    expect_equal(urt %>% abundances(), urt$abundances)
+    expect_equal(urt %>% counts(), urt$counts)
 })
 
 test_that("Extract all three tables in one large tibble",{

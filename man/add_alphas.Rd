@@ -20,7 +20,7 @@ names observed and inverse_simpson, respectively. This function will also
 add relative abundances if not present using \code{\link{add_rel_abundance}}.
 }
 \examples{
-# Initiate abundance matrix
+# Initiate counts matrix
 x <- matrix(
  c(1500, 1300, 280, 356),
  ncol = 2

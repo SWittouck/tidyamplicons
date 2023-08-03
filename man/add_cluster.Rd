@@ -23,7 +23,7 @@ variable named "cluster" will be added to the samples tibble of a
 tidytacos object defining to what cluster a sample belongs.
 }
 \examples{
-# Initiate abundance matrix
+# Initiate count matrix
 x <- matrix(
  c(1500, 1300, 280, 356),
  ncol = 2
