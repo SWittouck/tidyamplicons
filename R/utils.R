@@ -1,7 +1,10 @@
 #' Create a tidytacos object for testing/example purporses
-#' @export
+#'
 #' @return a small tidytacos object
-create_test_ta <- function(){
+#'
+#' @export
+create_test_ta <- function() {
+
   # Initiate abundance matrix
   x <- matrix(
         c(1500, 1300, 280, 356, 456, 678),
@@ -14,13 +17,17 @@ create_test_ta <- function(){
   data <- create_tidytacos(x,
             taxa_are_columns = FALSE
           )
+
   data
+
 }
 
 #' Removes empty samples from the tidytacos object
+#'
 #' @param ta a tidytacos object
-#' @export
 #' @return the tidytacos object minus the empty samples
+#'
+#' @export
 remove_empty_samples <- function(ta){
   present_samples <- ta %>% abundances() %>%
     dplyr::group_by(sample_id) %>%

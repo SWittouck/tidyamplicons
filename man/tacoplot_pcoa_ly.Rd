@@ -13,11 +13,13 @@ tacoplot_pcoa_ly(
 )
 }
 \arguments{
-\item{ta}{a tidytacos object}
+\item{ta}{A tidytacos object.}
 
-\item{x}{a string, representing the column name used to color the sample groups on.}
+\item{x}{A string, representing the column name used to color the sample
+groups on.}
 
-\item{palette}{a vector of colors, used as the palette for coloring sample groups.}
+\item{palette}{A vector of colors, used as the palette for coloring sample
+groups.}
 }
 \description{
 Return an interactive pcoa plot of the samples

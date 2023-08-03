@@ -1,7 +1,7 @@
 # Correct numbers reported
 
     Code
-      ta_test %>% tacosum()
+      urt %>% tacosum()
     Output
       n_samples    n_taxa   n_reads 
             217      1957   3873478 
