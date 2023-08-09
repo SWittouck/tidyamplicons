@@ -122,7 +122,7 @@ tacoplot_stack_ly <- function(ta, n = 12, x = sample_clustered) {
 #'   groups.
 #'
 #' @export
-tacoplot_pcoa_ly <- function(ta, x=NULL, samplenames = sample_id, palette = NULL, title = "PCOA plot") {
+tacoplot_ord_ly <- function(ta, x=NULL, samplenames = sample_id, palette = NULL, title = "PCOA plot") {
   force_optional_dependency("plotly")
   # convert promise to formula
   if (is.null(x)) {
@@ -175,7 +175,7 @@ tacoplot_pcoa_ly <- function(ta, x=NULL, samplenames = sample_id, palette = NULL
 #'   groups.
 #'
 #' @export
-tacoplot_pcoa <- function(ta, x=sample_id, palette = NULL, title = "PCOA plot") {
+tacoplot_ord <- function(ta, x=sample_id, palette = NULL, title = "PCOA plot") {
 
   x <- enquo(x)
   
