@@ -36,18 +36,19 @@ tacoplot_stack <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   # convert promise to formula
   x <- enquo(x)
 
-  error_message = paste0("Label \'", quo_name(x),"\' not found in the samples table.")
-  warning_message = "Sample labels not unique, samples are aggregated."
+  warning_message_label = paste0("Label \'", quo_name(x),"\' not found in the samples table.")
+  warning_message_aggregate = "Sample labels not unique, samples are aggregated."
   if (quo_name(x) != "sample_clustered" &&
     !is.element(quo_name(x), names(ta$samples))
   ) {
-    stop(error_message)
+    # Warning, so tidy functions can be performed on the label
+    warning(warning_message_label)
   }
 
   if (quo_name(x) != "sample_clustered" &&
     length(unique(ta$samples %>% pull(!!x))) < nrow(ta$samples)
   ) {
-    warning(warning_message)
+    warning(warning_message_aggregate)
   }
 
   # make plot and return
