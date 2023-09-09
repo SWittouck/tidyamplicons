@@ -140,6 +140,7 @@ reset_ids <- function(ta, keep_prev = F) {
 #' @export
 as_phyloseq <- function(ta, sample = sample, taxon = taxon) {
 
+  force_optional_dependency("phyloseq")
   if ("phyloseq" %in% class(ta)) return(ta)
 
   sample <- rlang::enexpr(sample)

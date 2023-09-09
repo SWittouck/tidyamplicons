@@ -8,6 +8,7 @@ test_data <- create_tidytacos(x,
     taxa_are_columns=FALSE)
 
 test_that("Can reclassify using dada and small test database", {
+    skip_if_not_installed("dada2")
     test_db = test_path("data/test_db.fa")
     expect_no_error(
         ta_reclass <- urt %>% classify_taxa(test_db)
