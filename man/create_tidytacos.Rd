@@ -4,12 +4,12 @@
 \alias{create_tidytacos}
 \title{Initiate tidytacos object}
 \usage{
-create_tidytacos(count_matrix, taxa_are_columns = TRUE)
+create_tidytacos(counts_matrix, taxa_are_columns = TRUE)
 }
 \arguments{
-\item{taxa_are_columns}{A logical scalar. Are the taxa defined in columns?}
-
 \item{counts_matrix}{Numerical matrix containing the count data.}
+
+\item{taxa_are_columns}{A logical scalar. Are the taxa defined in columns?}
 }
 \description{
 \code{tidytacos} returns a tidytacos object given a numeric matrix.

@@ -29,23 +29,23 @@
 #' }
 #'
 #' @export
-create_tidytacos <- function(count_matrix, taxa_are_columns = TRUE) {
+create_tidytacos <- function(counts_matrix, taxa_are_columns = TRUE) {
 
   if (
-    ! is.matrix(count_matrix) |
-    ! is.numeric(count_matrix)
+    ! is.matrix(counts_matrix) |
+    ! is.numeric(counts_matrix)
   ) stop("first argument should be a numeric matrix")
 
-  if (! taxa_are_columns) counts_matrix = t(count_matrix)
+  if (! taxa_are_columns) counts_matrix = t(counts_matrix)
 
   counts_matrix <-
-    counts_matrix[, colSums(count_matrix) != 0]
+    counts_matrix[, colSums(counts_matrix) != 0]
 
   ta <- list()
   class(ta) <- "tidytacos"
 
-  n_samples <- nrow(count_matrix)
-  n_taxa <- ncol(count_matrix)
+  n_samples <- nrow(counts_matrix)
+  n_taxa <- ncol(counts_matrix)
 
   sample_ids <- str_c("s", 1:n_samples)
   taxon_ids <- str_c("t", 1:n_taxa)
