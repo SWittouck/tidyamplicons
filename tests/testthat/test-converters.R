@@ -9,6 +9,7 @@ test_that("Can save a tidytacos object.", {
 })
 
 test_that("Can convert to phyloseq object.", {
+  skip_if_not_installed("phyloseq")
   ta_phylo <- as_phyloseq(urt, sample=sample_id, taxon=taxon_id)
   expect_true(class(ta_phylo) == "phyloseq")
 })

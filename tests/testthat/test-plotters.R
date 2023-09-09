@@ -4,11 +4,13 @@
 
 test_that("Barplot returns identical plot", {
     bp  <- urt %>% tacoplot_stack()
+    skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("Default barplot", bp)
 })
 
 test_that("Barplot raises warning when aggregating samples", {
     expect_warning(bp <- urt %>% tacoplot_stack(n=5, x=participant))
+    skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("Custom barplot", bp)
 })
 
@@ -23,10 +25,10 @@ test_that("Tacoplot_stack_ly works", {
     )
 })
 
-test_that("Tacoplot_pcoa_ly works", {
+test_that("Tacoplot_ord_ly works", {
     skip_if_not_installed("plotly")
     expect_no_error(
-        urt %>% tacoplot_pcoa_ly(x=location)
+        urt %>% tacoplot_ord_ly(x=location)
     )
 
 })

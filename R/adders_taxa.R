@@ -32,6 +32,7 @@ classify_taxa <- function(
   sequence_var = "sequence", multithread = T, min_boot = 50, n_ranks = 7
 ) {
 
+  force_optional_dependency("dada2")
   # throw error if sequence_var doesn't exist
   if (! sequence_var %in% names(ta$taxa)) {
     stop(paste0("variable '", sequence_var, "' not found in taxon table"))

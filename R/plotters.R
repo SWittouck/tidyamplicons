@@ -36,18 +36,19 @@ tacoplot_stack <- function(ta, n = 12, x = sample_clustered, geom_bar = T) {
   # convert promise to formula
   x <- enquo(x)
 
-  error_message = paste0("Label \'", quo_name(x),"\' not found in the samples table.")
-  warning_message = "Sample labels not unique, samples are aggregated."
+  warning_message_label = paste0("Label \'", quo_name(x),"\' not found in the samples table.")
+  warning_message_aggregate = "Sample labels not unique, samples are aggregated."
   if (quo_name(x) != "sample_clustered" &&
     !is.element(quo_name(x), names(ta$samples))
   ) {
-    stop(error_message)
+    # Warning, so tidy functions can be performed on the label
+    warning(warning_message_label)
   }
 
   if (quo_name(x) != "sample_clustered" &&
     length(unique(ta$samples %>% pull(!!x))) < nrow(ta$samples)
   ) {
-    warning(warning_message)
+    warning(warning_message_aggregate)
   }
 
   # make plot and return
@@ -122,9 +123,13 @@ tacoplot_stack_ly <- function(ta, n = 12, x = sample_clustered) {
 #'   groups.
 #'
 #' @export
-tacoplot_pcoa_ly <- function(ta, x, samplenames = sample_id, palette = NULL, title = "PCOA plot") {
+tacoplot_ord_ly <- function(ta, x=NULL, samplenames = sample_id, palette = NULL, title = "PCOA plot") {
   force_optional_dependency("plotly")
   # convert promise to formula
+  if (is.null(x)) {
+    stop("Argument x missing. Please supply the name of a categorical value, to be used as the color for the pcoa plot.")
+  }
+  
   x <- enquo(x)
   samplenames <- enquo(samplenames)
 
@@ -160,6 +165,45 @@ tacoplot_pcoa_ly <- function(ta, x, samplenames = sample_id, palette = NULL, tit
   ))
 
   plot
+}
+
+#' Return a pcoa plot of the samples
+#'
+#' @param ta A tidytacos object.
+#' @param x A string, representing the column name used to color the sample
+#'   groups on.
+#' @param palette A vector of colors, used as the palette for coloring sample
+#'   groups.
+#'
+#' @export
+tacoplot_ord <- function(ta, x=sample_id, palette = NULL, title = "PCOA plot") {
+
+  x <- enquo(x)
+  
+  error_message = paste0("Label \'", quo_name(x),"\' not found in the samples table.")
+  if(!is.element(quo_name(x), names(ta$samples))) {
+    stop(error_message)
+  }
+
+  if (quo_name(x) == "sample_id") {
+    x <- NULL
+  }
+  
+  # fallback to default palette
+  if (is.null(palette)) {
+    palette <- palette_paired
+  }
+
+  # prepare pcoa if needed
+  if (!all(c("pcoa1", "pcoa2") %in% names(ta$samples))) {
+    ta <- add_pcoa(ta)
+  }
+
+  ta$samples %>% ggplot(aes(x=pcoa1, y=pcoa2, color=!!x)) + 
+    geom_point() + 
+    theme_classic() +
+    ggtitle(title)
+
 }
 
 #' Return a visualization designed for a small number of samples
