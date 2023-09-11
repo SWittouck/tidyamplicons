@@ -44,13 +44,13 @@ add_sample_tibble <- function(ta, sample_tibble) {
 
 }
 
-#' Add total abundance per sample
+#' Add total reads per sample
 #'
-#' \code{add_lib_size} adds the total abundance per sample to the samples tibble
+#' \code{add_total_counts} adds the total reads per sample to the samples tibble
 #' of a tidytacos object.
 #'
-#' This function adds the total abundance per sample to the samples tibble of a
-#' tidytacos object under the variable name total_abundance.
+#' This function adds the total reads per sample to the samples tibble of a
+#' tidytacos object under the variable name total_counts.
 #'
 #' @param ta tidytacos object.
 #'
@@ -70,21 +70,21 @@ add_sample_tibble <- function(ta, sample_tibble) {
 #'
 #' # Add total counts
 #' data <- data %>%
-#'  add_lib_size()
+#'  add_total_counts()
 #'
 #' @export
-add_lib_size <- function(ta, step = "current") {
+add_total_counts <- function(ta, step = "current") {
 
   # remove lib_size if already present
-  ta$samples$lib_size <- NULL
+  ta$samples$total_counts <- NULL
 
   if (step == "current") {
 
     # make table with sample and library size
     lib_sizes <- ta$counts %>%
       group_by(sample_id) %>%
-      summarize(lib_size = sum(count)) %>%
-      select(sample_id, lib_size)
+      summarize(total_counts = sum(count)) %>%
+      select(sample_id, total_counts)
 
   } else {
 
@@ -92,15 +92,15 @@ add_lib_size <- function(ta, step = "current") {
     step_of_interest <- step
     lib_sizes <- ta$lib_sizes %>%
       filter(step == step_of_interest) %>%
-      select(sample_id, lib_size)
+      select(sample_id, total_counts)
 
   }
 
-  # add library size to sample table
+  # add total counts to sample table
   ta$samples <-
     ta$samples %>%
     left_join(lib_sizes, by = "sample_id") %>%
-    mutate(lib_size = ifelse(is.na(lib_size), 0, lib_size))
+    mutate(total_counts = ifelse(is.na(total_counts), 0, total_counts))
 
   # return ta object
   ta

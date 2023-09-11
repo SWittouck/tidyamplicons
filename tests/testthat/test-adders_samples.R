@@ -18,8 +18,8 @@ test_that("Can add sample tibble to ta object",{
 })
 
 test_that("Can add lib sizes", {
-    ta_lib <- test_data %>% add_lib_size()
-    expect_equal(ta_lib$samples$lib_size, c(2800, 636))
+    ta_lib <- test_data %>% add_total_counts()
+    expect_equal(ta_lib$samples$total_counts, c(2800, 636))
 })
 
 test_that("Can add alpha diversity metrics", {
