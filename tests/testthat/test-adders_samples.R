@@ -28,3 +28,9 @@ test_that("Can add alpha diversity metrics", {
                     c(1.989, 1.971), tolerance=1e-3)
 })
 
+test_that("Can add spike-ratio", {
+
+    ta_spike_ratio <- test_data %>% add_spike_ratio("t1")
+    expect_true("spike_ratio" %in% names(ta_spike_ratio$samples))
+})
+

@@ -326,8 +326,8 @@ add_pcoa <- function(ta) {
 add_spike_ratio <- function(ta, spike_taxon) {
 
   # if lib_size not present: add temporarily
-  lib_size_tmp <- ! "lib_size" %in% names(ta$samples)
-  if (lib_size_tmp) ta <- add_lib_size(ta)
+  lib_size_tmp <- ! "total_counts" %in% names(ta$samples)
+  if (lib_size_tmp) ta <- add_total_counts(ta)
 
   # make sample table with spike abundances
   spike_counts <- ta$counts %>%
@@ -337,13 +337,13 @@ add_spike_ratio <- function(ta, spike_taxon) {
   # calculate spike ratio (non-spike abundance to spike abundance)
   ta$samples <- ta$samples %>%
     left_join(spike_counts, by = "sample_id") %>%
-    mutate(spike_ratio = ( lib_size - spike_abundance ) / spike_abundance)
+    mutate(spike_ratio = ( total_counts - spike_abundance ) / spike_abundance)
 
   # remove spike_abundance
   ta$samples$spike_abundance <- NULL
 
   # cleanup
-  if (lib_size_tmp) ta$samples$lib_size <- NULL
+  if (lib_size_tmp) ta$samples$total_counts <- NULL
 
   # return ta object
   ta
