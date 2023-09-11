@@ -1,4 +1,4 @@
-abundance,sample_id,taxon_id
+count,sample_id,taxon_id
 13473,s1,t7
 10322,s2,t7
 86,s4,t7

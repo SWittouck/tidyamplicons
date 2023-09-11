@@ -12,12 +12,12 @@ add_spike_ratio(ta, spike_taxon)
 \item{spike_taxon}{The taxon_id of the spike.}
 }
 \description{
-\code{add_spike_ratio} adds a new variable showing the ratio total abundance
-to spike abundance to the samples tibble of a tidytacos object.
+\code{add_spike_ratio} adds a new variable showing the ratio total counts
+to spike counts to the samples tibble of a tidytacos object.
 }
 \details{
 This function calculates the spike ratio defined as the total sample
-abundance to the spike abundance and adds this as a new variable
+counts to the spike counts and adds this as a new variable
 "spike_ratio" to the samples tibble of a tidytacos object. This function
 is useful if a DNA spike was added prior to sequencing and is based on the
 method described by
@@ -27,7 +27,7 @@ Credits to Wenke Smets for the idea of spiking samples prior to 16S
 sequencing and the initial implementation of this function.
 }
 \examples{
-# Initiate abundance matrix
+# Initiate counts matrix
 x <- matrix(
  c(1500, 1300, 280, 356),
  ncol = 2

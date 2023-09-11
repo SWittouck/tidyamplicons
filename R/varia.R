@@ -1,13 +1,13 @@
-# Apply a sample filtering to the taxon and abundance tables
+# Apply a sample filtering to the taxon and counts tables
 process_sample_selection <- function(ta) {
 
-  # filter abundance table
+  # filter counts table
   selected_samples <- ta$samples$sample_id
-  ta$abundances <- ta$abundances %>%
+  ta$counts <- ta$counts %>%
     filter(sample_id %in% selected_samples)
 
   # filter taxon table
-  selected_taxa <- ta$abundances$taxon_id %>% unique()
+  selected_taxa <- ta$counts$taxon_id %>% unique()
   ta$taxa <- ta$taxa %>%
     filter(taxon_id %in% selected_taxa)
 
@@ -16,12 +16,12 @@ process_sample_selection <- function(ta) {
 
 }
 
-# Apply a taxon filtering to the abundance table
+# Apply a taxon filtering to the counts table
 process_taxon_selection <- function(ta) {
 
-  # filter abundance table
+  # filter counts table
   selected_taxa <- ta$taxa$taxon_id
-  ta$abundances <- ta$abundances %>%
+  ta$counts <- ta$counts %>%
     filter(taxon_id %in% selected_taxa)
 
   # return ta object
@@ -29,11 +29,11 @@ process_taxon_selection <- function(ta) {
 
 }
 
-# Apply an abundance filtering to the taxon table
-process_abundance_selection <- function(ta) {
+# Apply an count filtering to the taxon table
+process_count_selection <- function(ta) {
 
   # filter taxon table
-  selected_taxa <- ta$abundances$taxon_id %>% unique()
+  selected_taxa <- ta$counts$taxon_id %>% unique()
   ta$taxa <- ta$taxa %>%
     filter(taxon_id %in% selected_taxa)
 
@@ -82,10 +82,10 @@ merge_redundant_taxa <- function(ta) {
       as.character(NA)
     })
 
-  # merge taxa in abundances table
-  ta$abundances <- ta$abundances %>%
+  # merge taxa in counts table
+  ta$counts <- ta$counts %>%
     group_by(sample_id, taxon_id) %>%
-    summarise(abundance = sum(abundance)) %>%
+    summarise(count = sum(count)) %>%
     ungroup()
 
   ta
@@ -94,8 +94,8 @@ merge_redundant_taxa <- function(ta) {
 
 retain_taxon_id <- function(ta) {
   if ((! "taxon_id" %in% names(ta$taxa)) ||
-  (! "taxon_id" %in% names(ta$abundances)) ||
-  (is.null(ta$abundances$taxon_id)) ||
+  (! "taxon_id" %in% names(ta$counts)) ||
+  (is.null(ta$counts$taxon_id)) ||
   (is.null(ta$taxa$taxon_id))) {
     stop("You cannot delete the taxon_id column")
   }
@@ -103,17 +103,17 @@ retain_taxon_id <- function(ta) {
 
 retain_sample_id <- function(ta) {
   if ((! "sample_id" %in% names(ta$samples)) ||
-  (! "sample_id" %in% names(ta$abundances)) ||
+  (! "sample_id" %in% names(ta$counts)) ||
   (is.null(ta$samples$sample_id)) ||
-  (is.null(ta$abundances$sample_id))) {
+  (is.null(ta$counts$sample_id))) {
     stop("You cannot delete the sample_id column")
   }
 }
 
-retain_abundances <- function(ta) {
-  if (! "abundance" %in% names(ta$abundances) ||
-  (is.null(ta$abundances$abundance))) {
-    stop("You cannot delete the abundance column")
+retain_counts <- function(ta) {
+  if (! "count" %in% names(ta$counts) ||
+  (is.null(ta$counts$count))) {
+    stop("You cannot delete the count column")
   }
 }
 

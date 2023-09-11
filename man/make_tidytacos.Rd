@@ -4,20 +4,14 @@
 \alias{make_tidytacos}
 \title{Create a tidytacos object from three tidy tables}
 \usage{
-make_tidytacos(
-  samples,
-  taxa,
-  abundances,
-  sample_name = sample,
-  taxon_name = taxon
-)
+make_tidytacos(samples, taxa, counts, sample_name = sample, taxon_name = taxon)
 }
 \arguments{
 \item{samples}{A tidy table containing sample information}
 
 \item{taxa}{A tidy table containing taxon information}
 
-\item{abundances}{A tidy table, where each row represents the counts of a taxon in a sample}
+\item{counts}{A tidy table, where each row represents the counts of a taxon in a sample}
 
 \item{sample_name}{The column in the sample table that contains a unique identifier for each sample}
 

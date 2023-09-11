@@ -221,7 +221,7 @@ add_taxon_name_color <- function(
       aggregate_taxa(rank = rank_col) %>%
       add_taxon_name_color(method=method, n=n)
 
-    col_per_sample <- colnames$abundances %>%
+    col_per_sample <- colnames$counts %>%
       inner_join(colnames$taxa, by="taxon_id") %>%
       dplyr::select(sample_id, taxon_name_color, taxon_id)
 
@@ -319,7 +319,7 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
   sample_condition <- enquo(sample_condition)
 
   # if rel_abundance not present: add temporarily
-  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
+  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$counts)
   if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
 
   # if sample condition is given, use only samples that fulfill it
@@ -331,7 +331,7 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
   }
 
   # perform jervis bardy calculation
-  taxa_jb <- ta_jb$abundances %>%
+  taxa_jb <- ta_jb$counts %>%
     left_join(
       ta_jb$samples %>% select(sample_id, dna_conc = !! dna_conc),
       by = "sample_id"
@@ -351,7 +351,7 @@ add_jervis_bardy <- function(ta, dna_conc, sample_condition = T, min_pres = 3) {
   ta$taxa <- left_join(ta$taxa, taxa_jb, by = "taxon_id")
 
   # cleanup
-  if (rel_abundance_tmp) ta$abundances$rel_abundance <- NULL
+  if (rel_abundance_tmp) ta$counts$rel_abundance <- NULL
 
   # return ta object
   ta
@@ -481,11 +481,11 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
     condition_sym <- ensym(condition)
 
     # if rel_abundance not present: add temporarily
-    rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
+    rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$counts)
     if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
 
     rel_abundances_complete <-
-      abundances(ta) %>%
+      counts(ta) %>%
       left_join(ta$samples, by = "sample_id") %>%
       select(sample_id, !! condition_sym, taxon_id, rel_abundance) %>%
       complete(
@@ -531,7 +531,7 @@ add_mean_rel_abundances <- function(ta, condition = NULL, test = NULL) {
   }
 
   # cleanup
-  if (exists("rel_abundance_tmp")) ta$abundances$rel_abundance <- NULL
+  if (exists("rel_abundance_tmp")) ta$counts$rel_abundance <- NULL
 
   ta %>%
     purrr::modify_at("taxa", left_join, taxa_mean_rel_abundances, by = "taxon_id")

@@ -34,23 +34,23 @@ add_logratios <- function(ta, max_taxa = 30) {
   }
 
   abundances_complete <-
-    ta$abundances %>%
-    complete(sample_id, taxon_id, fill = list(abundance = 0))
+    ta$counts %>%
+    complete(sample_id, taxon_id, fill = list(count = 0))
 
   ta$logratios <-
     left_join(
       abundances_complete %>%
-        select(sample_id, taxon_id, abundance),
+        select(sample_id, taxon_id, count),
       abundances_complete %>%
-        select(sample_id, ref_taxon_id = taxon_id, ref_abundance = abundance),
+        select(sample_id, ref_taxon_id = taxon_id, ref_abundance = count),
       by = "sample_id",
       multiple = "all"
     ) %>%
     mutate(
       taxon_ids = str_c(taxon_id, ref_taxon_id, sep = "_"),
-      logratio = log10((abundance + 1) / (ref_abundance + 1))
+      logratio = log10((count + 1) / (ref_abundance + 1))
     ) %>%
-    select(- abundance, - ref_abundance)
+    select(- count, - ref_abundance)
 
   ta
 

@@ -4,10 +4,10 @@
 \alias{create_tidytacos}
 \title{Initiate tidytacos object}
 \usage{
-create_tidytacos(abundance_matrix, taxa_are_columns = TRUE)
+create_tidytacos(counts_matrix, taxa_are_columns = TRUE)
 }
 \arguments{
-\item{abundance_matrix}{Numerical matrix containing the abundance data.}
+\item{counts_matrix}{Numerical matrix containing the count data.}
 
 \item{taxa_are_columns}{A logical scalar. Are the taxa defined in columns?}
 }
@@ -21,7 +21,7 @@ updated using the functions \code{\link{add_taxon_tibble}} and
 \code{\link{add_sample_tibble}}.
 }
 \examples{
-# Initiate abundance matrix
+# Initiate count matrix
 x <- matrix(
  c(1500, 1300, 280, 356),
  ncol = 2

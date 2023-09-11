@@ -15,7 +15,7 @@
 #'   column name is 'sample'.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate counts matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2
@@ -55,7 +55,7 @@ add_sample_tibble <- function(ta, sample_tibble) {
 #' @param ta tidytacos object.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate counts matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2
@@ -68,7 +68,7 @@ add_sample_tibble <- function(ta, sample_tibble) {
 #'                      taxa_are_columns = FALSE
 #'                      )
 #'
-#' # Add total abundance
+#' # Add total counts
 #' data <- data %>%
 #'  add_lib_size()
 #'
@@ -81,9 +81,9 @@ add_lib_size <- function(ta, step = "current") {
   if (step == "current") {
 
     # make table with sample and library size
-    lib_sizes <- ta$abundances %>%
+    lib_sizes <- ta$counts %>%
       group_by(sample_id) %>%
-      summarize(lib_size = sum(abundance)) %>%
+      summarize(lib_size = sum(count)) %>%
       select(sample_id, lib_size)
 
   } else {
@@ -121,7 +121,7 @@ add_lib_size <- function(ta, step = "current") {
 #' @param ta tidytacos object.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate counts matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2
@@ -141,12 +141,12 @@ add_lib_size <- function(ta, step = "current") {
 add_alphas <- function(ta) {
 
   # if rel abundances not present: add temporarily
-  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$abundances)
+  rel_abundance_tmp <- ! "rel_abundance" %in% names(ta$counts)
   if (rel_abundance_tmp) ta <- add_rel_abundance(ta)
 
   # make table with sample, divObserved and divInvSimpson
-  diversities <- ta$abundances %>%
-    filter(abundance > 0) %>%
+  diversities <- ta$counts %>%
+    filter(count > 0) %>%
     group_by(sample_id) %>%
     summarize(
       observed = n(),
@@ -158,7 +158,7 @@ add_alphas <- function(ta) {
   ta$samples = left_join(ta$samples, diversities, by = "sample_id")
 
   # cleanup
-  if (rel_abundance_tmp) ta$abundances$rel_abundance <- NULL
+  if (rel_abundance_tmp) ta$counts$rel_abundance <- NULL
 
   # return ta object
   ta
@@ -181,7 +181,7 @@ add_alphas <- function(ta) {
 #' @param ta tidytacos object.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate counts matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2
@@ -240,7 +240,7 @@ add_sample_clustered <- function(ta) {
 #' @param ta tidytacos object.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate counts matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356, 456, 678),
 #'  ncol = 3
@@ -288,11 +288,11 @@ add_pcoa <- function(ta) {
 
 #' Add spike ratio
 #'
-#' \code{add_spike_ratio} adds a new variable showing the ratio total abundance
-#' to spike abundance to the samples tibble of a tidytacos object.
+#' \code{add_spike_ratio} adds a new variable showing the ratio total counts
+#' to spike counts to the samples tibble of a tidytacos object.
 #'
 #' This function calculates the spike ratio defined as the total sample
-#' abundance to the spike abundance and adds this as a new variable
+#' counts to the spike counts and adds this as a new variable
 #' "spike_ratio" to the samples tibble of a tidytacos object. This function
 #' is useful if a DNA spike was added prior to sequencing and is based on the
 #' method described by
@@ -305,7 +305,7 @@ add_pcoa <- function(ta) {
 #' @param spike_taxon The taxon_id of the spike.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate counts matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2
@@ -330,13 +330,13 @@ add_spike_ratio <- function(ta, spike_taxon) {
   if (lib_size_tmp) ta <- add_lib_size(ta)
 
   # make sample table with spike abundances
-  spike_abundances <- ta$abundances %>%
+  spike_counts <- ta$counts %>%
     filter(taxon_id == spike_taxon) %>%
-    select(sample_id, spike_abundance = abundance)
+    select(sample_id, spike_abundance = count)
 
   # calculate spike ratio (non-spike abundance to spike abundance)
   ta$samples <- ta$samples %>%
-    left_join(spike_abundances, by = "sample_id") %>%
+    left_join(spike_counts, by = "sample_id") %>%
     mutate(spike_ratio = ( lib_size - spike_abundance ) / spike_abundance)
 
   # remove spike_abundance
@@ -365,7 +365,7 @@ add_spike_ratio <- function(ta, spike_taxon) {
 #' @param n_clusters Numerical. Number of desired clusters.
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate count matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2

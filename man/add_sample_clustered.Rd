@@ -22,7 +22,7 @@ object. This function is extremely useful if one wants to plot similar
 samples together.
 }
 \examples{
-# Initiate abundance matrix
+# Initiate counts matrix
 x <- matrix(
  c(1500, 1300, 280, 356),
  ncol = 2

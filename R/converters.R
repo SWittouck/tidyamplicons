@@ -7,11 +7,11 @@
 #' updated using the functions \code{\link{add_taxon_tibble}} and
 #' \code{\link{add_sample_tibble}}.
 #'
-#' @param abundance_matrix Numerical matrix containing the abundance data.
+#' @param counts_matrix Numerical matrix containing the count data.
 #' @param taxa_are_columns A logical scalar. Are the taxa defined in columns?
 #'
 #' @examples
-#' # Initiate abundance matrix
+#' # Initiate count matrix
 #' x <- matrix(
 #'  c(1500, 1300, 280, 356),
 #'  ncol = 2
@@ -29,43 +29,43 @@
 #' }
 #'
 #' @export
-create_tidytacos <- function(abundance_matrix, taxa_are_columns = TRUE) {
+create_tidytacos <- function(counts_matrix, taxa_are_columns = TRUE) {
 
   if (
-    ! is.matrix(abundance_matrix) |
-    ! is.numeric(abundance_matrix)
+    ! is.matrix(counts_matrix) |
+    ! is.numeric(counts_matrix)
   ) stop("first argument should be a numeric matrix")
 
-  if (! taxa_are_columns) abundance_matrix = t(abundance_matrix)
+  if (! taxa_are_columns) counts_matrix = t(counts_matrix)
 
-  abundance_matrix <-
-    abundance_matrix[, colSums(abundance_matrix) != 0]
+  counts_matrix <-
+    counts_matrix[, colSums(counts_matrix) != 0]
 
   ta <- list()
   class(ta) <- "tidytacos"
 
-  n_samples <- nrow(abundance_matrix)
-  n_taxa <- ncol(abundance_matrix)
+  n_samples <- nrow(counts_matrix)
+  n_taxa <- ncol(counts_matrix)
 
   sample_ids <- str_c("s", 1:n_samples)
   taxon_ids <- str_c("t", 1:n_taxa)
 
-  ta$abundances <-
-    abundance_matrix %>%
+  ta$counts <-
+    counts_matrix %>%
     as.vector() %>%
-    tibble(abundance = .) %>%
+    tibble(count = .) %>%
     mutate(sample_id = rep(!! sample_ids, times = !! n_taxa)) %>%
     mutate(taxon_id = rep(!! taxon_ids, each = !! n_samples)) %>%
-    filter(abundance > 0)
+    filter(count > 0)
 
   ta$samples <-
-    abundance_matrix %>%
+    counts_matrix %>%
     rownames() %>%
     tibble(sample = .) %>%
     mutate(sample_id = !! sample_ids)
 
   ta$taxa <-
-    abundance_matrix %>%
+    counts_matrix %>%
     colnames() %>%
     tibble(taxon = .) %>%
     mutate(taxon_id = !! taxon_ids)
@@ -83,23 +83,23 @@ write_tidytacos <- function(ta, dout) {
   if (!dir.exists(dout)) {dir.create(dout)}
   write_csv(ta$samples, paste0(dout, "/samples.csv"))
   write_csv(ta$taxa, paste0(dout, "/taxa.csv"))
-  write_csv(ta$abundances, paste0(dout, "/abundances.csv"))
+  write_csv(ta$counts, paste0(dout, "/counts.csv"))
 }
 
 #' Read community data written by tidytacos
 #' @importFrom readr read_csv
-#' @param din directory containing the a sample, taxa and abundances table in csv format
+#' @param din directory containing the a sample, taxa and counts table in csv format
 #' @param samples the name of the samples table, defaults to samples.csv
 #' @param taxa the name of the taxa table, defaults to taxa.csv
-#' @param abundances the name of the abundances table, defaults to abundances.csv
+#' @param counts the name of the counts table, defaults to counts.csv
 #' @export
 read_tidytacos <- function(din, samples = "samples.csv", taxa = "taxa.csv",
-                               abundances = "abundances.csv") {
+                               counts = "counts.csv") {
   samples <- readr::read_csv(paste0(din, "/", samples), col_types = readr::cols())
   taxa <- readr::read_csv(paste0(din, "/", taxa), col_types = readr::cols())
-  abundances <- readr::read_csv(paste0(din, "/", abundances), col_types = readr::cols())
+  counts <- readr::read_csv(paste0(din, "/", counts), col_types = readr::cols())
   make_tidytacos(
-    samples, taxa, abundances, sample_name = sample_id, taxon_name = taxon_id
+    samples, taxa, counts, sample_name = sample_id, taxon_name = taxon_id
   )
 }
 
@@ -150,8 +150,8 @@ as_phyloseq <- function(ta, sample = sample, taxon = taxon) {
   ta <- change_id_taxa(ta, taxon_id_new = !! taxon)
 
   otu_table <-
-    ta$abundances %>%
-    spread(key = taxon_id, value = abundance, fill = 0) %>%
+    ta$counts %>%
+    spread(key = taxon_id, value = count, fill = 0) %>%
     `attr<-`("class", "data.frame") %>%
     `rownames<-`(.$sample_id) %>%
     select(- sample_id) %>%
@@ -215,7 +215,7 @@ as_tidytacos <- function(ps) {
     mutate(taxon = phyloseq::tax_table(ps) %>% row.names()) %>%
     `names<-`(names(.) %>% str_to_lower())
 
-  # make sure that taxa are columns in abundances table
+  # make sure that taxa are columns in counts table
   if (phyloseq::taxa_are_rows(ps)) {
     phyloseq::otu_table(ps) <- phyloseq::t(phyloseq::otu_table(ps))
   }
@@ -227,72 +227,72 @@ as_tidytacos <- function(ps) {
 
 }
 
-#' Convert matrix with abundances to tidy data frame
+#' Convert matrix with counts to tidy data frame
 #'
-#' \code{as_abundances} returns a tidy data frame given a numerical abundance
+#' \code{as_counts} returns a tidy data frame given a numerical counts
 #' matrix.
 #'
-#' This function will convert a numerical abundance matrix into a tidy data
-#' frame. To convert a tidy data frame into a numerical abundance matrix
-#' use \code{\link{as_abundances_matrix}}.
+#' This function will convert a numerical counts matrix into a tidy data
+#' frame. To convert a tidy data frame into a numerical counts matrix
+#' use \code{\link{as_counts_matrix}}.
 #'
-#' @param abundances_matrix The ambundance matrix that will be converted.
+#' @param counts_matrix The ambundance matrix that will be converted.
 #' @param taxa_are_columns A logical scalar. Are the taxa defined in columns?
 #'   Default is TRUE.
-#' @param value Name of resulting colum containing the abundance data. Default
-#'   is "abundance".
+#' @param value Name of resulting colum containing the count data. Default
+#'   is "counts".
 #'
 #' @export
-as_abundances <- function(abundances_matrix, taxa_are_columns = TRUE,
-                          value = "abundance") {
+as_counts <- function(counts_matrix, taxa_are_columns = TRUE,
+                          value = "counts") {
 
   if (
-    ! is.matrix(abundances_matrix) |
-    ! is.numeric(abundances_matrix)
-  ) stop("first argument should be an abundances matrix")
+    ! is.matrix(counts_matrix) |
+    ! is.numeric(counts_matrix)
+  ) stop("first argument should be an counts matrix")
 
-  if (! taxa_are_columns) abundances_matrix = t(abundances_matrix)
+  if (! taxa_are_columns) counts_matrix = t(counts_matrix)
 
-  abundances_matrix %>%
+  counts_matrix %>%
     as_tibble() %>%
-    mutate(sample_id = row.names(abundances_matrix)) %>%
+    mutate(sample_id = row.names(counts_matrix)) %>%
     gather(key = "taxon_id", value = !! value, - sample_id) %>%
     filter(!! value > 0)
 
 }
 
-#' Convert abundances tidy data frame to matrix.
+#' Convert counts tidy data frame to matrix.
 #'
-#' \code{as_abundances_matrix} returns a numerical matrix given a tidy
-#' abundances data frame.
+#' \code{as_counts_matrix} returns a numerical matrix given a tidy
+#' counts data frame.
 #'
-#' This function will convert a abundances tidy data frame into a numerlical
-#' abundance matrix. To convert a numerical abundance matrix into a abundances
-#' tidy data frame use \code{\link{as_abundances_matrix}}.
+#' This function will convert a counts tidy data frame into a numerlical
+#' counts matrix. To convert a numerical counts matrix into a counts
+#' tidy data frame use \code{\link{as_counts_matrix}}.
 #'
-#' @param abundances The abundance tidy data frame that will be converted.
-#' @param value Name of colum containing the abundance data. Default is
-#'   "abundance".
+#' @param counts The counts tidy data frame that will be converted.
+#' @param value Name of colum containing the counts data. Default is
+#'   "counts".
 #'
 #' @export
-as_abundances_matrix <- function(abundances, value = abundance) {
+as_counts_matrix <- function(counts, value = count) {
 
   if (
-    ! is.data.frame(abundances) |
-    is.null(abundances$taxon_id) |
-    is.null(abundances$sample_id)
-  ) stop("first argument should be an abundances table (data frame)")
+    ! is.data.frame(counts) |
+    is.null(counts$taxon_id) |
+    is.null(counts$sample_id)
+  ) stop("first argument should be a counts table (data frame)")
 
   value <- enquo(value)
 
-  abundances_wide <- abundances %>%
+  counts_wide <- counts %>%
     select(sample_id, taxon_id, !! value) %>%
     spread(key = taxon_id, value = !! value, fill = 0)
 
-  abundances_wide %>%
+  counts_wide %>%
     select(- sample_id) %>%
     as.matrix() %>%
-    `row.names<-`(abundances_wide$sample_id)
+    `row.names<-`(counts_wide$sample_id)
 
 }
 
@@ -341,11 +341,11 @@ merge_tidytacos <- function(ta1, ta2, taxon_identifier = sequence) {
       as.character(NA)
     })
 
-  # merge abundances tables
-  abundances <- bind_rows(ta1$abundances, ta2$abundances)
+  # merge counts tables
+  counts <- bind_rows(ta1$counts, ta2$counts)
 
   # make new ta object
-  ta <- list(samples = samples, taxa = taxa, abundances = abundances)
+  ta <- list(samples = samples, taxa = taxa, counts = counts)
   class(ta) <- "tidytacos"
 
   # give new sample names in new ta object
@@ -360,24 +360,24 @@ merge_tidytacos <- function(ta1, ta2, taxon_identifier = sequence) {
 #'
 #' @param samples A tidy table containing sample information
 #' @param taxa A tidy table containing taxon information
-#' @param abundances A tidy table, where each row represents the counts of a taxon in a sample
+#' @param counts A tidy table, where each row represents the counts of a taxon in a sample
 #' @param sample_name The column in the sample table that contains a unique identifier for each sample
 #' @param taxon_name The column in the taxon table that contains a unique identifier for each taxon
 #' @export
-make_tidytacos <- function(samples, taxa, abundances,
+make_tidytacos <- function(samples, taxa, counts,
                                sample_name = sample, taxon_name = taxon) {
 
   sample_name <- rlang::enexpr(sample_name)
   taxon_name <- rlang::enexpr(taxon_name)
 
-  list(samples = samples, taxa = taxa, abundances = abundances) %>%
+  list(samples = samples, taxa = taxa, counts = counts) %>%
     purrr::modify_at("samples", mutate, sample_id = !! sample_name) %>%
     purrr::modify_at("taxa", mutate, taxon_id = !! taxon_name) %>%
-    purrr::modify_at("abundances", rename, sample_id = !! sample_name) %>%
-    purrr::modify_at("abundances", rename, taxon_id = !! taxon_name) %>%
-    purrr::modify_at("abundances", filter, abundance > 0) %>%
-    purrr::modify_at("abundances", filter, sample_id %in% .$samples$sample_id) %>%
-    purrr::modify_at("abundances", filter, taxon_id %in% .$taxa$taxon_id) %>%
+    purrr::modify_at("counts", rename, sample_id = !! sample_name) %>%
+    purrr::modify_at("counts", rename, taxon_id = !! taxon_name) %>%
+    purrr::modify_at("counts", filter, count > 0) %>%
+    purrr::modify_at("counts", filter, sample_id %in% .$samples$sample_id) %>%
+    purrr::modify_at("counts", filter, taxon_id %in% .$taxa$taxon_id) %>%
     `class<-`("tidytacos") %>%
     reset_ids()
 
