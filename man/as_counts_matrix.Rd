@@ -4,7 +4,7 @@
 \alias{as_counts_matrix}
 \title{Convert counts tidy data frame to matrix.}
 \usage{
-as_counts_matrix(counts, value = readcount)
+as_counts_matrix(counts, value = count)
 }
 \arguments{
 \item{counts}{The counts tidy data frame that will be converted.}

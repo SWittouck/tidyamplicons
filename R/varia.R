@@ -85,7 +85,7 @@ merge_redundant_taxa <- function(ta) {
   # merge taxa in counts table
   ta$counts <- ta$counts %>%
     group_by(sample_id, taxon_id) %>%
-    summarise(readcount = sum(readcount)) %>%
+    summarise(count = sum(count)) %>%
     ungroup()
 
   ta
@@ -111,9 +111,9 @@ retain_sample_id <- function(ta) {
 }
 
 retain_counts <- function(ta) {
-  if (! "readcount" %in% names(ta$counts) ||
-  (is.null(ta$counts$readcount))) {
-    stop("You cannot delete the readcount column")
+  if (! "count" %in% names(ta$counts) ||
+  (is.null(ta$counts$count))) {
+    stop("You cannot delete the count column")
   }
 }
 

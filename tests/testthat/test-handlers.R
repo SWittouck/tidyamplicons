@@ -6,13 +6,13 @@ expect_error(urt %>% rarefy(100))
 
 test_that("Max abundance equals n", {
     ab <- urt %>% rarefy(10) %>%
-    counts() %>% dplyr::pull(readcount)
+    counts() %>% dplyr::pull(count)
     expect_equal(max(ab), 10)
 })
 
 test_that("Max abundance equals n with replace=TRUE", {
     ab <- urt %>% rarefy(100, replace=TRUE) %>%
-    counts() %>% dplyr::pull(readcount)
+    counts() %>% dplyr::pull(count)
     expect_equal(max(ab), 100)
 })
 
@@ -213,7 +213,7 @@ test_that("Mutating abundances, where taxon_id is removed throws error", {
 })
 
 test_that("Mutating abundances, where abundances is removed throws error", {
-    expect_error(urt %>% mutate_counts(readcount = NULL))
+    expect_error(urt %>% mutate_counts(count = NULL))
 })
 
 test_that("Filtering out all samples raises error", {
@@ -235,11 +235,11 @@ test_that("Filtering returns the expected amount of taxa", {
 })
 
 test_that("Filtering out all abundances raises error", {
-    expect_error(urt %>% filter_counts(readcount == "Impossible"))
+    expect_error(urt %>% filter_counts(count == "Impossible"))
 })
 
 test_that("Filtering returns the expected amount of samples", {
-    ta_f <- urt %>% filter_counts(readcount >= 10000)
+    ta_f <- urt %>% filter_counts(count >= 10000)
     expect_equal(length(ta_f$counts$sample_id), 70)
     expect_equal(length(ta_f$taxa$taxon_id), 18)
 })

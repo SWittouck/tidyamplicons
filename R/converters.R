@@ -53,10 +53,10 @@ create_tidytacos <- function(counts_matrix, taxa_are_columns = TRUE) {
   ta$counts <-
     counts_matrix %>%
     as.vector() %>%
-    tibble(readcount = .) %>%
+    tibble(count = .) %>%
     mutate(sample_id = rep(!! sample_ids, times = !! n_taxa)) %>%
     mutate(taxon_id = rep(!! taxon_ids, each = !! n_samples)) %>%
-    filter(readcount > 0)
+    filter(count > 0)
 
   ta$samples <-
     counts_matrix %>%
@@ -151,7 +151,7 @@ as_phyloseq <- function(ta, sample = sample, taxon = taxon) {
 
   otu_table <-
     ta$counts %>%
-    spread(key = taxon_id, value = readcount, fill = 0) %>%
+    spread(key = taxon_id, value = count, fill = 0) %>%
     `attr<-`("class", "data.frame") %>%
     `rownames<-`(.$sample_id) %>%
     select(- sample_id) %>%
@@ -275,7 +275,7 @@ as_counts <- function(counts_matrix, taxa_are_columns = TRUE,
 #'   "counts".
 #'
 #' @export
-as_counts_matrix <- function(counts, value = readcount) {
+as_counts_matrix <- function(counts, value = count) {
 
   if (
     ! is.data.frame(counts) |
@@ -375,7 +375,7 @@ make_tidytacos <- function(samples, taxa, counts,
     purrr::modify_at("taxa", mutate, taxon_id = !! taxon_name) %>%
     purrr::modify_at("counts", rename, sample_id = !! sample_name) %>%
     purrr::modify_at("counts", rename, taxon_id = !! taxon_name) %>%
-    purrr::modify_at("counts", filter, readcount > 0) %>%
+    purrr::modify_at("counts", filter, count > 0) %>%
     purrr::modify_at("counts", filter, sample_id %in% .$samples$sample_id) %>%
     purrr::modify_at("counts", filter, taxon_id %in% .$taxa$taxon_id) %>%
     `class<-`("tidytacos") %>%

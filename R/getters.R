@@ -26,7 +26,7 @@ tacosum <- function(ta) {
   c(
     n_samples = nrow(ta$samples),
     n_taxa = nrow(ta$taxa),
-    n_reads = sum(ta$counts$readcount)
+    n_reads = sum(ta$counts$count)
   )
 
 }
@@ -124,7 +124,7 @@ occurrences <- function(ta, condition = NULL, pres_abs = F) {
 
   abundances_extended <-
     ta$counts %>%
-    filter(readcount > 0) %>%
+    filter(count > 0) %>%
     left_join(ta$samples, by = "sample_id")
 
   if (is.null(condition)) {
@@ -281,7 +281,7 @@ perform_adonis <- function(ta, predictors, permutations = 999) {
 #' @return A matrix with count values.
 #'
 #' @export
-counts_matrix <- function(ta, sample_name = sample, taxon_name = taxon, var = readcount) {
+counts_matrix <- function(ta, sample_name = sample, taxon_name = taxon, var = count) {
 
   if (
     ! "tidytacos" %in% class(ta)

@@ -10,16 +10,16 @@ rarefy <- function(ta, n, replace = F) {
     ta$counts %>%
     group_by(sample_id) %>%
     mutate(
-      readcount =
-        sample(x = 1:sum(readcount), size = !! n, replace = !! replace) %>%
-        cut(breaks = c(0, cumsum(readcount)), labels = taxon_id) %>%
+      count =
+        sample(x = 1:sum(count), size = !! n, replace = !! replace) %>%
+        cut(breaks = c(0, cumsum(count)), labels = taxon_id) %>%
         table() %>%
         as.integer()
     ) %>%
     ungroup()
 
   ta %>%
-    purrr::modify_at("counts", filter, readcount > 0) %>%
+    purrr::modify_at("counts", filter, count > 0) %>%
     process_count_selection()
 
 }
@@ -116,7 +116,7 @@ aggregate_samples <- function(ta) {
     left_join(names, by = "sample_id") %>%
     select(- sample_id) %>%
     group_by(sample_id_new, taxon_id) %>%
-    summarize(readcount = sum(readcount)) %>%
+    summarize(count = sum(count)) %>%
     ungroup() %>%
     rename(sample_id = sample_id_new)
 
@@ -186,10 +186,10 @@ aggregate_taxa <- function(ta, rank = NULL) {
     {
       if ("rel_abundance" %in% names(ta$counts)) {
         summarize(
-          ., readcount = sum(readcount), rel_abundance = sum(rel_abundance)
+          ., count = sum(count), rel_abundance = sum(rel_abundance)
         )
       } else {
-        summarize(., readcount = sum(readcount))
+        summarize(., count = sum(count))
       }
     } %>%
     ungroup() %>%

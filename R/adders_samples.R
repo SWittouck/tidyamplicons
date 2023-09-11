@@ -83,7 +83,7 @@ add_lib_size <- function(ta, step = "current") {
     # make table with sample and library size
     lib_sizes <- ta$counts %>%
       group_by(sample_id) %>%
-      summarize(lib_size = sum(readcount)) %>%
+      summarize(lib_size = sum(count)) %>%
       select(sample_id, lib_size)
 
   } else {
@@ -146,7 +146,7 @@ add_alphas <- function(ta) {
 
   # make table with sample, divObserved and divInvSimpson
   diversities <- ta$counts %>%
-    filter(readcount > 0) %>%
+    filter(count > 0) %>%
     group_by(sample_id) %>%
     summarize(
       observed = n(),
@@ -332,7 +332,7 @@ add_spike_ratio <- function(ta, spike_taxon) {
   # make sample table with spike abundances
   spike_counts <- ta$counts %>%
     filter(taxon_id == spike_taxon) %>%
-    select(sample_id, spike_abundance = readcount)
+    select(sample_id, spike_abundance = count)
 
   # calculate spike ratio (non-spike abundance to spike abundance)
   ta$samples <- ta$samples %>%

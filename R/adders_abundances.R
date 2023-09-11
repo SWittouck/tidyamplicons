@@ -31,7 +31,7 @@ add_rel_abundance <- function(ta) {
   # add relative abundance to abundance table
   ta$counts <- ta$counts %>%
     group_by(sample_id) %>%
-    mutate(rel_abundance = readcount / sum(readcount)) %>%
+    mutate(rel_abundance = count / sum(count)) %>%
     ungroup()
 
   # return ta object
