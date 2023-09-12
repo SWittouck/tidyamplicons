@@ -25,6 +25,7 @@ Imports:
     vegan
 Suggests: 
     covr,
+    compositions,
     vdiffr,
     dada2,
     ggVennDiagram,

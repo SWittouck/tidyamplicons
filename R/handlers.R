@@ -5,23 +5,21 @@
 #'
 #' @export
 rarefy <- function(ta, n, replace = F) {
-
   ta$counts <-
     ta$counts %>%
     group_by(sample_id) %>%
     mutate(
       count =
-        sample(x = 1:sum(count), size = !! n, replace = !! replace) %>%
-        cut(breaks = c(0, cumsum(count)), labels = taxon_id) %>%
-        table() %>%
-        as.integer()
+        sample(x = 1:sum(count), size = !!n, replace = !!replace) %>%
+          cut(breaks = c(0, cumsum(count)), labels = taxon_id) %>%
+          table() %>%
+          as.integer()
     ) %>%
     ungroup()
 
   ta %>%
     purrr::modify_at("counts", filter, count > 0) %>%
     process_count_selection()
-
 }
 
 # Change sample IDs to a given expression
@@ -31,10 +29,9 @@ rarefy <- function(ta, n, replace = F) {
 #   identifier.
 #
 change_id_samples <- function(ta, sample_id_new) {
-
   sample_id_new <- rlang::enexpr(sample_id_new)
 
-  ta <- mutate_samples(ta, sample_id_new = as.character(!! sample_id_new))
+  ta <- mutate_samples(ta, sample_id_new = as.character(!!sample_id_new))
 
   if (any(duplicated(ta$samples$sample_id_new))) {
     stop("the new sample ids are not unique")
@@ -43,18 +40,18 @@ change_id_samples <- function(ta, sample_id_new) {
   ta$counts <-
     ta$counts %>%
     left_join(
-      ta$samples %>% select(sample_id, sample_id_new), by = "sample_id"
+      ta$samples %>% select(sample_id, sample_id_new),
+      by = "sample_id"
     ) %>%
-    select(- sample_id) %>%
+    select(-sample_id) %>%
     rename(sample_id = sample_id_new)
 
   ta$samples <-
     ta$samples %>%
-    select(- sample_id) %>%
+    select(-sample_id) %>%
     rename(sample_id = sample_id_new)
 
   ta
-
 }
 
 # Change taxon IDs to a given expression
@@ -64,10 +61,9 @@ change_id_samples <- function(ta, sample_id_new) {
 #   identifier.
 #
 change_id_taxa <- function(ta, taxon_id_new) {
-
   taxon_id_new <- rlang::enexpr(taxon_id_new)
 
-  ta <- mutate_taxa(ta, taxon_id_new = as.character(!! taxon_id_new))
+  ta <- mutate_taxa(ta, taxon_id_new = as.character(!!taxon_id_new))
 
   if (any(duplicated(ta$taxa$taxon_id_new))) {
     stop("the new taxon ids are not unique")
@@ -76,16 +72,15 @@ change_id_taxa <- function(ta, taxon_id_new) {
   ta$counts <-
     ta$counts %>%
     left_join(ta$taxa %>% select(taxon_id, taxon_id_new), by = "taxon_id") %>%
-    select(- taxon_id) %>%
+    select(-taxon_id) %>%
     rename(taxon_id = taxon_id_new)
 
   ta$taxa <-
     ta$taxa %>%
-    select(- taxon_id) %>%
+    select(-taxon_id) %>%
     rename(taxon_id = taxon_id_new)
 
   ta
-
 }
 
 #' Aggregate samples with identical values for all metadata
@@ -94,27 +89,26 @@ change_id_taxa <- function(ta, taxon_id_new) {
 #'
 #' @export
 aggregate_samples <- function(ta) {
-
   # sample table with only old and new sample names
   metadata <- setdiff(names(ta$samples), "sample_id")
   names <- ta$samples %>%
     select(-sample_id) %>%
     distinct() %>%
     mutate(sample_id_new = paste0("m", 1:n())) %>%
-    right_join(ta$samples, by=metadata, multiple="all") %>%
+    right_join(ta$samples, by = metadata, multiple = "all") %>%
     select(sample_id, sample_id_new)
 
   # adapt sample table with new names
   ta$samples <- ta$samples %>%
     left_join(names, by = "sample_id") %>%
-    select(- sample_id) %>%
+    select(-sample_id) %>%
     rename(sample_id = sample_id_new) %>%
     distinct()
 
   # merge samples in counts table and adapt with new names
   ta$counts <- ta$counts %>%
     left_join(names, by = "sample_id") %>%
-    select(- sample_id) %>%
+    select(-sample_id) %>%
     group_by(sample_id_new, taxon_id) %>%
     summarize(count = sum(count)) %>%
     ungroup() %>%
@@ -122,7 +116,6 @@ aggregate_samples <- function(ta) {
 
   # return ta object
   ta
-
 }
 
 #' Aggregate taxa on a given taxonomic rank
@@ -138,26 +131,25 @@ aggregate_samples <- function(ta) {
 #' @param rank an optional rank to aggregate on
 #' @export
 aggregate_taxa <- function(ta, rank = NULL) {
-
-  if (! is.null(rank)) {
-
+  if (!is.null(rank)) {
     rank_names <-
       rank_names(ta) %>%
       intersect(names(ta$taxa))
 
     if (length(rank_names) == 0) {
-      stop("at least one of the taxonomic rank names should be present ",
-           "in the taxon table")
+      stop(
+        "at least one of the taxonomic rank names should be present ",
+        "in the taxon table"
+      )
     }
 
-    if (! rank %in% rank_names) {
+    if (!rank %in% rank_names) {
       stop("the rank you supplied should be one of the rank names")
     }
 
     rank_index <- which(rank_names == rank)
     rank_names_to_keep <- rank_names[1:rank_index]
-    ta <- select_taxa(ta, taxon_id, !! rank_names_to_keep)
-
+    ta <- select_taxa(ta, taxon_id, !!rank_names_to_keep)
   }
 
   # this avoids some problems
@@ -175,18 +167,19 @@ aggregate_taxa <- function(ta, rank = NULL) {
 
   ta$taxa <-
     ta$taxa %>%
-    select(- taxon_id) %>%
+    select(-taxon_id) %>%
     rename(taxon_id = taxon_id_new)
 
   ta$counts <-
     ta$counts %>%
     left_join(id_conversion, by = "taxon_id") %>%
-    select(- taxon_id) %>%
+    select(-taxon_id) %>%
     group_by(taxon_id_new, sample_id) %>%
     {
       if ("rel_abundance" %in% names(ta$counts)) {
         summarize(
-          ., count = sum(count), rel_abundance = sum(rel_abundance)
+          .,
+          count = sum(count), rel_abundance = sum(rel_abundance)
         )
       } else {
         summarize(., count = sum(count))
@@ -199,7 +192,6 @@ aggregate_taxa <- function(ta, rank = NULL) {
   ta$taxa[ta$taxa == "unknown"] <- NA
 
   ta
-
 }
 
 #' Trim all sequences
@@ -212,56 +204,50 @@ aggregate_taxa <- function(ta, rank = NULL) {
 #'
 #' @export
 trim_asvs <- function(ta, start, end) {
-
   ta$taxa <- ta$taxa %>%
-  mutate(sequence = str_sub(sequence, start = !! start, end = !! end))
-  if ("sequence" %in% names(ta$counts)){
+    mutate(sequence = str_sub(sequence, start = !!start, end = !!end))
+  if ("sequence" %in% names(ta$counts)) {
     ta$counts <- ta$counts %>%
       mutate(sequence = str_sub(
-        sequence, start = !! start, end = !! end
+        sequence,
+        start = !!start, end = !!end
       ))
   }
   ta <- merge_redundant_taxa(ta)
 
   ta
-
 }
 
 #' Retain or remove a set of sample variables
 #' @param ta a tidytacos object
 #' @export
 select_samples <- function(ta, ...) {
-
   ta$samples <- ta$samples %>%
     select(...)
 
-  if (! "sample_id" %in% names(ta$samples)) {
+  if (!"sample_id" %in% names(ta$samples)) {
     stop("you cannot delete the sample_id column")
   }
 
   ta
-
 }
 
 #' Retain or remove a set of taxon variables
 #' @param ta a tidytacos object
 #' @export
 select_taxa <- function(ta, ...) {
-
   ta$taxa <- ta$taxa %>%
     select(...)
 
   retain_taxon_id(ta)
 
   ta
-
 }
 
 #' Retain or remove a set of count variables
 #' @param ta a tidytacos object
 #' @export
 select_counts <- function(ta, ...) {
-
   ta$counts <- ta$counts %>%
     select(...)
 
@@ -270,40 +256,34 @@ select_counts <- function(ta, ...) {
   retain_counts(ta)
 
   ta
-
 }
 
 #' Create extra variables in the sample table
 #' @param ta a tidytacos object
 #' @export
 mutate_samples <- function(ta, ...) {
-
   ta$samples <- ta$samples %>%
     mutate(...)
   retain_sample_id(ta)
 
   ta
-
 }
 
 #' Create extra variables in the taxon table
 #' @param ta a tidytacos object
 #' @export
 mutate_taxa <- function(ta, ...) {
-
   ta$taxa <- ta$taxa %>%
     mutate(...)
   retain_taxon_id(ta)
 
   ta
-
 }
 
 #' Create extra variables in the abundances table
 #' @param ta a tidytacos object
 #' @export
 mutate_counts <- function(ta, ...) {
-
   ta$counts <- ta$counts %>%
     mutate(...)
   retain_sample_id(ta)
@@ -311,14 +291,12 @@ mutate_counts <- function(ta, ...) {
   retain_counts(ta)
 
   ta
-
 }
 
 #' Filter the samples
 #' @param ta a tidytacos object
 #' @export
 filter_samples <- function(ta, ...) {
-
   ta$samples <- ta$samples %>%
     filter(...)
 
@@ -327,14 +305,12 @@ filter_samples <- function(ta, ...) {
   any_samples_left(ta)
 
   ta
-
 }
 
 #' Filter the taxa
 #' @param ta a tidytacos object
 #' @export
 filter_taxa <- function(ta, ...) {
-
   ta$taxa <- ta$taxa %>%
     filter(...)
 
@@ -343,14 +319,12 @@ filter_taxa <- function(ta, ...) {
   any_taxa_left(ta)
 
   ta
-
 }
 
 #' Filter the counts
 #' @param ta a tidytacos object
 #' @export
 filter_counts <- function(ta, ...) {
-
   ta$counts <- ta$counts %>%
     filter(...)
 
@@ -359,5 +333,38 @@ filter_counts <- function(ta, ...) {
   any_taxa_left(ta)
 
   ta
+}
 
+#' Perform a centered log ratio transformation on the readcounts.
+#' @param ta a tidytacos object
+#' @param taxon unique identifier for the taxon, by default taxon_id.
+#' @param sample unique identifier for the sample, by default sample_id.
+#' @param counts variable name of the counts to be transformed in the counts table.
+#' @param overwrite wether or not the counts table is to be overwritten with the transformed counts.
+#' @export
+clr_transform_counts <- function(
+    ta,
+    taxon = taxon_id, sample = sample_id, counts = counts,
+    overwrite = F) {
+  force_optional_dependency("compositions")
+
+  taxon_name <- rlang::enquo(taxon)
+  sample_name <- rlang::enquo(sample)
+  counts_var <- rlang::enquo(counts)
+
+  counts_mat <- ta %>% counts_matrix(
+    sample_name = sample_name, taxon_name = taxon_name
+  )
+  clrt_counts <- compositions::clr(counts_mat)
+
+  ta_clrt <- create_tidytacos(clrt_counts)
+
+  if (overwrite) {
+    ta$clr_counts <- NULL
+    ta$counts <- ta_clrt$counts
+  } else {
+    ta$clr_counts <- ta_clrt$counts
+  }
+
+  ta
 }
