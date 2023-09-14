@@ -112,16 +112,19 @@ add_sparcc_network_clusters <- function(
     sparcc_to_network(treshold = network_tresh) %>%
     markov_cluster(min_n = min_n_cluster)
 
-  ta$taxa <- ta$taxa %>% left_join(clusters, by=rlang::quo_name(taxon_name))
+  ta$taxa <- ta$taxa %>% left_join(clusters, by=join_by(!!taxon_name==taxon))
   ta
 }
 
 
 # Internal function to run pca per cluster
-pca_taxa <- function(ta, cluster_name){
+pca_taxa <- function(ta, cluster_name, taxon_name=taxon, sample_name=sample){
+
+    taxon_name <- rlang::enquo(taxon_name)
+    sample_name <- rlang::enquo(sample_name)
 
     cm <- ta %>% filter_taxa(cluster==cluster_name) %>% 
-        counts_matrix()
+        counts_matrix(taxon_name=!!taxon_name, sample_name=!!sample_name)
 
     res <- cm %>% 
         stats::prcomp(scale=T)
@@ -142,12 +145,14 @@ pca_taxa <- function(ta, cluster_name){
 #' @param ta a tidytacos object.
 #'  
 #' @export
-add_eigentaxa <- function(ta) {
+add_eigentaxa <- function(ta, taxon_name=taxon, sample_name=sample) {
 
+    taxon_name <- rlang::enquo(taxon_name)
+    sample_name <- rlang::enquo(sample_name)
     ta_tmp <- ta
     if (! "cluster" %in% names(ta$taxa)) {
     # keep cluster ids in tax table
-    ta <- ta %>% add_sparcc_network_clusters()
+    ta <- ta %>% add_sparcc_network_clusters(taxon_name=!!taxon_name)
     ta_tmp <- ta %>% clr_transform_counts(overwrite=T)
     }
 
@@ -155,7 +160,8 @@ add_eigentaxa <- function(ta) {
 
     for (clust in unique(clusters)){
     tryCatch({
-        ta_tmp <- pca_taxa(ta_tmp, clust)}, 
+        ta_tmp <- pca_taxa(ta_tmp, clust, 
+        taxon_name=!!taxon_name, sample_name=!!sample_name)}, 
         error=function(cond){warning(cond)}
     )
     }
