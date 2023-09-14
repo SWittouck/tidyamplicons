@@ -60,6 +60,7 @@ jobs:
               any::rcmdcheck
               any::plotly
               any::vdiffr
+              any::compositions
               bioc::dada2
               bioc::phyloseq
           needs: check
